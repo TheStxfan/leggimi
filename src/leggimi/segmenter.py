@@ -1,4 +1,4 @@
-from models import Page, Chapter
+from .models import Page, Chapter
 
 
 def split_chapters(pages: list[Page]) -> list[Chapter]:

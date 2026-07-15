@@ -1,4 +1,4 @@
-from models import Page
+from .models import Page
 
 
 def extract_text(pdf_path: str) -> list[Page]:

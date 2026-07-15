@@ -1,4 +1,4 @@
-from models import Script
+from .models import Script
 from typing import Literal
 
 
