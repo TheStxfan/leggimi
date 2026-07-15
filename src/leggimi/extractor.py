@@ -1,3 +1,6 @@
+from models import Page
+
+
 def extract_text(pdf_path: str) -> list[Page]:
     """
     Estrae il testo grezzo dal PDF, una stringa per pagina.
