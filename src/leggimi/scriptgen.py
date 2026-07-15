@@ -1,3 +1,7 @@
+from models import Script
+from typing import Literal
+
+
 def to_script(
     chapter_text: str,
     mode: Literal["riassunto", "dialogo"] = "riassunto",
