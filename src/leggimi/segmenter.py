@@ -1,3 +1,6 @@
+from models import Page, Chapter
+
+
 def split_chapters(pages: list[Page]) -> list[Chapter]:
     """
     Divide le pagine in capitoli basandosi sui titoli.
