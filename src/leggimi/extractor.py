@@ -1,8 +1,10 @@
-from pathlib import Path
-from leggimi import llm_client
-from .models import Page
 import fitz  # PyMuPDF
 import re
+
+from pathlib import Path
+from leggimi import llm_client
+from leggimi.errors import LeggiMiError
+from .models import Page
 
 
 def extract_text(pdf_path: str) -> list[Page]:
@@ -18,7 +20,6 @@ def extract_text(pdf_path: str) -> list[Page]:
     Raises:
         FileNotFoundError: se il file non esiste.
         RuntimeError: se si verifica un errore durante la lettura del PDF.
-        NotImplementedError: implementazione non ancora disponibile.
     """
 
     if not Path(pdf_path).exists():
@@ -60,6 +61,8 @@ def estrai_pagina_ordinata(idx: int, page) -> str:
         text = rimuovi_sillabazione(raw_text)
         text = unisci_righe(text)
 
+    except LeggiMiError:
+        raise
     except Exception as exc:
         raise RuntimeError(f"Errore durante l'elaborazione della pagina {idx}") from exc
 
