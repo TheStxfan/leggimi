@@ -1,7 +1,12 @@
 import base64
 
-from openai import OpenAI
+from openai import OpenAI, NotFoundError, APIConnectionError, RateLimitError
 from leggimi.config import get_openrouter_key
+from leggimi.errors import (
+    ModelNotFoundError,
+    NoInternetConnectionError,
+    ApiRequestLimitExceededError,
+)
 
 SYSTEM_PROMPT = (
     "Sei un motore OCR ad alta precisione. "
@@ -20,7 +25,7 @@ def get_text_from_image(
     image_bytes: bytes,
     prompt: str,
     model: str = "google/gemma-4-26b-a4b-it:free",  # alternative: google/gemma-4-31b-it:free
-    system_prompt: str | None = None,
+    system_prompt: str | None = SYSTEM_PROMPT,
 ) -> str:
     """
     Completa il prompt utilizzando un modello di linguaggio.
@@ -38,7 +43,6 @@ def get_text_from_image(
         ModelNotFoundError: se il modello non è stato trovato.
         NoInternetConnectionError: se non c'è connessione a internet.
         ApiRequestLimitExceededError: se il limite di richieste all'API è stato superato.
-        NotImplementedError: implementazione non ancora disponibile.
     """
     # raise NotImplementedError
 
@@ -63,9 +67,18 @@ def get_text_from_image(
         }
     )
 
-    response = client.chat.completions.create(
-        model=model,
-        messages=messages,
-    )
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+        )
+    except NotFoundError as exc:
+        raise ModelNotFoundError(f"Modello non trovato: {model}") from exc
+
+    except APIConnectionError as exc:
+        raise NoInternetConnectionError("Connessione all'API fallita") from exc
+
+    except RateLimitError as exc:
+        raise ApiRequestLimitExceededError("Limite richieste superato") from exc
 
     return response.choices[0].message.content or ""
