@@ -1,0 +1,30 @@
+class LeggiMiError(Exception):
+    """Base di tutti gli errori dell'app."""
+
+
+class PdfIlleggibileError(LeggiMiError):
+    """Il PDF non può essere aperto o non contiene testo utile."""
+
+
+class LLMNonDisponibileError(LeggiMiError):
+    """Provider LLM non configurato o non raggiungibile."""
+
+
+class TTSNonDisponibileError(LeggiMiError):
+    """Sintesi vocale non disponibile."""
+
+
+class PdfScansionatoError(PdfIlleggibileError):
+    """Scansione (immagine): serve percorso OCR/AI."""
+
+
+class ModelNotFoundError(LLMNonDisponibileError):
+    """404: modello non trovato."""
+
+
+class NoInternetConnectionError(LLMNonDisponibileError):
+    """Connessione all'API fallita."""
+
+
+class ApiRequestLimitExceededError(LLMNonDisponibileError):
+    """429: limite richieste superato."""
