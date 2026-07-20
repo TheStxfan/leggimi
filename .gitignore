@@ -1,5 +1,6 @@
 *.egg-info/
 *.pyc
+*.sh
 .env
 .pytest_cache
 .venv/
