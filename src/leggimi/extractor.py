@@ -15,11 +15,10 @@ def extract_text(pdf_path: str) -> list[Page]:
         pdf_path: percorso al file PDF.
 
     Returns:
-        Lista di stringhe, una per pagina.
+        Lista di oggetti Page, uno per pagina.
 
     Raises:
         FileNotFoundError: se il file non esiste.
-        RuntimeError: se si verifica un errore durante la lettura del PDF.
     """
 
     if not Path(pdf_path).exists():
@@ -27,8 +26,13 @@ def extract_text(pdf_path: str) -> list[Page]:
 
     pages: list[Page] = []
     with fitz.open(pdf_path) as doc:
-        for idx, page in enumerate(doc):  # type: ignore
-            text = estrai_pagina_ordinata(idx, page)
+        for idx, page in enumerate(doc):
+            try:
+                text = estrai_pagina_ordinata(idx, page)
+            except LeggiMiError:
+                raise
+            except Exception:
+                text = ""
             pages.append(Page(num=idx, text=text))
 
     return pages
@@ -39,7 +43,8 @@ def estrai_pagina_ordinata(idx: int, page) -> str:
     Estrae il testo ordinato da una singola pagina del PDF
 
     Args:
-        page: indice pagina
+        idx: indice della pagina.
+        page: oggetto pagina PyMuPDF da trascrivere.
 
     Returns:
         Testo della pagina
