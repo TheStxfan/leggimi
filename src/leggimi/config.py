@@ -8,7 +8,7 @@ load_dotenv()
 
 def get_openrouter_key() -> str:
     try:
-        key = get_openrouter_key()
+        key = os.environ.get("OPENROUTER_API_KEY", "")
     except EnvironmentError as exc:
         raise LLMNonDisponibileError("OPENROUTER_API_KEY mancante") from exc
 
