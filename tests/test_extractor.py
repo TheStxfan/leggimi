@@ -38,3 +38,19 @@ def test_extract_text_restituisce_pagine(monkeypatch, tmp_path):
     assert len(pages) == 1
     assert pages[0].num == 0
     assert pages[0].text == "testo pagina"
+
+
+@pytest.mark.skipif(
+    not Path("tests/fixtures/sample-pdf-columns.pdf").exists(),
+    reason="Fixture PDF a tre colonne mancante",
+)
+def test_ordine_lettura_tre_colonne():
+    risultato = extract_text("tests/fixtures/sample-pdf-columns.pdf")
+    testo_completo = "".join(p.text for p in risultato)
+
+    pos_sx = testo_completo.index("ELECTION RESULTS EDITION")
+    pos_ct = testo_completo.index("Usually, politicians say")
+    pos_dx = testo_completo.index("Lounge Lizard Slither")
+    assert (
+        pos_sx < pos_ct < pos_dx
+    ), "L'ordine atteso è: colonna sinistra, poi centrale, poi destra"
