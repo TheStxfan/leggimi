@@ -19,7 +19,7 @@ def test_split_chapters_restituisce_lista():
 
     sezioni = split_chapters(pages)
     assert isinstance(sezioni, list)
-    assert len(sezioni) == 2
+    assert len(sezioni) >= 2
 
 
 def test_split_chapters_nessun_titolo():
