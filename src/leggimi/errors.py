@@ -14,6 +14,10 @@ class TTSNonDisponibileError(LeggiMiError):
     """Sintesi vocale non disponibile."""
 
 
+class ChaptersNotFoundError(LeggiMiError):
+    """Nessun capitolo trovato."""
+
+
 class PdfScansionatoError(PdfIlleggibileError):
     """Scansione (immagine): serve percorso OCR/AI."""
 
