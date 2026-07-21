@@ -10,7 +10,7 @@ class Page:
 @dataclass
 class Chapter:
     title: str
-    pages: list[Page] = field(default_factory=list)
+    text: str
 
 
 @dataclass
