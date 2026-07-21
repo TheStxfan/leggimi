@@ -20,6 +20,8 @@ SYSTEM_PROMPT = (
     "Se una parola è spezzata da un trattino a fine riga, lasciala così "
     "(es. 'trat-\\nto'): verrà ricomposta in un secondo momento. "
     "Non includere note del tipo 'Ecco il testo'."
+    "Se riconosci un titolo di capitolo o di sezione, rappresentalo usando la sintassi Markdown delle intestazioni "
+    "(una o più '#' seguite da uno spazio e il titolo)."
 )
 
 
