@@ -1,4 +1,4 @@
-import fitz  # PyMuPDF
+import fitz
 import re
 
 from pathlib import Path
@@ -26,7 +26,7 @@ def extract_text(pdf_path: str) -> list[Page]:
 
     pages: list[Page] = []
     with fitz.open(pdf_path) as doc:
-        for idx, page in enumerate(doc):
+        for idx, page in enumerate(doc):  # type: ignore
             try:
                 text = estrai_pagina_ordinata(idx, page)
             except LeggiMiError:
