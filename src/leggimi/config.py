@@ -7,9 +7,11 @@ load_dotenv()
 
 
 def get_openrouter_key() -> str:
-    try:
-        key = os.environ.get("OPENROUTER_API_KEY", "")
-    except EnvironmentError as exc:
-        raise LLMNonDisponibileError("OPENROUTER_API_KEY mancante") from exc
+    key = os.environ.get("OPENROUTER_API_KEY")
+
+    if not key:
+        raise LLMNonDisponibileError(
+            "Chiave API OpenRouter non trovata nelle variabili d'ambiente."
+        )
 
     return key
