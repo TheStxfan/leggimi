@@ -32,3 +32,11 @@ class NoInternetConnectionError(LLMNonDisponibileError):
 
 class ApiRequestLimitExceededError(LLMNonDisponibileError):
     """429: limite richieste superato."""
+
+
+class UIInitializationError(LeggiMiError):
+    """Errore durante l'inizializzazione dell'interfaccia utente."""
+
+
+class FileSelectionError(LeggiMiError):
+    """Errore durante la selezione di un file."""
