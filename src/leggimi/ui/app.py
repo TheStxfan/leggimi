@@ -5,6 +5,12 @@ import flet as ft
 from leggimi.pipeline import process_pdf
 from leggimi.ui.ui_components import create_text, create_button
 from leggimi.errors import FileSelectionError, UIInitializationError
+from leggimi.ui.ui_components import (
+    create_text,
+    create_button,
+    resize_ui,
+    create_ui_size_slider,
+)
 
 
 async def main(page: ft.Page):
@@ -164,6 +170,9 @@ async def main(page: ft.Page):
         select_pdf,
     )
 
+    ui_size_row, ui_size_text = create_ui_size_slider()
+
+    page.add(ui_size_row)
     page.add(welcome_text)
     page.add(select_pdf_button)
 
