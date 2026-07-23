@@ -44,6 +44,12 @@ def resize_ui(
         if control.icon is not None:
             control.icon.size = new_size  # type: ignore
 
+        if isinstance(control.tooltip, ft.Tooltip):
+            control.tooltip.text_style = ft.TextStyle(
+                size=new_size * 0.7,
+                color="amber",
+            )
+
     if hasattr(control, "controls"):
         for child in control.controls:  # type: ignore
             resize_ui(child, new_size, exclude)
@@ -60,7 +66,7 @@ def resize_ui(
 
 
 def create_ui_size_slider(
-    min_size: float = 26,
+    min_size: float = 35,
     max_size: float = 80,
 ) -> tuple[ft.Row, ft.Text]:
     """
@@ -115,7 +121,16 @@ def create_ui_size_slider(
         thumb_color="amber",
         active_color="amber",
         value=UI_SIZE,
-        tooltip="Modifica la scala interfaccia",
+        tooltip=(
+            ft.Tooltip(
+                message="Modifica la scala interfaccia",
+                text_style=ft.TextStyle(
+                    size=current_ui_size * 0.8,
+                    color="amber",
+                ),
+                bgcolor=ft.Colors.GREY_900,
+            )
+        ),
         label=f"{initial_percentage:.0f}%",
         width=300,
         on_change=resize_ui_handler,
@@ -164,12 +179,23 @@ def create_button(
 
     return ft.Button(
         content=ft.Text(text, size=size),
-        icon=ft.Icon(icon, size=size),
+        icon=ft.Icon(icon, size=size),  # type: ignore
         offset=button_offset,
         scale=button_scale,
         color="amber",
         on_click=on_click,
-        tooltip=tooltip_text,
+        tooltip=(
+            ft.Tooltip(
+                message=tooltip_text,
+                text_style=ft.TextStyle(
+                    size=current_ui_size * 0.7,
+                    color="amber",
+                ),
+                bgcolor=ft.Colors.GREY_900,
+            )
+            if tooltip_text is not None
+            else None
+        ),
         align=ft.Alignment.CENTER,
         style=ft.ButtonStyle(
             side={
