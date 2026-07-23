@@ -59,8 +59,14 @@ async def main(page: ft.Page):
 
     chapters_view: ft.ListView | None = None
 
-    main_content = ft.Column(
+    main_content_column = ft.Column(
         expand=True,
+    )
+
+    main_content = ft.Container(
+        content=main_content_column,
+        expand=True,
+        clip_behavior=ft.ClipBehavior.HARD_EDGE,
     )
 
     def remove_control(
@@ -76,8 +82,8 @@ async def main(page: ft.Page):
             None.
         """
 
-        if control is not None and control in main_content.controls:
-            main_content.controls.remove(control)
+        if control is not None and control in main_content.content.controls:  # type: ignore
+            main_content.content.controls.remove(control)  # type: ignore
 
     async def run_processes(e):
         """
@@ -106,7 +112,7 @@ async def main(page: ft.Page):
 
         remove_control(chapters_view)
 
-        main_content.controls.append(
+        main_content.content.controls.append(  # type: ignore
             processing_text,
         )
 
@@ -120,6 +126,7 @@ async def main(page: ft.Page):
         remove_control(processing_text)
 
         chapters_view = ft.ListView(
+            margin=ft.Margin.only(top=15),
             controls=[
                 ft.ListTile(
                     title=create_text(
@@ -132,7 +139,7 @@ async def main(page: ft.Page):
             expand=True,
         )
 
-        main_content.controls.append(
+        main_content.content.controls.append(  # type: ignore
             chapters_view,
         )
 
@@ -191,8 +198,8 @@ async def main(page: ft.Page):
                 f"File: {Path(pdf_path).name}",
             )
 
-            main_content.controls.append(selected_file_text)
-            main_content.controls.append(start_button)
+            main_content.content.controls.append(selected_file_text)  # type: ignore
+            main_content.content.controls.append(start_button)  # type: ignore
 
             page.update()
 
@@ -210,7 +217,7 @@ async def main(page: ft.Page):
 
     ui_size_row, ui_size_text = create_ui_size_slider()
 
-    main_content.controls.append(select_pdf_button)
+    main_content.content.controls.append(select_pdf_button)  # type: ignore
 
     page.add(
         ft.Column(
