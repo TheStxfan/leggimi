@@ -112,7 +112,10 @@ def create_ui_size_slider(
         min=min_size,
         max=max_size,
         divisions=10,
+        thumb_color="amber",
+        active_color="amber",
         value=UI_SIZE,
+        tooltip="Modifica la scala interfaccia",
         label=f"{initial_percentage:.0f}%",
         width=300,
         on_change=resize_ui_handler,
@@ -134,6 +137,7 @@ def create_button(
     text: str,
     icon,
     on_click,
+    tooltip_text: str | None = None,
     size: float | None = None,
 ) -> ft.Button:
     """
@@ -159,18 +163,22 @@ def create_button(
     )
 
     return ft.Button(
-        content=ft.Text(
-            text,
-            size=size,
-        ),
-        icon=ft.Icon(
-            icon,
-            size=size,
-        ),
+        content=ft.Text(text, size=size),
+        icon=ft.Icon(icon, size=size),
         offset=button_offset,
         scale=button_scale,
+        color="amber",
         on_click=on_click,
+        tooltip=tooltip_text,
         align=ft.Alignment.CENTER,
+        style=ft.ButtonStyle(
+            side={
+                ft.ControlState.FOCUSED: ft.BorderSide(
+                    width=3,
+                    color=ft.Colors.AMBER,
+                ),
+            },
+        ),
     )
 
 
@@ -192,6 +200,7 @@ def create_text(
 
     return ft.Text(
         text,
+        color="amber",
         size=(current_ui_size if size is None else size),
         align=ft.Alignment.CENTER,
     )
