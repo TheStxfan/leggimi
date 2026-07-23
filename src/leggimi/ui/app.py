@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 
 import flet as ft
 
@@ -187,7 +188,7 @@ async def main(page: ft.Page):
             start_button.disabled = False
 
             selected_file_text = create_text(
-                f"File selezionato: {pdf_path}",
+                f"File: {Path(pdf_path).name}",
             )
 
             main_content.controls.append(selected_file_text)
