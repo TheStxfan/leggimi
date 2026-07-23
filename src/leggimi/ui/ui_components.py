@@ -50,6 +50,14 @@ def resize_ui(
                 color="amber",
             )
 
+    elif isinstance(control, ft.ListTile):
+        if isinstance(control.title, ft.Control):
+            resize_ui(
+                control.title,
+                new_size,
+                exclude,
+            )
+
     if hasattr(control, "controls"):
         for child in control.controls:  # type: ignore
             resize_ui(child, new_size, exclude)
@@ -137,7 +145,7 @@ def create_ui_size_slider(
     )
 
     row = ft.Row(
-        margin=ft.Margin.only(top=30),
+        margin=ft.Margin.only(top=15),
         controls=[
             ui_size_text,
             ui_size_slider,
