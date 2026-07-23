@@ -1,1 +1,1 @@
-UI_SIZE = 26
+UI_SIZE = 42.2
