@@ -38,13 +38,15 @@ async def main(page: ft.Page):
         page.fonts = {
             "Roboto": "fonts/Roboto-Regular.ttf",
         }
+        page.theme_mode = ft.ThemeMode.DARK
+        page.bgcolor = "black"
 
         file_picker = ft.FilePicker()
         page.services.append(file_picker)
 
     except Exception as exc:
         raise UIInitializationError(
-            "Errore durante l'inizializzazione " "dell'interfaccia.",
+            "Errore durante l'inizializzazione dell'interfaccia.",
         ) from exc
 
     pdf_path: str | None = None
@@ -59,6 +61,22 @@ async def main(page: ft.Page):
     main_content = ft.Column(
         expand=True,
     )
+
+    def remove_control(
+        control: ft.Control | None,
+    ) -> None:
+        """
+        Rimuove un controllo dal contenuto principale, se presente.
+
+        Args:
+            control: Controllo da rimuovere.
+
+        Returns:
+            None.
+        """
+
+        if control is not None and control in main_content.controls:
+            main_content.controls.remove(control)
 
     async def run_processes(e):
         """
@@ -85,10 +103,7 @@ async def main(page: ft.Page):
         if start_button is not None:
             start_button.disabled = True
 
-        if chapters_view is not None:
-            main_content.controls.remove(
-                chapters_view,
-            )
+        remove_control(chapters_view)
 
         main_content.controls.append(
             processing_text,
@@ -101,9 +116,7 @@ async def main(page: ft.Page):
             pdf_path,
         )
 
-        main_content.controls.remove(
-            processing_text,
-        )
+        remove_control(processing_text)
 
         chapters_view = ft.ListView(
             controls=[
@@ -158,42 +171,27 @@ async def main(page: ft.Page):
             if pdf_path is None:
                 return
 
-            if selected_file_text is not None:
-                main_content.controls.remove(
-                    selected_file_text,
-                )
+            remove_control(selected_file_text)
+            remove_control(processing_text)
+            remove_control(chapters_view)
+            remove_control(start_button)
 
-            if processing_text is not None:
-                main_content.controls.remove(
-                    processing_text,
-                )
-
-            if chapters_view is not None:
-                main_content.controls.remove(
-                    chapters_view,
-                )
-
-            if start_button is not None:
-                start_button.disabled = False
-
-            else:
+            if start_button is None:
                 start_button = create_button(
                     "Start",
                     ft.Icons.START,
                     run_processes,
+                    tooltip_text="Converti il file PDF selezionato in audio",
                 )
+
+            start_button.disabled = False
 
             selected_file_text = create_text(
                 f"File selezionato: {pdf_path}",
             )
 
-            main_content.controls.append(
-                selected_file_text,
-            )
-
-            main_content.controls.append(
-                start_button,
-            )
+            main_content.controls.append(selected_file_text)
+            main_content.controls.append(start_button)
 
             page.update()
 
@@ -202,24 +200,16 @@ async def main(page: ft.Page):
                 "Errore durante la selezione del file.",
             ) from exc
 
-    welcome_text = create_text(
-        "Benvenuto su LeggiMi!",
-    )
-
     select_pdf_button = create_button(
         "Seleziona un PDF",
         ft.Icons.UPLOAD_FILE,
         select_pdf,
+        tooltip_text="Seleziona un file PDF da convertire in audio",
     )
 
     ui_size_row, ui_size_text = create_ui_size_slider()
 
-    main_content.controls.extend(
-        [
-            welcome_text,
-            select_pdf_button,
-        ],
-    )
+    main_content.controls.append(select_pdf_button)
 
     page.add(
         ft.Column(
