@@ -1,9 +1,103 @@
 import flet as ft
 from leggimi.ui.ui_config import UI_SIZE
 
+current_ui_size = UI_SIZE
 button_scale = UI_SIZE ** (1 / 16) - 0.2
 text_size = UI_SIZE
 button_offset = ft.Offset((button_scale - 1) / 2, (button_scale - 1) / 2)
+
+
+def resize_ui(
+    control: ft.Control,
+    new_size: float,
+    exclude=None,
+) -> None:
+    """
+    Ridimensiona ricorsivamente i componenti UI.
+
+    Args:
+        control: Controllo Flet da ridimensionare.
+        new_size: Nuova dimensione base dell'interfaccia.
+
+    Returns:
+        None.
+    """
+
+    if control is exclude:
+        return
+
+    button_scale = new_size ** (1 / 16) - 0.2
+    button_offset = ft.Offset(
+        (button_scale - 1) / 2,
+        (button_scale - 1) / 2,
+    )
+
+    if isinstance(control, ft.Text):
+        control.size = new_size
+
+    elif isinstance(control, ft.Button):
+        control.scale = button_scale
+        control.offset = button_offset
+
+        if isinstance(control.content, ft.Text):
+            control.content.size = new_size
+
+        if control.icon is not None:
+            control.icon.size = new_size  # type: ignore
+
+    if hasattr(control, "controls"):
+        for child in control.controls:  # type: ignore
+            resize_ui(child, new_size, exclude)
+
+    if hasattr(control, "content") and isinstance(
+        control.content,  # type: ignore
+        ft.Control,
+    ):
+        resize_ui(control.content, new_size, exclude)  # type: ignore
+
+
+def create_ui_size_slider(
+    min_size: float = 26,
+    max_size: float = 80,
+) -> tuple[ft.Row, ft.Text]:
+    def resize_ui_handler(e):
+        global current_ui_size
+
+        new_size = e.control.value
+        current_ui_size = new_size
+
+        percentage = (new_size - min_size) / (max_size - min_size) * 100
+        e.control.label = f"{percentage:.0f}%"
+
+        resize_ui(
+            e.page,
+            new_size,
+            exclude=ui_size_text,
+        )
+
+        e.page.update()
+
+    initial_percentage = (UI_SIZE - min_size) / (max_size - min_size) * 100
+
+    ui_size_text = create_text("UI Size")
+
+    ui_size_slider = ft.Slider(
+        min=min_size,
+        max=max_size,
+        divisions=10,
+        value=UI_SIZE,
+        label=f"{initial_percentage:.0f}%",
+        width=300,
+        on_change=resize_ui_handler,
+    )
+
+    row = ft.Row(
+        margin=ft.Margin.only(top=30),
+        controls=[ui_size_text, ui_size_slider],
+        alignment=ft.MainAxisAlignment.CENTER,
+    )
+
+    return row, ui_size_text
 
 
 def create_button(
@@ -24,10 +118,10 @@ def create_button(
 
 def create_text(
     text: str,
-    size: float = text_size,
+    size: float | None = None,
 ) -> ft.Text:
     return ft.Text(
         text,
-        size=size,
+        size=current_ui_size if size is None else size,
         align=ft.Alignment.CENTER,
     )
