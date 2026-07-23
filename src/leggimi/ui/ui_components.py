@@ -1,16 +1,14 @@
 import flet as ft
+
 from leggimi.ui.ui_config import UI_SIZE
 
 current_ui_size = UI_SIZE
-button_scale = UI_SIZE ** (1 / 16) - 0.2
-text_size = UI_SIZE
-button_offset = ft.Offset((button_scale - 1) / 2, (button_scale - 1) / 2)
 
 
 def resize_ui(
     control: ft.Control,
     new_size: float,
-    exclude=None,
+    exclude: ft.Control | None = None,
 ) -> None:
     """
     Ridimensiona ricorsivamente i componenti UI.
@@ -18,6 +16,7 @@ def resize_ui(
     Args:
         control: Controllo Flet da ridimensionare.
         new_size: Nuova dimensione base dell'interfaccia.
+        exclude: Controllo da escludere dal ridimensionamento.
 
     Returns:
         None.
@@ -53,20 +52,50 @@ def resize_ui(
         control.content,  # type: ignore
         ft.Control,
     ):
-        resize_ui(control.content, new_size, exclude)  # type: ignore
+        resize_ui(
+            control.content,  # type: ignore
+            new_size,
+            exclude,
+        )
 
 
 def create_ui_size_slider(
     min_size: float = 26,
     max_size: float = 80,
 ) -> tuple[ft.Row, ft.Text]:
+    """
+    Crea lo slider per modificare la dimensione dell'interfaccia.
+
+    Args:
+        min_size: Dimensione minima dell'interfaccia.
+        max_size: Dimensione massima dell'interfaccia.
+
+    Returns:
+        Una tupla contenente il Row dello slider e il testo
+        utilizzato per visualizzare l'etichetta "UI Size".
+    """
+
+    ui_size_text = create_text("UI Size")
+
     def resize_ui_handler(e):
+        """
+        Aggiorna la dimensione dell'interfaccia in base al valore
+        selezionato nello slider.
+
+        Args:
+            e: Evento generato dalla modifica del valore dello slider.
+
+        Returns:
+            None.
+        """
+
         global current_ui_size
 
         new_size = e.control.value
         current_ui_size = new_size
 
         percentage = (new_size - min_size) / (max_size - min_size) * 100
+
         e.control.label = f"{percentage:.0f}%"
 
         resize_ui(
@@ -78,8 +107,6 @@ def create_ui_size_slider(
         e.page.update()
 
     initial_percentage = (UI_SIZE - min_size) / (max_size - min_size) * 100
-
-    ui_size_text = create_text("UI Size")
 
     ui_size_slider = ft.Slider(
         min=min_size,
@@ -93,7 +120,10 @@ def create_ui_size_slider(
 
     row = ft.Row(
         margin=ft.Margin.only(top=30),
-        controls=[ui_size_text, ui_size_slider],
+        controls=[
+            ui_size_text,
+            ui_size_slider,
+        ],
         alignment=ft.MainAxisAlignment.CENTER,
     )
 
@@ -104,11 +134,39 @@ def create_button(
     text: str,
     icon,
     on_click,
-    size: float = UI_SIZE,
+    size: float | None = None,
 ) -> ft.Button:
+    """
+    Crea un pulsante Flet con testo e icona.
+
+    Args:
+        text: Testo visualizzato nel pulsante.
+        icon: Icona visualizzata nel pulsante.
+        on_click: Funzione eseguita al clic sul pulsante.
+        size: Dimensione del testo e dell'icona.
+
+    Returns:
+        Pulsante Flet configurato.
+    """
+
+    if size is None:
+        size = current_ui_size
+
+    button_scale = size ** (1 / 16) - 0.2
+    button_offset = ft.Offset(
+        (button_scale - 1) / 2,
+        (button_scale - 1) / 2,
+    )
+
     return ft.Button(
-        content=ft.Text(text, size=size),
-        icon=ft.Icon(icon, size=size),
+        content=ft.Text(
+            text,
+            size=size,
+        ),
+        icon=ft.Icon(
+            icon,
+            size=size,
+        ),
         offset=button_offset,
         scale=button_scale,
         on_click=on_click,
@@ -120,8 +178,20 @@ def create_text(
     text: str,
     size: float | None = None,
 ) -> ft.Text:
+    """
+    Crea un controllo di testo Flet.
+
+    Args:
+        text: Testo da visualizzare.
+        size: Dimensione del testo. Se non specificata, viene utilizzata
+            la dimensione corrente dell'interfaccia.
+
+    Returns:
+        Controllo di testo Flet configurato.
+    """
+
     return ft.Text(
         text,
-        size=current_ui_size if size is None else size,
+        size=(current_ui_size if size is None else size),
         align=ft.Alignment.CENTER,
     )
