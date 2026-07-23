@@ -60,7 +60,7 @@ def estrai_pagina_ordinata(idx: int, page) -> str:
         raw_text = llm_client.get_text_from_image(
             img_bytes,
             prompt="Trascrivi tutto il testo visibile in questa pagina, mantenendo la struttura dei paragrafi.",
-            system_prompt=llm_client.SYSTEM_PROMPT,
+            system_prompt=llm_client.TEXT_EXTRACTION_SYSTEM_PROMPT,
         )
 
         text = rimuovi_sillabazione(raw_text)
