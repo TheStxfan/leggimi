@@ -1,7 +1,15 @@
 import base64
+import time
 from typing import Literal
+from openai.types.chat import ChatCompletion
 
-from openai import OpenAI, NotFoundError, APIConnectionError, RateLimitError
+from openai import (
+    APIConnectionError,
+    APIStatusError,
+    NotFoundError,
+    OpenAI,
+    RateLimitError,
+)
 from leggimi.config import get_openrouter_key
 from leggimi.models import Line, Script
 from leggimi.errors import (
@@ -174,6 +182,50 @@ della modalità e del livello forniti dall'utente.
 """
 
 
+def _is_retryable_error(exc: Exception) -> bool:
+    """
+    Determina se un errore API può essere ritentato.
+    """
+
+    if isinstance(exc, (APIConnectionError, RateLimitError)):
+        return True
+
+    if isinstance(exc, APIStatusError):
+        return exc.status_code == 503
+
+    return False
+
+
+def _call_with_retry(
+    client: OpenAI,
+    model: str,
+    messages: list,
+    max_retries: int = 3,
+) -> ChatCompletion:
+    """
+    Esegue una richiesta API ritentandola in caso di errori temporanei.
+
+    Usa un backoff esponenziale tra i tentativi.
+    """
+
+    for attempt in range(max_retries):
+        try:
+            return client.chat.completions.create(
+                model=model,
+                messages=messages,
+            )
+
+        except Exception as exc:
+            if not _is_retryable_error(exc) or attempt == max_retries - 1:
+                raise
+
+            time.sleep(2**attempt)
+
+    raise RuntimeError(
+        "La richiesta API non ha restituito alcuna risposta.",
+    )
+
+
 def get_text_from_image(
     image_bytes: bytes,
     prompt: str,
@@ -237,18 +289,26 @@ def get_text_from_image(
     )
 
     try:
-        response = client.chat.completions.create(
+        response = _call_with_retry(
+            client=client,
             model=model,
             messages=messages,
         )
+
     except NotFoundError as exc:
-        raise ModelNotFoundError(f"Modello non trovato: {model}") from exc
+        raise ModelNotFoundError(
+            f"Modello non trovato: {model}",
+        ) from exc
 
     except APIConnectionError as exc:
-        raise NoInternetConnectionError("Connessione all'API fallita") from exc
+        raise NoInternetConnectionError(
+            "Connessione all'API fallita",
+        ) from exc
 
     except RateLimitError as exc:
-        raise ApiRequestLimitExceededError("Limite richieste superato") from exc
+        raise ApiRequestLimitExceededError(
+            "Limite richieste superato",
+        ) from exc
 
     return response.choices[0].message.content or ""
 
@@ -347,117 +407,139 @@ def _generate_chunk_script(
         }
     )
 
-    try:
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-        )
-
-        content = response.choices[0].message.content
-
-        if content is None:
-            raise InvalidScriptFormatError(
-                "La risposta del modello è vuota.",
+    for attempt in range(2):
+        try:
+            response = _call_with_retry(
+                client=client,
+                model=model,
+                messages=messages,
             )
 
-        content_lines = []
+            content = response.choices[0].message.content
 
-        for line in content.splitlines():
-            line = line.strip()
+            if content is None:
+                raise InvalidScriptFormatError(
+                    "La risposta del modello è vuota.",
+                )
 
-            if line:
-                content_lines.append(line)
+            content_lines = []
 
-        if len(content_lines) % 2 != 0:
-            raise InvalidScriptFormatError(
-                "Il numero di righe della risposta non è valido.",
+            for line in content.splitlines():
+                line = line.strip()
+
+                if line:
+                    content_lines.append(line)
+
+            if len(content_lines) % 2 != 0:
+                raise InvalidScriptFormatError(
+                    "Il numero di righe della risposta non è valido.",
+                )
+
+            lines: list[Line] = []
+
+            for i in range(0, len(content_lines), 2):
+                speaker_line = content_lines[i]
+                text_line = content_lines[i + 1]
+
+                if ":" not in speaker_line or ":" not in text_line:
+                    raise InvalidScriptFormatError(
+                        f"Formato non valido alla battuta {i // 2 + 1}.",
+                    )
+
+                speaker_prefix, speaker = speaker_line.split(":", 1)
+                text_prefix, text = text_line.split(":", 1)
+
+                speaker_prefix = speaker_prefix.strip()
+                text_prefix = text_prefix.strip()
+
+                if speaker_prefix != "SPEAKER":
+                    raise InvalidScriptFormatError(
+                        f"Formato speaker non valido alla battuta {i // 2 + 1}.",
+                    )
+
+                if text_prefix != "TEXT":
+                    raise InvalidScriptFormatError(
+                        f"Formato testo non valido alla battuta {i // 2 + 1}.",
+                    )
+
+                speaker = speaker.strip()
+                text = text.strip()
+
+                if not speaker or not text:
+                    raise InvalidScriptFormatError(
+                        f"Speaker o testo vuoto alla battuta {i // 2 + 1}.",
+                    )
+
+                if speaker not in {"Speaker1", "Speaker2"}:
+                    raise InvalidScriptFormatError(
+                        f"Speaker non valido: {speaker}",
+                    )
+
+                if mode == "Riassunto" and speaker != "Speaker1":
+                    raise InvalidScriptFormatError(
+                        "In modalità 'Riassunto' è consentito solo Speaker1.",
+                    )
+
+                lines.append(
+                    Line(
+                        speaker=speaker,
+                        text=text,
+                    )
+                )
+
+            if not lines:
+                raise InvalidScriptFormatError(
+                    "Il modello non ha restituito alcuna battuta.",
+                )
+
+            speakers = {line.speaker for line in lines}
+
+            if mode == "Riassunto" and speakers != {"Speaker1"}:
+                raise InvalidScriptFormatError(
+                    "Il riassunto deve usare esclusivamente Speaker1.",
+                )
+
+            if mode == "Dialogo" and speakers != {"Speaker1", "Speaker2"}:
+                raise InvalidScriptFormatError(
+                    "Il dialogo deve contenere Speaker1 e Speaker2.",
+                )
+
+            return lines
+
+        except InvalidScriptFormatError:
+            if attempt == 1:
+                raise
+
+            messages.append(
+                {
+                    "role": "user",
+                    "content": (
+                        "La risposta precedente non rispettava il formato "
+                        "richiesto. Genera nuovamente l'intero script "
+                        "rispettando rigorosamente il formato obbligatorio "
+                        "SPEAKER/TEXT."
+                    ),
+                }
             )
 
-        lines: list[Line] = []
+        except NotFoundError as exc:
+            raise ModelNotFoundError(
+                f"Modello non trovato: {model}",
+            ) from exc
 
-        for i in range(0, len(content_lines), 2):
-            speaker_line = content_lines[i]
-            text_line = content_lines[i + 1]
+        except APIConnectionError as exc:
+            raise NoInternetConnectionError(
+                "Connessione all'API fallita",
+            ) from exc
 
-            if ":" not in speaker_line or ":" not in text_line:
-                raise InvalidScriptFormatError(
-                    f"Formato non valido alla battuta {i // 2 + 1}.",
-                )
+        except RateLimitError as exc:
+            raise ApiRequestLimitExceededError(
+                "Limite richieste superato",
+            ) from exc
 
-            speaker_prefix, speaker = speaker_line.split(":", 1)
-            text_prefix, text = text_line.split(":", 1)
-
-            speaker_prefix = speaker_prefix.strip()
-            text_prefix = text_prefix.strip()
-
-            if speaker_prefix != "SPEAKER":
-                raise InvalidScriptFormatError(
-                    f"Formato speaker non valido alla battuta {i // 2 + 1}.",
-                )
-
-            if text_prefix != "TEXT":
-                raise InvalidScriptFormatError(
-                    f"Formato testo non valido alla battuta {i // 2 + 1}.",
-                )
-
-            speaker = speaker.strip()
-            text = text.strip()
-
-            if not speaker or not text:
-                raise InvalidScriptFormatError(
-                    f"Speaker o testo vuoto alla battuta {i // 2 + 1}.",
-                )
-
-            if speaker not in {"Speaker1", "Speaker2"}:
-                raise InvalidScriptFormatError(
-                    f"Speaker non valido: {speaker}",
-                )
-
-            if mode == "Riassunto" and speaker != "Speaker1":
-                raise InvalidScriptFormatError(
-                    "In modalità 'Riassunto' è consentito solo Speaker1.",
-                )
-
-            lines.append(
-                Line(
-                    speaker=speaker,
-                    text=text,
-                )
-            )
-
-        if not lines:
-            raise InvalidScriptFormatError(
-                "Il modello non ha restituito alcuna battuta.",
-            )
-
-        speakers = {line.speaker for line in lines}
-
-        if mode == "Riassunto" and speakers != {"Speaker1"}:
-            raise InvalidScriptFormatError(
-                "Il riassunto deve usare esclusivamente Speaker1.",
-            )
-
-        if mode == "Dialogo" and speakers != {"Speaker1", "Speaker2"}:
-            raise InvalidScriptFormatError(
-                "Il dialogo deve contenere Speaker1 e Speaker2.",
-            )
-
-        return lines
-
-    except NotFoundError as exc:
-        raise ModelNotFoundError(
-            f"Modello non trovato: {model}",
-        ) from exc
-
-    except APIConnectionError as exc:
-        raise NoInternetConnectionError(
-            "Connessione all'API fallita",
-        ) from exc
-
-    except RateLimitError as exc:
-        raise ApiRequestLimitExceededError(
-            "Limite richieste superato",
-        ) from exc
+    raise InvalidScriptFormatError(
+        "Impossibile generare uno script valido dopo i tentativi disponibili.",
+    )
 
 
 def to_script(
