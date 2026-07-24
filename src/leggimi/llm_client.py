@@ -3,12 +3,13 @@ from typing import Literal
 
 from openai import OpenAI, NotFoundError, APIConnectionError, RateLimitError
 from leggimi.config import get_openrouter_key
+from leggimi.models import Line, Script
 from leggimi.errors import (
     ModelNotFoundError,
     NoInternetConnectionError,
     ApiRequestLimitExceededError,
+    InvalidScriptFormatError,
 )
-from leggimi.models import Script
 
 TEXT_EXTRACTION_SYSTEM_PROMPT = """
 Sei un motore OCR avanzato e strutturatore di documenti.
@@ -117,6 +118,39 @@ Livello "avanzato":
 FORMATO DELL'OUTPUT:
 Restituisci esclusivamente lo script richiesto.
 Non aggiungere spiegazioni, commenti o testo al di fuori dello script.
+
+Lo script deve essere composto da una sequenza di interventi.
+Ogni intervento deve occupare esattamente due righe:
+
+SPEAKER: <nome dello speaker>
+TEXT: <testo pronunciato dallo speaker>
+
+Dopo ogni riga TEXT può iniziare un nuovo intervento con una nuova riga SPEAKER.
+
+REGOLE:
+- Usa sempre esattamente i prefissi `SPEAKER:` e `TEXT:`.
+- `SPEAKER:` contiene esclusivamente il nome dello speaker.
+- `TEXT:` contiene esclusivamente il testo pronunciato.
+- Non inserire altri prefissi, intestazioni o metadati.
+- Non lasciare vuoto il testo di un intervento.
+- Non inserire righe vuote all'interno di un intervento.
+
+ESEMPIO DI STRUTTURA:
+SPEAKER: Marco
+TEXT: La fotosintesi è il processo attraverso cui le piante producono energia.
+
+SPEAKER: Sara
+TEXT: Quindi la pianta utilizza la luce per trasformare alcune sostanze?
+
+SPEAKER: Marco
+TEXT: Esatto. Utilizza la luce, l'acqua e l'anidride carbonica.
+
+La struttura dell'esempio è puramente illustrativa.
+Il contenuto effettivo deve essere generato esclusivamente sulla base del testo fornito.
+
+REGOLE SPECIFICHE PER LA MODALITÀ:
+- In modalità "Riassunto", usa sempre lo stesso speaker per tutti gli interventi.
+- In modalità "Dialogo", usa esclusivamente i due speaker previsti e indica chiaramente ogni cambio di speaker iniziando un nuovo intervento con `SPEAKER:`.
 """
 
 
@@ -138,7 +172,7 @@ def get_text_from_image(
         image_bytes: Contenuto binario dell'immagine della pagina da analizzare.
         prompt: Istruzioni aggiuntive per il modello relative all'estrazione.
         model: Identificativo del modello multimodale da utilizzare.
-        system_prompt: Istruzioni di sistema da fornire al modello. Se ``None``,
+        system_prompt: Istruzioni di sistema da fornire al modello. Se `None`,
             non viene utilizzato alcun system prompt.
 
     Returns:
@@ -163,7 +197,15 @@ def get_text_from_image(
     )
 
     messages = []
-    messages.append({"role": "system", "content": system_prompt})
+
+    if system_prompt is not None:
+        messages.append(
+            {
+                "role": "system",
+                "content": system_prompt,
+            }
+        )
+
     messages.append(
         {
             "role": "user",
@@ -195,30 +237,32 @@ def to_script(
     chapter_text: str,
     mode: Literal["Riassunto", "Dialogo"],
     livello: Literal["base", "intermedio", "avanzato"],
+    model: str = "google/gemma-4-26b-a4b-it:free",  # alternative: google/gemma-4-31b-it:free
+    system_prompt: str | None = SCRIPT_GENERATION_SYSTEM_PROMPT,
 ) -> Script:
     """
-    Trasforma il testo di un capitolo scolastico in uno script ottimizzato
-    per l'ascolto.
+    Trasforma il testo di un capitolo scolastico in uno script
+    ottimizzato per l'ascolto.
 
     Il contenuto viene rielaborato secondo la modalità richiesta:
-
-    - ``"Riassunto"``: una spiegazione discorsiva e coerente con un solo speaker;
-    - ``"Dialogo"``: una spiegazione sotto forma di dialogo tra due speaker.
+    - "Riassunto": una spiegazione discorsiva e coerente con un solo speaker;
+    - "Dialogo": una spiegazione sotto forma di dialogo tra due speaker.
 
     Il livello determina la profondità e la complessità della spiegazione:
-
-    - ``"base"``: linguaggio molto semplice, spiegazioni graduali ed esempi frequenti;
-    - ``"intermedio"``: linguaggio semplice ma preciso, con terminologia tecnica
-      essenziale;
-    - ``"avanzato"``: maggiore precisione e completezza, con terminologia più tecnica.
+    - "base": linguaggio molto semplice, spiegazioni graduali ed esempi frequenti;
+    - "intermedio": linguaggio semplice ma preciso, con terminologia tecnica essenziale;
+    - "avanzato": maggiore precisione e completezza, con terminologia più tecnica.
 
     Args:
         chapter_text: Testo del capitolo scolastico da rielaborare.
         mode: Modalità di generazione dello script.
         livello: Livello di complessità e approfondimento della spiegazione.
+        model: Identificativo del modello linguistico da utilizzare.
+        system_prompt: Istruzioni di sistema da fornire al modello. Se `None`,
+            non viene utilizzato alcun system prompt.
 
     Returns:
-        Uno ``Script`` contenente la modalità utilizzata e la lista ordinata
+        Uno Script contenente la modalità utilizzata e la lista ordinata
         delle battute da convertire successivamente in audio.
 
     Raises:
@@ -226,5 +270,104 @@ def to_script(
         NoInternetConnectionError: Se non è disponibile una connessione a Internet.
         ApiRequestLimitExceededError: Se viene superato il limite di richieste
             del provider LLM.
+        InvalidScriptFormatError: Se la risposta del modello è vuota o
+            non rispetta il formato previsto.
     """
-    raise NotImplementedError
+
+    key = get_openrouter_key()
+
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=key,
+    )
+
+    messages = []
+
+    if system_prompt is not None:
+        messages.append(
+            {
+                "role": "system",
+                "content": system_prompt,
+            }
+        )
+
+    messages.append(
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        f"Modalità: {mode}\n"
+                        f"Livello: {livello}\n\n"
+                        f"Testo del capitolo:\n{chapter_text}"
+                    ),
+                },
+            ],
+        }
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+        )
+
+        content = response.choices[0].message.content
+
+        if content is None:
+            raise InvalidScriptFormatError("La risposta del modello è vuota.")
+
+        lines: list[Line] = []
+
+        for line_number, line in enumerate(
+            content.splitlines(),
+            start=1,
+        ):
+            line = line.strip()
+
+            if not line:
+                continue
+
+            if ":" not in line:
+                raise InvalidScriptFormatError(
+                    f"Formato non valido alla riga {line_number}.",
+                )
+
+            speaker, text = line.split(":", 1)
+
+            speaker = speaker.strip()
+            text = text.strip()
+
+            if not speaker or not text:
+                raise InvalidScriptFormatError(
+                    f"Speaker o testo vuoto alla riga {line_number}.",
+                )
+
+            lines.append(
+                Line(
+                    speaker=speaker,
+                    text=text,
+                )
+            )
+
+        if not lines:
+            raise InvalidScriptFormatError(
+                "Il modello non ha restituito alcuna battuta.",
+            )
+
+        script = Script(
+            mode=mode,
+            lines=lines,
+        )
+
+    except NotFoundError as exc:
+        raise ModelNotFoundError(f"Modello non trovato: {model}") from exc
+
+    except APIConnectionError as exc:
+        raise NoInternetConnectionError("Connessione all'API fallita") from exc
+
+    except RateLimitError as exc:
+        raise ApiRequestLimitExceededError("Limite richieste superato") from exc
+
+    return script
