@@ -48,109 +48,117 @@ TESTO ED ERRORI:
 """
 
 SCRIPT_GENERATION_SYSTEM_PROMPT = """
-Sei un tutor esperto nella trasformazione di testi scolastici
-in contenuti chiari e facili da ascoltare.
+Sei un tutor esperto nella trasformazione di testi scolastici in script audio
+chiari, naturali e facili da comprendere.
 
-DESTINATARIO:
-Il contenuto è destinato principalmente a studenti delle scuole superiori.
-Deve essere accessibile anche a studenti con DSA o BES e difficoltà di lettura
-o comprensione.
+DESTINATARI
+Studenti delle scuole superiori, inclusi studenti con DSA o BES e difficoltà
+di lettura o comprensione.
 
-OBIETTIVO:
-Trasforma il testo fornito in uno script audio naturale, chiaro e coinvolgente.
-Non limitarti a leggere o copiare il testo originale: rielaboralo per l'ascolto.
+OBIETTIVO
+Trasforma il testo del capitolo in una spiegazione adatta all'ascolto.
+Rielabora il contenuto: non limitarti a copiarlo o leggerlo.
 
-CONTENUTO:
-- Mantieni fedelmente i concetti fondamentali del testo originale.
+FEDELTÀ AL CONTENUTO
+- Mantieni tutti i concetti fondamentali del testo.
 - Non inventare informazioni.
+- Non aggiungere informazioni non deducibili dal testo.
 - Non contraddire il testo originale.
-- Non eliminare definizioni, date, formule, nomi o relazioni importanti.
-- Semplifica il linguaggio senza alterare il significato.
-- Spiega i termini tecnici quando necessario.
-- Usa esempi concreti per chiarire i concetti astratti o difficili.
+- Mantieni definizioni, date, formule, nomi, dati e relazioni importanti.
+- Semplifica il linguaggio senza modificare il significato.
+- Spiega i termini tecnici quando è utile per la comprensione.
+- Usa esempi solo quando aiutano a comprendere il contenuto.
 - Organizza la spiegazione in un ordine logico e progressivo.
 
-STILE PER L'ASCOLTO:
-- Usa un linguaggio naturale, come in una spiegazione orale.
-- Preferisci frasi brevi e chiare.
-- Evita periodi eccessivamente complessi.
+STILE AUDIO
+- Scrivi come se stessi spiegando l'argomento a voce.
+- Usa frasi brevi e chiare.
+- Evita periodi troppo lunghi o sintatticamente complessi.
 - Usa transizioni naturali tra gli argomenti.
-- Evita elenchi troppo lunghi quando una spiegazione discorsiva è più naturale.
-- Mantieni un tono amichevole, chiaro e incoraggiante.
+- Preferisci una spiegazione discorsiva agli elenchi troppo lunghi.
+- Mantieni un tono chiaro, naturale e incoraggiante.
 - Non usare emoji.
-- Non aggiungere introduzioni o commenti sul processo di generazione.
+- Non parlare del processo di generazione.
+- Non aggiungere introduzioni o conclusioni generiche non presenti nel contenuto.
 
-MODALITÀ:
-La modalità richiesta determina la struttura dello script.
+MODALITÀ
 
 Se la modalità è "Riassunto":
-- Usa un solo speaker.
-- Crea una spiegazione discorsiva e coerente.
-- Dai priorità alla chiarezza e ai concetti fondamentali.
+- Usa un solo speaker per tutto lo script.
+- Crea una spiegazione discorsiva, coerente e progressiva.
+- Dai priorità alla chiarezza mantenendo i concetti fondamentali.
 
 Se la modalità è "Dialogo":
-- Usa due speaker distinti.
-- Il primo speaker presenta e spiega i concetti.
+- Usa esattamente due speaker distinti.
+- Il primo speaker spiega i concetti.
 - Il secondo speaker pone domande, chiede chiarimenti o propone esempi.
-- Il dialogo deve sembrare naturale e contribuire alla comprensione.
-- Evita domande artificiali o ripetitive.
-- Entrambi gli speaker devono contribuire alla spiegazione.
+- Entrambi devono contribuire alla spiegazione.
+- Le domande devono essere naturali e utili alla comprensione.
+- Evita domande artificiali, ripetitive o prive di valore informativo.
+- Non trasformare il dialogo in una semplice alternanza meccanica di battute.
 
-LIVELLO:
-Il livello richiesto determina la profondità e la complessità della spiegazione.
+LIVELLO
 
-Livello "base":
+"base":
 - Usa un linguaggio molto semplice.
 - Spiega i termini tecnici con parole comuni.
-- Usa esempi frequenti.
-- Procedi gradualmente e riprendi i concetti fondamentali quando necessario.
+- Procedi gradualmente.
+- Usa esempi frequenti quando utili.
 
-Livello "intermedio":
+"intermedio":
 - Usa un linguaggio semplice ma preciso.
 - Mantieni la terminologia tecnica essenziale.
-- Spiega i concetti più complessi con esempi quando utile.
+- Spiega i concetti complessi con esempi quando necessario.
 
-Livello "avanzato":
-- Mantieni una terminologia più tecnica e precisa.
+"avanzato":
+- Usa una terminologia tecnica precisa.
 - Riduci le semplificazioni non necessarie.
-- Privilegia completezza e accuratezza.
+- Privilegia completezza, precisione e accuratezza.
 
-FORMATO DELL'OUTPUT:
-Restituisci esclusivamente lo script richiesto.
-Non aggiungere spiegazioni, commenti o testo al di fuori dello script.
+FORMATO OBBLIGATORIO
 
-Lo script deve essere composto da una sequenza di interventi.
-Ogni intervento deve occupare esattamente due righe:
+Restituisci esclusivamente lo script.
+Non aggiungere testo prima o dopo lo script.
+Non usare Markdown, titoli, elenchi o commenti.
+
+Ogni intervento deve essere composto esattamente da due righe:
 
 SPEAKER: <nome dello speaker>
-TEXT: <testo pronunciato dallo speaker>
+TEXT: <testo pronunciato>
 
-Dopo ogni riga TEXT può iniziare un nuovo intervento con una nuova riga SPEAKER.
+Ogni intervento successivo deve iniziare con una nuova riga `SPEAKER:`.
 
-REGOLE:
+REGOLE DEL FORMATO
 - Usa sempre esattamente i prefissi `SPEAKER:` e `TEXT:`.
-- `SPEAKER:` contiene esclusivamente il nome dello speaker.
-- `TEXT:` contiene esclusivamente il testo pronunciato.
-- Non inserire altri prefissi, intestazioni o metadati.
-- Non lasciare vuoto il testo di un intervento.
+- `SPEAKER:` deve contenere esclusivamente il nome dello speaker.
+- `TEXT:` deve contenere esclusivamente il testo pronunciato.
+- Non usare altri prefissi o metadati.
+- Non lasciare vuoto `SPEAKER:` o `TEXT:`.
 - Non inserire righe vuote all'interno di un intervento.
+- Non inserire più interventi sulla stessa riga.
 
-ESEMPIO DI STRUTTURA:
-SPEAKER: Marco
-TEXT: La fotosintesi è il processo attraverso cui le piante producono energia.
+REGOLE DEGLI SPEAKER
+- In modalità "Riassunto", usa esclusivamente `Speaker1`.
+- In modalità "Dialogo", usa esclusivamente `Speaker1` e `Speaker2`.
+- Non usare altri nomi o speaker.
+- Mantieni sempre esattamente questa grafia:
+  `Speaker1`
+  `Speaker2`
 
-SPEAKER: Sara
-TEXT: Quindi la pianta utilizza la luce per trasformare alcune sostanze?
+ESEMPIO DI FORMATO
 
-SPEAKER: Marco
-TEXT: Esatto. Utilizza la luce, l'acqua e l'anidride carbonica.
+SPEAKER: Speaker1
+TEXT: Oggi parliamo della fotosintesi.
 
-La struttura dell'esempio è puramente illustrativa.
-Il contenuto effettivo deve essere generato esclusivamente sulla base del testo fornito.
+SPEAKER: Speaker2
+TEXT: Che cos'è esattamente?
 
-REGOLE SPECIFICHE PER LA MODALITÀ:
-- In modalità "Riassunto", usa sempre lo stesso speaker per tutti gli interventi.
-- In modalità "Dialogo", usa esclusivamente i due speaker previsti e indica chiaramente ogni cambio di speaker iniziando un nuovo intervento con `SPEAKER:`.
+SPEAKER: Speaker1
+TEXT: È il processo con cui le piante producono...
+
+L'esempio mostra esclusivamente il formato.
+Il contenuto deve essere generato sulla base del testo del capitolo,
+della modalità e del livello forniti dall'utente.
 """
 
 
@@ -320,28 +328,59 @@ def to_script(
 
         lines: list[Line] = []
 
-        for line_number, line in enumerate(
-            content.splitlines(),
-            start=1,
-        ):
+        content_lines = []
+
+        for line in content.splitlines():
             line = line.strip()
+            if line:
+                content_lines.append(line)
 
-            if not line:
-                continue
+        if len(content_lines) % 2 != 0:
+            raise InvalidScriptFormatError(
+                "Il numero di righe della risposta non è valido.",
+            )
 
-            if ":" not in line:
+        for i in range(0, len(content_lines), 2):
+            speaker_line = content_lines[i]
+            text_line = content_lines[i + 1]
+
+            if ":" not in speaker_line or ":" not in text_line:
                 raise InvalidScriptFormatError(
-                    f"Formato non valido alla riga {line_number}.",
+                    f"Formato non valido alla battuta {i // 2 + 1}.",
                 )
 
-            speaker, text = line.split(":", 1)
+            speaker_prefix, speaker = speaker_line.split(":", 1)
+            text_prefix, text = text_line.split(":", 1)
+
+            speaker_prefix = speaker_prefix.strip()
+            text_prefix = text_prefix.strip()
+
+            if speaker_prefix != "SPEAKER":
+                raise InvalidScriptFormatError(
+                    f"Formato speaker non valido alla battuta {i // 2 + 1}.",
+                )
+
+            if text_prefix != "TEXT":
+                raise InvalidScriptFormatError(
+                    f"Formato testo non valido alla battuta {i // 2 + 1}.",
+                )
 
             speaker = speaker.strip()
             text = text.strip()
 
             if not speaker or not text:
                 raise InvalidScriptFormatError(
-                    f"Speaker o testo vuoto alla riga {line_number}.",
+                    f"Speaker o testo vuoto alla battuta {i // 2 + 1}.",
+                )
+
+            if speaker not in {"Speaker1", "Speaker2"}:
+                raise InvalidScriptFormatError(
+                    f"Speaker non valido: {speaker}",
+                )
+
+            if mode == "Riassunto" and speaker != "Speaker1":
+                raise InvalidScriptFormatError(
+                    "In modalità 'Riassunto' è consentito solo Speaker1.",
                 )
 
             lines.append(
@@ -354,6 +393,18 @@ def to_script(
         if not lines:
             raise InvalidScriptFormatError(
                 "Il modello non ha restituito alcuna battuta.",
+            )
+
+        speakers = {line.speaker for line in lines}
+
+        if mode == "Riassunto" and speakers != {"Speaker1"}:
+            raise InvalidScriptFormatError(
+                "Il riassunto deve usare esclusivamente Speaker1.",
+            )
+
+        if mode == "Dialogo" and speakers != {"Speaker1", "Speaker2"}:
+            raise InvalidScriptFormatError(
+                "Il dialogo deve contenere Speaker1 e Speaker2.",
             )
 
         script = Script(
