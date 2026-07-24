@@ -59,6 +59,18 @@ OBIETTIVO
 Trasforma il testo del capitolo in una spiegazione adatta all'ascolto.
 Rielabora il contenuto: non limitarti a copiarlo o leggerlo.
 
+GESTIONE DEL TESTO PARZIALE
+Il testo fornito potrebbe essere solo una parte di un capitolo più lungo.
+
+- Tratta il testo ricevuto come una porzione del capitolo completo.
+- Inizia direttamente dall'argomento presente nel testo.
+- Non aggiungere introduzioni generiche solo perché il testo inizia a metà capitolo.
+- Non aggiungere conclusioni generiche solo perché il testo termina prima della fine del capitolo.
+- Non fare riferimento al fatto che il testo sia un estratto o un blocco.
+- Mantieni la continuità logica con il contenuto ricevuto.
+- Non ripetere inutilmente concetti già presenti nel testo.
+- Se il testo inizia o termina durante un concetto, utilizza il contesto presente nel blocco per mantenere una spiegazione naturale e coerente.
+
 FEDELTÀ AL CONTENUTO
 - Mantieni tutti i concetti fondamentali del testo.
 - Non inventare informazioni.
@@ -241,37 +253,57 @@ def get_text_from_image(
     return response.choices[0].message.content or ""
 
 
-def to_script(
+def chunk_text(
+    text: str,
+    max_words: int = 1500,
+    overlap: int = 100,
+) -> list[str]:
+    """
+    Divide un testo lungo in blocchi di parole sovrapposti.
+
+    Args:
+        text: Testo da dividere.
+        max_words: Numero massimo di parole per blocco.
+        overlap: Numero di parole ripetute tra due blocchi consecutivi.
+
+    Returns:
+        Lista dei blocchi di testo.
+    """
+
+    words = text.split()
+    chunks = []
+
+    start = 0
+
+    while start < len(words):
+        end = start + max_words
+
+        chunks.append(" ".join(words[start:end]))
+
+        start = end - overlap
+
+    return chunks
+
+
+def _generate_chunk_script(
     chapter_text: str,
     mode: Literal["Riassunto", "Dialogo"],
     livello: Literal["base", "intermedio", "avanzato"],
-    model: str = "google/gemma-4-26b-a4b-it:free",  # alternative: google/gemma-4-31b-it:free
-    system_prompt: str | None = SCRIPT_GENERATION_SYSTEM_PROMPT,
-) -> Script:
+    model: str,
+    system_prompt: str | None,
+) -> list[Line]:
     """
-    Trasforma il testo di un capitolo scolastico in uno script
-    ottimizzato per l'ascolto.
-
-    Il contenuto viene rielaborato secondo la modalità richiesta:
-    - "Riassunto": una spiegazione discorsiva e coerente con un solo speaker;
-    - "Dialogo": una spiegazione sotto forma di dialogo tra due speaker.
-
-    Il livello determina la profondità e la complessità della spiegazione:
-    - "base": linguaggio molto semplice, spiegazioni graduali ed esempi frequenti;
-    - "intermedio": linguaggio semplice ma preciso, con terminologia tecnica essenziale;
-    - "avanzato": maggiore precisione e completezza, con terminologia più tecnica.
+    Genera le battute dello script per un singolo chunk di testo.
 
     Args:
-        chapter_text: Testo del capitolo scolastico da rielaborare.
+        chapter_text: Chunk del capitolo da rielaborare.
         mode: Modalità di generazione dello script.
-        livello: Livello di complessità e approfondimento della spiegazione.
+        livello: Livello di complessità e approfondimento.
         model: Identificativo del modello linguistico da utilizzare.
-        system_prompt: Istruzioni di sistema da fornire al modello. Se `None`,
-            non viene utilizzato alcun system prompt.
+        system_prompt: Istruzioni di sistema da fornire al modello.
 
     Returns:
-        Uno Script contenente la modalità utilizzata e la lista ordinata
-        delle battute da convertire successivamente in audio.
+        Lista delle battute generate.
 
     Raises:
         ModelNotFoundError: Se il modello linguistico configurato non è disponibile.
@@ -324,14 +356,15 @@ def to_script(
         content = response.choices[0].message.content
 
         if content is None:
-            raise InvalidScriptFormatError("La risposta del modello è vuota.")
-
-        lines: list[Line] = []
+            raise InvalidScriptFormatError(
+                "La risposta del modello è vuota.",
+            )
 
         content_lines = []
 
         for line in content.splitlines():
             line = line.strip()
+
             if line:
                 content_lines.append(line)
 
@@ -339,6 +372,8 @@ def to_script(
             raise InvalidScriptFormatError(
                 "Il numero di righe della risposta non è valido.",
             )
+
+        lines: list[Line] = []
 
         for i in range(0, len(content_lines), 2):
             speaker_line = content_lines[i]
@@ -407,18 +442,61 @@ def to_script(
                 "Il dialogo deve contenere Speaker1 e Speaker2.",
             )
 
-        script = Script(
-            mode=mode,
-            lines=lines,
-        )
+        return lines
 
     except NotFoundError as exc:
-        raise ModelNotFoundError(f"Modello non trovato: {model}") from exc
+        raise ModelNotFoundError(
+            f"Modello non trovato: {model}",
+        ) from exc
 
     except APIConnectionError as exc:
-        raise NoInternetConnectionError("Connessione all'API fallita") from exc
+        raise NoInternetConnectionError(
+            "Connessione all'API fallita",
+        ) from exc
 
     except RateLimitError as exc:
-        raise ApiRequestLimitExceededError("Limite richieste superato") from exc
+        raise ApiRequestLimitExceededError(
+            "Limite richieste superato",
+        ) from exc
 
-    return script
+
+def to_script(
+    chapter_text: str,
+    mode: Literal["Riassunto", "Dialogo"],
+    livello: Literal["base", "intermedio", "avanzato"],
+    model: str = "google/gemma-4-26b-a4b-it:free",
+    system_prompt: str | None = SCRIPT_GENERATION_SYSTEM_PROMPT,
+) -> Script:
+    """
+    Divide il capitolo in chunk e genera lo script per ogni parte.
+
+    Args:
+        chapter_text: Testo completo del capitolo da rielaborare.
+        mode: Modalità di generazione dello script.
+        livello: Livello di complessità e approfondimento.
+        model: Identificativo del modello linguistico da utilizzare.
+        system_prompt: Istruzioni di sistema da fornire al modello.
+
+    Returns:
+        Uno Script contenente tutte le battute generate dai vari chunk.
+    """
+
+    chunks = chunk_text(chapter_text)
+
+    lines: list[Line] = []
+
+    for chunk in chunks:
+        lines.extend(
+            _generate_chunk_script(
+                chapter_text=chunk,
+                mode=mode,
+                livello=livello,
+                model=model,
+                system_prompt=system_prompt,
+            )
+        )
+
+    return Script(
+        mode=mode,
+        lines=lines,
+    )
