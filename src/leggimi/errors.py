@@ -40,3 +40,7 @@ class UIInitializationError(LeggiMiError):
 
 class FileSelectionError(LeggiMiError):
     """Errore durante la selezione di un file."""
+
+
+class InvalidScriptFormatError(LeggiMiError):
+    """La risposta del modello non rispetta il formato dello script."""
