@@ -13,7 +13,6 @@ from leggimi.errors import (
     ModelNotFoundError,
     NoInternetConnectionError,
     ApiRequestLimitExceededError,
-    InvalidScriptFormatError,
 )
 
 
