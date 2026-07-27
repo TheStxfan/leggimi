@@ -10,7 +10,6 @@ from openai import (
     RateLimitError,
 )
 from leggimi.config import get_openrouter_key
-from leggimi.models import Line, Script
 from leggimi.errors import (
     ModelNotFoundError,
     NoInternetConnectionError,
