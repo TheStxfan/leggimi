@@ -226,7 +226,7 @@ def _call_with_retry(
 def get_text_from_image(
     image_bytes: bytes,
     prompt: str,
-    model: str = get_model(),
+    model: str = get_model("IMAGE"),
     system_prompt: str | None = TEXT_EXTRACTION_SYSTEM_PROMPT,
 ) -> str:
     """
