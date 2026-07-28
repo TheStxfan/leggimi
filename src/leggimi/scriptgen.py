@@ -1,6 +1,7 @@
 from .models import Script, Line
 from leggimi.config import get_openrouter_key, get_model
-from leggimi.llm_client import SCRIPT_GENERATION_SYSTEM_PROMPT, _call_with_retry
+from leggimi.prompts import SCRIPT_GENERATION_SYSTEM_PROMPT
+from leggimi.llm_client import _call_with_retry
 from typing import Literal
 from openai import (
     APIConnectionError,
@@ -285,3 +286,16 @@ def to_script(
         mode=mode,
         lines=lines,
     )
+
+
+# script = to_script(
+#     chapter_text=(
+#         "La fotosintesi è il processo con cui le piante producono "
+#         "glucosio usando luce solare, acqua e anidride carbonica."
+#     ),
+#     mode="Riassunto",
+#     livello="base",
+# )
+# print(f"Modalità: {script.mode}")
+# for line in script.lines:
+#     print(f"{line.speaker}: {line.text}")
