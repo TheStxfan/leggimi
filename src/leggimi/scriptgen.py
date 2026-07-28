@@ -249,7 +249,7 @@ def to_script(
     chapter_text: str,
     mode: Literal["Riassunto", "Dialogo"],
     livello: Literal["base", "intermedio", "avanzato"],
-    model: str = get_model(),
+    model: str = get_model("TEXT"),
     system_prompt: str | None = SCRIPT_GENERATION_SYSTEM_PROMPT,
 ) -> Script:
     """
