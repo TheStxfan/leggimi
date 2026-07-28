@@ -9,7 +9,7 @@ from openai import (
     OpenAI,
     RateLimitError,
 )
-from leggimi.config import get_openrouter_key
+from leggimi.config import get_openrouter_key, get_model
 from leggimi.errors import (
     ModelNotFoundError,
     NoInternetConnectionError,
@@ -226,7 +226,7 @@ def _call_with_retry(
 def get_text_from_image(
     image_bytes: bytes,
     prompt: str,
-    model: str = "google/gemma-4-26b-a4b-it:free",  # alternative: google/gemma-4-31b-it:free
+    model: str = get_model(),
     system_prompt: str | None = TEXT_EXTRACTION_SYSTEM_PROMPT,
 ) -> str:
     """

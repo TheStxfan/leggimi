@@ -1,5 +1,5 @@
 from .models import Script, Line
-from leggimi.config import get_openrouter_key
+from leggimi.config import get_openrouter_key, get_model
 from leggimi.llm_client import SCRIPT_GENERATION_SYSTEM_PROMPT, _call_with_retry
 from typing import Literal
 from openai import (
@@ -249,7 +249,7 @@ def to_script(
     chapter_text: str,
     mode: Literal["Riassunto", "Dialogo"],
     livello: Literal["base", "intermedio", "avanzato"],
-    model: str = "google/gemma-4-26b-a4b-it:free",  # alternative: google/gemma-4-31b-it:free
+    model: str = get_model(),
     system_prompt: str | None = SCRIPT_GENERATION_SYSTEM_PROMPT,
 ) -> Script:
     """
