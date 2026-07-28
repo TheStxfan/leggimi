@@ -1,4 +1,5 @@
 import os
+from typing import Literal
 
 from dotenv import load_dotenv
 from leggimi.errors import LLMNonDisponibileError, ModelNotFoundError
@@ -17,8 +18,17 @@ def get_openrouter_key() -> str:
     return key
 
 
-def get_model() -> str:
-    model = os.environ.get("MODEL")
+def get_model(type: Literal["TEXT", "IMAGE"]) -> str:
+    if type == "IMAGE":
+        model = os.environ.get("MODEL")
+    elif type == "TEXT":
+        model = ""
+
+    model = (
+        os.environ.get("TEXT_MODEL")
+        if type == "TEXT"
+        else os.environ.get("IMAGE_MODEL")
+    )
 
     if not model:
         raise ModuleNotFoundError("Modello non trovato nelle variabili d'ambiente.")
