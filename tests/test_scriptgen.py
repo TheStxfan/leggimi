@@ -3,7 +3,7 @@ import pytest
 
 from dataclasses import dataclass
 from openai import APIConnectionError, NotFoundError, RateLimitError
-
+from leggimi import config
 from leggimi import llm_client
 from leggimi import scriptgen
 from leggimi.errors import (
@@ -156,7 +156,7 @@ def test_generate_chunk_script_retry_on_bad_format(monkeypatch):
         chapter_text="Testo di prova",
         mode="Riassunto",
         livello="base",
-        model="google/gemma-4-26b-a4b-it:free",
+        model=config.get_model("TEXT"),
         system_prompt="Prompt",
     )
 
@@ -182,7 +182,7 @@ def test_generate_chunk_script_invalid_speaker_for_mode(monkeypatch):
             chapter_text="Testo capitolo",
             mode="Riassunto",
             livello="base",
-            model="google/gemma-4-26b-a4b-it:free",
+            model=config.get_model("TEXT"),
             system_prompt=None,
         )
 
