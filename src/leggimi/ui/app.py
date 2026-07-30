@@ -12,6 +12,7 @@ from leggimi.ui.ui_components import (
     create_button,
     create_text,
     create_ui_size_slider,
+    create_chapters_dropdown,
 )
 
 
@@ -57,7 +58,7 @@ async def main(page: ft.Page):
 
     start_button: ft.Button | None = None
 
-    chapters_view: ft.ListView | None = None
+    chapters_view: ft.Container | None = None
 
     main_content_column = ft.Column(
         expand=True,
@@ -125,19 +126,7 @@ async def main(page: ft.Page):
 
         remove_control(processing_text)
 
-        chapters_view = ft.ListView(
-            margin=ft.Margin.only(top=15),
-            controls=[
-                ft.ListTile(
-                    title=create_text(
-                        chapter.title,
-                    ),
-                    data=i,
-                )
-                for i, chapter in enumerate(chapters)
-            ],
-            expand=True,
-        )
+        chapters_view = create_chapters_dropdown(chapters, page)
 
         main_content.content.controls.append(  # type: ignore
             chapters_view,

@@ -1,5 +1,6 @@
 import flet as ft
 
+from leggimi.models import Chapter
 from leggimi.ui.ui_config import UI_SIZE
 
 current_ui_size = UI_SIZE
@@ -179,9 +180,9 @@ def create_button(
     if size is None:
         size = current_ui_size
 
-    button_scale = size ** (1 / 16) - 0.2
+    button_scale = current_ui_size ** (1 / 16) - 0.2
     button_offset = ft.Offset(
-        (button_scale - 1) / 2,
+        0,
         (button_scale - 1) / 2,
     )
 
@@ -237,4 +238,73 @@ def create_text(
         color="amber",
         size=(current_ui_size if size is None else size),
         align=ft.Alignment.CENTER,
+    )
+
+
+def create_chapters_dropdown(
+    chapters: list[Chapter],
+    # tooltip_text: str | None = None,
+    page: ft.Page,
+    size: float | None = None,
+) -> ft.Container:
+    """
+    Crea un menu Dropdown Flet con testo e icona.
+
+    Args:
+        chapters: Lista di capitoli contenenti titolo e testo.
+        size: Dimensione del testo e dell'icona.
+
+    Returns:
+        Pulsante Flet configurato.
+    """
+
+    if size is None:
+        size = current_ui_size
+
+    dropdown_scale = current_ui_size ** (1 / 4)
+    dropdown_offset = ft.Offset(
+        0,
+        (dropdown_scale) / 2,
+    )
+
+    return ft.Container(
+        content=ft.Dropdown(
+            color="amber",
+            autofocus=True,
+            border=ft.InputBorder.UNDERLINE,
+            border_color="amber",
+            border_width=2,
+            options=[
+                ft.DropdownOption(
+                    key=str(idx),
+                    text=chapter.title,
+                    style=ft.ButtonStyle(
+                        color="amber",
+                    ),
+                )
+                for idx, chapter in enumerate(chapters)
+            ],
+            align=ft.Alignment.CENTER,
+            enable_filter=True,
+            editable=True,
+            label="Seleziona un capitolo",
+            label_style=ft.TextStyle(
+                color="amber",
+            ),
+            value="0",
+            leading_icon=ft.Icon(
+                ft.Icons.SEARCH,
+                color="amber",
+            ),
+            trailing_icon=ft.Icon(
+                ft.Icons.ARROW_DROP_DOWN,
+                color="amber",
+            ),
+            selected_trailing_icon=ft.Icon(
+                ft.Icons.ARROW_DROP_UP,
+                color="amber",
+            ),
+        ),
+        scale=dropdown_scale,
+        offset=dropdown_offset,
     )
