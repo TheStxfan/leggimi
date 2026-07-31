@@ -12,7 +12,7 @@ from leggimi.errors import (
     ModelNotFoundError,
     NoInternetConnectionError,
 )
-from leggimi.models import Line, Script
+from leggimi.models.models import Line, Script
 from leggimi.scriptgen import (
     _generate_chunk_script,
     chunk_text,

@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 from leggimi.llm_client import TEXT_EXTRACTION_SYSTEM_PROMPT, get_text_from_image
 from leggimi.errors import LeggiMiError
-from .models import Page
+from .models.models import Page
 
 
 def extract_text(pdf_path: str) -> list[Page]:

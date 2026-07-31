@@ -1,6 +1,6 @@
 """Fondamenta: questi test devono essere VERDI da subito."""
 
-from leggimi.models import Page, Chapter, Line, Script
+from leggimi.models.models import Page, Chapter, Line, Script
 
 
 def test_chapter_e_page():

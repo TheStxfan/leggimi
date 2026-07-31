@@ -1,5 +1,5 @@
 from leggimi.segmenter import split_chapters
-from leggimi.models import Page
+from leggimi.models.models import Page
 
 
 def test_split_chapters_restituisce_lista():

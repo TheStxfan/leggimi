@@ -1,4 +1,4 @@
-from .models import Script, Line
+from .models.models import Script, Line
 from leggimi.config import get_openrouter_key, get_model
 from leggimi.prompts import SCRIPT_GENERATION_SYSTEM_PROMPT
 from leggimi.llm_client import _call_with_retry

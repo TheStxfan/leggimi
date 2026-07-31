@@ -1,4 +1,4 @@
-from .models import Page, Chapter
+from .models.models import Page, Chapter
 from leggimi.errors import PdfIlleggibileError, ChaptersNotFoundError
 
 
