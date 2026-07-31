@@ -1,7 +1,8 @@
 import flet as ft
 
-from leggimi.models import Chapter
+from leggimi.models.models import Chapter
 from leggimi.ui.ui_config import UI_SIZE
+from leggimi.ui.ui_theme import theme_config
 
 current_ui_size = UI_SIZE
 
@@ -27,17 +28,12 @@ def resize_ui(
         return
 
     button_scale = new_size ** (1 / 16) - 0.2
-    button_offset = ft.Offset(
-        (button_scale - 1) / 2,
-        (button_scale - 1) / 2,
-    )
 
     if isinstance(control, ft.Text):
         control.size = new_size
 
     elif isinstance(control, ft.Button):
         control.scale = button_scale
-        control.offset = button_offset
 
         if isinstance(control.content, ft.Text):
             control.content.size = new_size
@@ -48,7 +44,7 @@ def resize_ui(
         if isinstance(control.tooltip, ft.Tooltip):
             control.tooltip.text_style = ft.TextStyle(
                 size=new_size * 0.7,
-                color="amber",
+                color=theme_config.primary_text_color,
             )
 
     elif isinstance(control, ft.ListTile):
@@ -60,47 +56,48 @@ def resize_ui(
             )
 
     elif isinstance(control, ft.Dropdown):
-        page_width = control.page.width or 1500 if control.page else 1500
-        page_height = control.page.height or 750 if control.page else 750
+        if control.page:
+            dropdown_width, dropdown_menu_height = get_dropdown_dimensions(
+                control.page,
+                new_size,
+            )
 
-        dropdown_scale = new_size ** (1 / 4)
+            control.width = dropdown_width
+            control.height = new_size * 2.2
 
-        control.width = page_width * 0.2 * dropdown_scale
-        control.height = new_size * 2.2
+            control.text_style = ft.TextStyle(
+                size=new_size,
+                color=theme_config.primary_text_color,
+            )
 
-        control.text_style = ft.TextStyle(
-            size=new_size,
-            color="amber",
-        )
+            control.label_style = ft.TextStyle(
+                color=theme_config.primary_text_color,
+                size=new_size * 0.7 * 0.8,
+            )
 
-        control.label_style = ft.TextStyle(
-            color="amber",
-            size=new_size * 0.7,
-        )
+            if control.leading_icon:
+                control.leading_icon.size = new_size * 1.2  # type: ignore
 
-        if control.leading_icon:
-            control.leading_icon.size = new_size * 1.2  # type: ignore
+            if control.trailing_icon:
+                control.trailing_icon.size = new_size  # type: ignore
 
-        if control.trailing_icon:
-            control.trailing_icon.size = new_size  # type: ignore
+            if control.selected_trailing_icon:
+                control.selected_trailing_icon.size = new_size  # type: ignore
 
-        if control.selected_trailing_icon:
-            control.selected_trailing_icon.size = new_size  # type: ignore
-
-        control.menu_style = ft.MenuStyle(
-            fixed_size=ft.Size(
-                width=((control.page.width or 1500) * 0.2) * (new_size ** (1 / 4)),
-                height=((control.page.height or 750) * 0.15) * (new_size ** (1 / 4)),
-            ),
-        )
-
-        for option in control.options:
-            option.style = ft.ButtonStyle(
-                color="amber",
-                text_style=ft.TextStyle(
-                    size=new_size,
+            control.menu_style = ft.MenuStyle(
+                fixed_size=ft.Size(
+                    width=dropdown_width,
+                    height=dropdown_menu_height,
                 ),
             )
+
+            for option in control.options:
+                option.style = ft.ButtonStyle(
+                    color=theme_config.primary_text_color,
+                    text_style=ft.TextStyle(
+                        size=new_size,
+                    ),
+                )
 
     if hasattr(control, "controls"):
         for child in control.controls:  # type: ignore
@@ -120,7 +117,7 @@ def resize_ui(
 def create_ui_size_slider(
     min_size: float = 35,
     max_size: float = 80,
-) -> tuple[ft.Row, ft.Text]:
+) -> ft.Row:
     """
     Crea lo slider per modificare la dimensione dell'interfaccia.
 
@@ -170,17 +167,17 @@ def create_ui_size_slider(
         min=min_size,
         max=max_size,
         divisions=10,
-        thumb_color="amber",
-        active_color="amber",
+        thumb_color=theme_config.primary_text_color,
+        active_color=theme_config.primary_text_color,
         value=UI_SIZE,
         tooltip=(
             ft.Tooltip(
                 message="Modifica la scala interfaccia",
                 text_style=ft.TextStyle(
                     size=current_ui_size * 0.8,
-                    color="amber",
+                    color=theme_config.primary_text_color,
                 ),
-                bgcolor=ft.Colors.GREY_900,
+                bgcolor=theme_config.tooltip_bgcolor,
             )
         ),
         label=f"{initial_percentage:.0f}%",
@@ -197,7 +194,7 @@ def create_ui_size_slider(
         alignment=ft.MainAxisAlignment.CENTER,
     )
 
-    return row, ui_size_text
+    return row
 
 
 def create_button(
@@ -224,26 +221,21 @@ def create_button(
         size = current_ui_size
 
     button_scale = current_ui_size ** (1 / 16) - 0.2
-    button_offset = ft.Offset(
-        0,
-        (button_scale - 1) / 2,
-    )
 
     return ft.Button(
         content=ft.Text(text, size=size),
         icon=ft.Icon(icon, size=size),  # type: ignore
-        offset=button_offset,
         scale=button_scale,
-        color="amber",
+        color=theme_config.primary_text_color,
         on_click=on_click,
         tooltip=(
             ft.Tooltip(
                 message=tooltip_text,
                 text_style=ft.TextStyle(
                     size=current_ui_size * 0.7,
-                    color="amber",
+                    color=theme_config.primary_text_color,
                 ),
-                bgcolor=ft.Colors.GREY_900,
+                bgcolor=theme_config.tooltip_bgcolor,
             )
             if tooltip_text is not None
             else None
@@ -278,10 +270,25 @@ def create_text(
 
     return ft.Text(
         text,
-        color="amber",
+        color=theme_config.primary_text_color,
         size=(current_ui_size if size is None else size),
         align=ft.Alignment.CENTER,
     )
+
+
+def get_dropdown_dimensions(
+    page: ft.Page,
+    size: float,
+) -> tuple[float, float]:
+    dropdown_scale = size ** (1 / 4)
+
+    page_width = page.width or 1500
+    page_height = page.height or 750
+
+    dropdown_width = page_width * 0.2 * dropdown_scale
+    dropdown_menu_height = page_height * 0.15 * dropdown_scale
+
+    return dropdown_width, dropdown_menu_height
 
 
 def create_chapters_dropdown(
@@ -304,19 +311,19 @@ def create_chapters_dropdown(
     if size is None:
         size = current_ui_size
 
-    dropdown_scale = current_ui_size ** (1 / 4)
-    dropdown_width = ((page.width or 1500) * 0.2) * dropdown_scale
-    dropdown_menu_height = ((page.height or 750) * 0.15) * dropdown_scale
-
+    dropdown_width, dropdown_menu_height = get_dropdown_dimensions(
+        page,
+        current_ui_size,
+    )
     return ft.Container(
         margin=ft.Margin.only(
             top=current_ui_size * 0.3,
         ),
         content=ft.Dropdown(
-            color="amber",
+            color=theme_config.primary_text_color,
             autofocus=True,
             border=ft.InputBorder.UNDERLINE,
-            border_color="amber",
+            border_color=theme_config.primary_text_color,
             border_width=2,
             width=dropdown_width,
             height=current_ui_size * 2.2,
@@ -324,7 +331,7 @@ def create_chapters_dropdown(
             label="Seleziona un capitolo",
             text_style=ft.TextStyle(
                 size=current_ui_size,
-                color="amber",
+                color=theme_config.primary_text_color,
             ),
             menu_style=ft.MenuStyle(
                 fixed_size=ft.Size(
@@ -337,7 +344,7 @@ def create_chapters_dropdown(
                     key=str(idx),
                     text=chapter.title,
                     style=ft.ButtonStyle(
-                        color="amber",
+                        color=theme_config.primary_text_color,
                         text_style=ft.TextStyle(
                             size=current_ui_size,
                         ),
@@ -346,23 +353,23 @@ def create_chapters_dropdown(
                 for idx, chapter in enumerate(chapters)
             ],
             label_style=ft.TextStyle(
-                color="amber",
+                color=theme_config.primary_text_color,
                 size=current_ui_size * 0.7,
             ),
             value="0",
             leading_icon=ft.Icon(
                 ft.Icons.SEARCH,
-                color="amber",
+                color=theme_config.primary_text_color,
                 size=current_ui_size * 1.2,
             ),
             trailing_icon=ft.Icon(
                 ft.Icons.ARROW_DROP_DOWN,
-                color="amber",
+                color=theme_config.primary_text_color,
                 size=current_ui_size,
             ),
             selected_trailing_icon=ft.Icon(
                 ft.Icons.ARROW_DROP_UP,
-                color="amber",
+                color=theme_config.primary_text_color,
                 size=current_ui_size,
             ),
         ),
