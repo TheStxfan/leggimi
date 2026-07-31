@@ -59,6 +59,49 @@ def resize_ui(
                 exclude,
             )
 
+    elif isinstance(control, ft.Dropdown):
+        page_width = control.page.width or 1500 if control.page else 1500
+        page_height = control.page.height or 750 if control.page else 750
+
+        dropdown_scale = new_size ** (1 / 4)
+
+        control.width = page_width * 0.2 * dropdown_scale
+        control.height = new_size * 2.2
+
+        control.text_style = ft.TextStyle(
+            size=new_size,
+            color="amber",
+        )
+
+        control.label_style = ft.TextStyle(
+            color="amber",
+            size=new_size * 0.7,
+        )
+
+        if control.leading_icon:
+            control.leading_icon.size = new_size * 1.2  # type: ignore
+
+        if control.trailing_icon:
+            control.trailing_icon.size = new_size  # type: ignore
+
+        if control.selected_trailing_icon:
+            control.selected_trailing_icon.size = new_size  # type: ignore
+
+        control.menu_style = ft.MenuStyle(
+            fixed_size=ft.Size(
+                width=((control.page.width or 1500) * 0.2) * (new_size ** (1 / 4)),
+                height=((control.page.height or 750) * 0.15) * (new_size ** (1 / 4)),
+            ),
+        )
+
+        for option in control.options:
+            option.style = ft.ButtonStyle(
+                color="amber",
+                text_style=ft.TextStyle(
+                    size=new_size,
+                ),
+            )
+
     if hasattr(control, "controls"):
         for child in control.controls:  # type: ignore
             resize_ui(child, new_size, exclude)
@@ -262,49 +305,65 @@ def create_chapters_dropdown(
         size = current_ui_size
 
     dropdown_scale = current_ui_size ** (1 / 4)
-    dropdown_offset = ft.Offset(
-        0,
-        (dropdown_scale) / 2,
-    )
+    dropdown_width = ((page.width or 1500) * 0.2) * dropdown_scale
+    dropdown_menu_height = ((page.height or 750) * 0.15) * dropdown_scale
 
     return ft.Container(
+        margin=ft.Margin.only(
+            top=current_ui_size * 0.3,
+        ),
         content=ft.Dropdown(
             color="amber",
             autofocus=True,
             border=ft.InputBorder.UNDERLINE,
             border_color="amber",
             border_width=2,
+            width=dropdown_width,
+            height=current_ui_size * 2.2,
+            align=ft.Alignment.CENTER,
+            label="Seleziona un capitolo",
+            text_style=ft.TextStyle(
+                size=current_ui_size,
+                color="amber",
+            ),
+            menu_style=ft.MenuStyle(
+                fixed_size=ft.Size(
+                    width=dropdown_width,
+                    height=dropdown_menu_height,
+                ),
+            ),
             options=[
                 ft.DropdownOption(
                     key=str(idx),
                     text=chapter.title,
                     style=ft.ButtonStyle(
                         color="amber",
+                        text_style=ft.TextStyle(
+                            size=current_ui_size,
+                        ),
                     ),
                 )
                 for idx, chapter in enumerate(chapters)
             ],
-            align=ft.Alignment.CENTER,
-            enable_filter=True,
-            editable=True,
-            label="Seleziona un capitolo",
             label_style=ft.TextStyle(
                 color="amber",
+                size=current_ui_size * 0.7,
             ),
             value="0",
             leading_icon=ft.Icon(
                 ft.Icons.SEARCH,
                 color="amber",
+                size=current_ui_size * 1.2,
             ),
             trailing_icon=ft.Icon(
                 ft.Icons.ARROW_DROP_DOWN,
                 color="amber",
+                size=current_ui_size,
             ),
             selected_trailing_icon=ft.Icon(
                 ft.Icons.ARROW_DROP_UP,
                 color="amber",
+                size=current_ui_size,
             ),
         ),
-        scale=dropdown_scale,
-        offset=dropdown_offset,
     )
