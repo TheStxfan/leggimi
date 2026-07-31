@@ -2,7 +2,7 @@ import os
 from typing import Literal
 
 from dotenv import load_dotenv
-from leggimi.errors import LLMNonDisponibileError, ModelNotFoundError
+from leggimi.errors import LLMNonDisponibileError
 
 load_dotenv()
 
