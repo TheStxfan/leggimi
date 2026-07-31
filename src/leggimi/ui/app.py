@@ -1,19 +1,12 @@
-import asyncio
-from pathlib import Path
-
 import flet as ft
 
-from leggimi.errors import (
-    FileSelectionError,
-    UIInitializationError,
-)
-from leggimi.pipeline import process_pdf
+from leggimi.errors import UIInitializationError
+from leggimi.models.app_state import AppState
 from leggimi.ui.ui_components import (
     create_button,
-    create_text,
     create_ui_size_slider,
-    create_chapters_dropdown,
 )
+from leggimi.ui.ui_theme import set_theme_mode
 
 
 async def main(page: ft.Page):
@@ -34,14 +27,8 @@ async def main(page: ft.Page):
 
     try:
         page.title = "LeggiMi"
-        page.theme = ft.Theme(
-            font_family="Roboto",
-        )
-        page.fonts = {
-            "Roboto": "fonts/Roboto-Regular.ttf",
-        }
-        page.theme_mode = ft.ThemeMode.DARK
-        page.bgcolor = "black"
+
+        set_theme_mode(page)
 
         file_picker = ft.FilePicker()
         page.services.append(file_picker)
@@ -51,166 +38,37 @@ async def main(page: ft.Page):
             "Errore durante l'inizializzazione dell'interfaccia.",
         ) from exc
 
-    pdf_path: str | None = None
-
-    selected_file_text: ft.Text | None = None
-    processing_text: ft.Text | None = None
-
-    start_button: ft.Button | None = None
-
-    chapters_view: ft.Container | None = None
-
-    main_content_column = ft.Column(
-        expand=True,
-    )
-
     main_content = ft.Container(
-        content=main_content_column,
+        content=ft.Column(
+            expand=True,
+        ),
         expand=True,
         clip_behavior=ft.ClipBehavior.HARD_EDGE,
     )
 
-    def remove_control(
-        control: ft.Control | None,
-    ) -> None:
-        """
-        Rimuove un controllo dal contenuto principale, se presente.
-
-        Args:
-            control: Controllo da rimuovere.
-
-        Returns:
-            None.
-        """
-
-        if control is not None and control in main_content.content.controls:  # type: ignore
-            main_content.content.controls.remove(control)  # type: ignore
-
-    async def run_processes(e):
-        """
-        Elabora il PDF selezionato e visualizza i capitoli estratti.
-
-        Args:
-            e: Evento generato dal clic sul pulsante.
-
-        Returns:
-            None.
-        """
-
-        nonlocal processing_text
-        nonlocal chapters_view
-
-        if pdf_path is None:
-            return
-
-        if processing_text is None:
-            processing_text = create_text(
-                "Processing...",
-            )
-
-        if start_button is not None:
-            start_button.disabled = True
-
-        remove_control(chapters_view)
-
-        main_content.content.controls.append(  # type: ignore
-            processing_text,
-        )
-
-        page.update()
-
-        chapters = await asyncio.to_thread(
-            process_pdf,
-            pdf_path,
-        )
-
-        remove_control(processing_text)
-
-        chapters_view = create_chapters_dropdown(chapters, page)
-
-        main_content.content.controls.append(  # type: ignore
-            chapters_view,
-        )
-
-        page.update()
-
-    async def select_pdf(e):
-        """
-        Apre il selettore di file e seleziona un PDF da elaborare.
-
-        Args:
-            e: Evento generato dal clic sul pulsante.
-
-        Returns:
-            None.
-
-        Raises:
-            FileSelectionError: Se si verifica un errore durante
-                la selezione del file.
-        """
-
-        nonlocal pdf_path
-        nonlocal selected_file_text
-        nonlocal start_button
-
-        try:
-            file = await file_picker.pick_files(
-                allow_multiple=False,
-                file_type=ft.FilePickerFileType.CUSTOM,
-                allowed_extensions=["pdf"],
-            )
-
-            if not file:
-                return
-
-            pdf_path = file[0].path
-
-            if pdf_path is None:
-                return
-
-            remove_control(selected_file_text)
-            remove_control(processing_text)
-            remove_control(chapters_view)
-            remove_control(start_button)
-
-            if start_button is None:
-                start_button = create_button(
-                    "Start",
-                    ft.Icons.START,
-                    run_processes,
-                    tooltip_text="Converti il file PDF selezionato in audio",
-                )
-
-            start_button.disabled = False
-
-            selected_file_text = create_text(
-                f"File: {Path(pdf_path).name}",
-            )
-
-            main_content.content.controls.append(selected_file_text)  # type: ignore
-            main_content.content.controls.append(start_button)  # type: ignore
-
-            page.update()
-
-        except Exception as exc:
-            raise FileSelectionError(
-                "Errore durante la selezione del file.",
-            ) from exc
+    app_state = AppState(
+        page=page,
+        file_picker=file_picker,
+        main_content=main_content,
+    )
 
     select_pdf_button = create_button(
         "Seleziona un PDF",
         ft.Icons.UPLOAD_FILE,
-        select_pdf,
-        tooltip_text="Seleziona un file PDF da convertire in audio",
+        app_state.select_pdf,
+        tooltip_text=("Seleziona un file PDF da convertire in audio"),
     )
 
-    ui_size_row, ui_size_text = create_ui_size_slider()
+    ui_size_row = create_ui_size_slider()
 
-    main_content.content.controls.append(select_pdf_button)  # type: ignore
+    main_content.content.controls.append(  # type: ignore
+        select_pdf_button,
+    )
 
     page.add(
         ft.Column(
             expand=True,
+            margin=ft.Margin.only(top=20),
             controls=[
                 main_content,
                 ui_size_row,
