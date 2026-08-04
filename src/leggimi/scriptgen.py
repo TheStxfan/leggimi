@@ -51,7 +51,7 @@ def chunk_text(
 
 def _generate_chunk_script(
     chapter_text: str,
-    mode: Literal["Riassunto", "Dialogo"],
+    mode: Literal["riassunto", "dialogo"],
     livello: Literal["base", "intermedio", "avanzato"],
     model: str,
     system_prompt: str | None,
@@ -248,7 +248,7 @@ def _generate_chunk_script(
 
 def to_script(
     chapter_text: str,
-    mode: Literal["Riassunto", "Dialogo"],
+    mode: Literal["riassunto", "dialogo"],
     livello: Literal["base", "intermedio", "avanzato"],
     model: str = get_model("TEXT"),
     system_prompt: str | None = SCRIPT_GENERATION_SYSTEM_PROMPT,

@@ -78,7 +78,7 @@ def test_to_script_riassunto_success(monkeypatch):
 
     result = to_script(
         chapter_text="Il sistema solare è composto dal sole e dai pianeti.",
-        mode="Riassunto",
+        mode="riassunto",
         livello="base",
     )
 
@@ -114,7 +114,7 @@ def test_to_script_dialogo_success(monkeypatch):
 
     result = to_script(
         chapter_text="La fotosintesi clorofilliana...",
-        mode="Dialogo",
+        mode="dialogo",
         livello="intermedio",
     )
 
@@ -154,7 +154,7 @@ def test_generate_chunk_script_retry_on_bad_format(monkeypatch):
 
     lines = _generate_chunk_script(
         chapter_text="Testo di prova",
-        mode="Riassunto",
+        mode="riassunto",
         livello="base",
         model=config.get_model("TEXT"),
         system_prompt="Prompt",
@@ -180,7 +180,7 @@ def test_generate_chunk_script_invalid_speaker_for_mode(monkeypatch):
     with pytest.raises(InvalidScriptFormatError):
         _generate_chunk_script(
             chapter_text="Testo capitolo",
-            mode="Riassunto",
+            mode="riassunto",
             livello="base",
             model=config.get_model("TEXT"),
             system_prompt=None,
@@ -203,7 +203,7 @@ def test_generate_chunk_script_dialogue_missing_speaker(monkeypatch):
     with pytest.raises(InvalidScriptFormatError):
         _generate_chunk_script(
             chapter_text="Testo capitolo",
-            mode="Dialogo",
+            mode="dialogo",
             livello="base",
             model="google/gemma-4-26b-a4b-it:free",
             system_prompt=None,
@@ -221,7 +221,7 @@ def test_to_script_parsing(monkeypatch):
 
     script = to_script(
         "Testo del capitolo",
-        mode="Riassunto",
+        mode="riassunto",
         livello="intermedio",
     )
 
