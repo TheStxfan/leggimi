@@ -239,7 +239,7 @@ def create_global_settings_row() -> ft.Row:
             ),
             menu_style=ft.MenuStyle(
                 fixed_size=ft.Size(
-                    width=250,
+                    width=320,
                     height=current_ui_size * 4,
                 ),
             ),
@@ -251,11 +251,22 @@ def create_global_settings_row() -> ft.Row:
                         color=theme_config.primary_text_color,
                         text_style=ft.TextStyle(
                             size=current_ui_size,
+                            color=theme_config.primary_text_color,
                         ),
                     ),
                 )
                 for key, text in options
             ],
+            trailing_icon=ft.Icon(
+                ft.Icons.ARROW_DROP_DOWN,
+                color=theme_config.primary_text_color,
+                size=current_ui_size,
+            ),
+            selected_trailing_icon=ft.Icon(
+                ft.Icons.ARROW_DROP_UP,
+                color=theme_config.primary_text_color,
+                size=current_ui_size,
+            ),
             tooltip=ft.Tooltip(
                 message=f"Imposta {label.lower()}",
                 text_style=ft.TextStyle(
@@ -474,6 +485,141 @@ def create_chapters_dropdown(
     )
 
 
+def update_text_theme(control: ft.Control) -> None:
+    """
+    Aggiorna ricorsivamente i colori dei testi.
+    """
+
+    if isinstance(control, ft.Text):
+        control.color = theme_config.primary_text_color
+
+    if isinstance(control, ft.Button):
+        control.color = theme_config.primary_text_color
+
+        if isinstance(control.content, ft.Text):
+            control.content.color = theme_config.primary_text_color
+
+        elif isinstance(control, ft.Dropdown):
+            control.color = theme_config.primary_text_color
+            control.border_color = theme_config.primary_text_color
+
+            control.text_style = ft.TextStyle(
+                size=current_ui_size,
+                color=theme_config.primary_text_color,
+            )
+
+            control.label_style = ft.TextStyle(
+                size=current_ui_size * 0.7 * 0.8,
+                color=theme_config.primary_text_color,
+            )
+
+            # freccette dropdown
+            if control.trailing_icon:
+                control.trailing_icon.color = theme_config.primary_text_color  # type: ignore
+
+            if control.selected_trailing_icon:
+                control.selected_trailing_icon.color = theme_config.primary_text_color  # type: ignore
+
+            # opzioni del menu
+            for option in control.options:
+                option.style = ft.ButtonStyle(
+                    color=theme_config.primary_text_color,
+                    text_style=ft.TextStyle(
+                        size=current_ui_size,
+                        color=theme_config.primary_text_color,
+                    ),
+                )
+
+    if hasattr(control, "controls"):
+        for child in control.controls:  # type: ignore
+            update_text_theme(child)
+
+    content = getattr(control, "content", None)
+
+    if isinstance(content, ft.Control):
+        update_text_theme(content)
+
+
+def update_controls_theme(control: ft.Control) -> None:
+    """
+    Aggiorna colori e stili dei controlli dopo cambio tema.
+    """
+
+    if isinstance(control, ft.Text):
+        control.color = theme_config.primary_text_color
+
+    elif isinstance(control, ft.Button):
+        control.color = theme_config.primary_text_color
+
+        if isinstance(control.content, ft.Text):
+            control.content.color = theme_config.primary_text_color
+
+        if control.icon:
+            control.icon.color = theme_config.primary_text_color  # type: ignore
+
+    elif isinstance(control, ft.IconButton):
+        control.icon_color = theme_config.primary_text_color
+
+    elif isinstance(control, ft.Slider):
+        control.thumb_color = theme_config.primary_text_color
+        control.active_color = theme_config.primary_text_color
+
+        if isinstance(control.tooltip, ft.Tooltip):
+            control.tooltip.bgcolor = theme_config.tooltip_bgcolor
+            control.tooltip.text_style = ft.TextStyle(
+                size=current_ui_size * 0.8,
+                color=theme_config.primary_text_color,
+            )
+
+    elif isinstance(control, ft.Dropdown):
+        control.color = theme_config.primary_text_color
+        control.border_color = theme_config.primary_text_color
+
+        control.text_style = ft.TextStyle(
+            size=current_ui_size,
+            color=theme_config.primary_text_color,
+        )
+
+        for option in control.options:
+            option.style = ft.ButtonStyle(
+                color=theme_config.primary_text_color,
+                text_style=ft.TextStyle(
+                    size=current_ui_size,
+                    color=theme_config.primary_text_color,
+                ),
+            )
+
+        control.label_style = ft.TextStyle(
+            size=current_ui_size * 0.7 * 0.8,
+            color=theme_config.primary_text_color,
+        )
+
+        if control.leading_icon:
+            control.leading_icon.color = theme_config.primary_text_color  # type: ignore
+
+        if control.trailing_icon:
+            control.trailing_icon.color = theme_config.primary_text_color  # type: ignore
+
+        if control.selected_trailing_icon:
+            control.selected_trailing_icon.color = theme_config.primary_text_color  # type: ignore
+
+    if isinstance(control.tooltip, ft.Tooltip):
+        control.tooltip.bgcolor = theme_config.tooltip_bgcolor
+        control.tooltip.text_style = ft.TextStyle(
+            size=current_ui_size * 0.7,
+            color=theme_config.primary_text_color,
+        )
+
+    if hasattr(control, "controls"):
+        for child in control.controls:  # type: ignore
+            update_controls_theme(child)
+
+    content = getattr(control, "content", None)
+
+    if isinstance(content, ft.Control):
+        update_controls_theme(content)
+
+
 def create_theme_switch_button() -> ft.IconButton:
     """
     Crea un pulsante icona per alternare tema chiaro e scuro.
@@ -503,7 +649,12 @@ def create_theme_switch_button() -> ft.IconButton:
             ),
         )
 
+        update_text_theme(e.page)
+        update_controls_theme(e.page)
         update_tooltips_theme(e.page)
+        e.page.theme = ft.Theme(
+            font_family="Roboto",
+        )
 
         e.page.update()
 
