@@ -65,8 +65,17 @@ def resize_ui(
                 new_size,
             )
 
-            control.width = dropdown_width
-            control.height = new_size * 2.2
+            # Dropdown impostazioni globali
+            if control.label in ("Modalità", "Livello"):
+                control.width = new_size * 7
+                control.height = new_size * 2.2
+                menu_width = new_size * 7
+
+            # Dropdown capitoli
+            else:
+                control.width = dropdown_width
+                control.height = new_size * 2.2
+                menu_width = dropdown_width
 
             control.text_style = ft.TextStyle(
                 size=new_size,
@@ -89,7 +98,7 @@ def resize_ui(
 
             control.menu_style = ft.MenuStyle(
                 fixed_size=ft.Size(
-                    width=dropdown_width,
+                    width=menu_width,
                     height=dropdown_menu_height,
                 ),
             )
@@ -106,12 +115,11 @@ def resize_ui(
         for child in control.controls:  # type: ignore
             resize_ui(child, new_size, exclude)
 
-    if hasattr(control, "content") and isinstance(
-        control.content,  # type: ignore
-        ft.Control,
-    ):
+    content = getattr(control, "content", None)
+
+    if isinstance(content, ft.Control):
         resize_ui(
-            control.content,  # type: ignore
+            content,
             new_size,
             exclude,
         )
@@ -198,6 +206,93 @@ def create_ui_size_slider(
     )
 
     return row
+
+
+def create_global_settings_row() -> ft.Row:
+    """
+    Crea la barra delle impostazioni globali dell'applicazione.
+    """
+
+    def create_setting_dropdown(
+        label: str,
+        options: list[tuple[str, str]],
+        value: str,
+    ) -> ft.Dropdown:
+        return ft.Dropdown(
+            color=theme_config.primary_text_color,
+            width=320,
+            height=current_ui_size * 2.2,
+            border=ft.InputBorder.OUTLINE,
+            border_color=theme_config.primary_text_color,
+            border_width=2,
+            border_radius=10,
+            align=ft.Alignment.CENTER,
+            label=label,
+            value=value,
+            text_style=ft.TextStyle(
+                size=current_ui_size,
+                color=theme_config.primary_text_color,
+            ),
+            label_style=ft.TextStyle(
+                size=current_ui_size * 0.7,
+                color=theme_config.primary_text_color,
+            ),
+            menu_style=ft.MenuStyle(
+                fixed_size=ft.Size(
+                    width=250,
+                    height=current_ui_size * 4,
+                ),
+            ),
+            options=[
+                ft.DropdownOption(
+                    key=key,
+                    text=text,
+                    style=ft.ButtonStyle(
+                        color=theme_config.primary_text_color,
+                        text_style=ft.TextStyle(
+                            size=current_ui_size,
+                        ),
+                    ),
+                )
+                for key, text in options
+            ],
+            tooltip=ft.Tooltip(
+                message=f"Imposta {label.lower()}",
+                text_style=ft.TextStyle(
+                    size=current_ui_size * 0.7,
+                    color=theme_config.primary_text_color,
+                ),
+                bgcolor=theme_config.tooltip_bgcolor,
+            ),
+        )
+
+    mode_dropdown = create_setting_dropdown(
+        "Modalità",
+        [
+            ("riassunto", "Riassunto"),
+            ("dialogo", "Dialogo"),
+        ],
+        "riassunto",
+    )
+
+    level_dropdown = create_setting_dropdown(
+        "Livello",
+        [
+            ("base", "Base"),
+            ("intermedio", "Intermedio"),
+            ("avanzato", "Avanzato"),
+        ],
+        "base",
+    )
+
+    return ft.Row(
+        controls=[
+            mode_dropdown,
+            level_dropdown,
+        ],
+        alignment=ft.MainAxisAlignment.CENTER,
+        spacing=20,
+    )
 
 
 def create_button(

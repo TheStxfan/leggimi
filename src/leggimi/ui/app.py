@@ -3,6 +3,7 @@ import flet as ft
 from leggimi.errors import UIInitializationError
 from leggimi.models.app_state import AppState
 from leggimi.ui.ui_components import (
+    create_global_settings_row,
     create_button,
     create_theme_switch_button,
     create_ui_size_slider,
@@ -54,6 +55,8 @@ async def main(page: ft.Page):
         main_content=main_content,
     )
 
+    settings_row = create_global_settings_row()
+
     select_pdf_button = create_button(
         "Seleziona un PDF",
         ft.Icons.UPLOAD_FILE,
@@ -64,8 +67,11 @@ async def main(page: ft.Page):
     ui_size_row = create_ui_size_slider()
     theme_button = create_theme_switch_button()
 
-    main_content.content.controls.append(  # type: ignore
-        select_pdf_button,
+    main_content.content.controls.extend(  # type: ignore
+        [
+            settings_row,
+            select_pdf_button,
+        ]
     )
 
     page.add(
