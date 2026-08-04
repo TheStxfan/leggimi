@@ -44,6 +44,7 @@ async def main(page: ft.Page):
             expand=True,
         ),
         expand=True,
+        padding=ft.Padding.only(top=20),
         clip_behavior=ft.ClipBehavior.HARD_EDGE,
     )
 
@@ -73,7 +74,6 @@ async def main(page: ft.Page):
             controls=[
                 ft.Column(
                     expand=True,
-                    margin=ft.Margin.only(top=20),
                     controls=[
                         main_content,
                         ui_size_row,
