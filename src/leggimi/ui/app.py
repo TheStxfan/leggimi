@@ -4,6 +4,7 @@ from leggimi.errors import UIInitializationError
 from leggimi.models.app_state import AppState
 from leggimi.ui.ui_components import (
     create_button,
+    create_theme_switch_button,
     create_ui_size_slider,
 )
 from leggimi.ui.ui_theme import set_theme_mode
@@ -60,18 +61,29 @@ async def main(page: ft.Page):
     )
 
     ui_size_row = create_ui_size_slider()
+    theme_button = create_theme_switch_button()
 
     main_content.content.controls.append(  # type: ignore
         select_pdf_button,
     )
 
     page.add(
-        ft.Column(
+        ft.Stack(
             expand=True,
-            margin=ft.Margin.only(top=20),
             controls=[
-                main_content,
-                ui_size_row,
+                ft.Column(
+                    expand=True,
+                    margin=ft.Margin.only(top=20),
+                    controls=[
+                        main_content,
+                        ui_size_row,
+                    ],
+                ),
+                ft.Container(
+                    content=theme_button,
+                    right=20,
+                    bottom=20,
+                ),
             ],
         ),
     )

@@ -1,8 +1,11 @@
 import flet as ft
 
 from leggimi.models.models import Chapter
-from leggimi.ui.ui_config import UI_SIZE
-from leggimi.ui.ui_theme import theme_config
+from leggimi.ui.ui_config import UI_SIZE, THEME
+from leggimi.ui.ui_theme import (
+    set_theme_mode,
+    theme_config,
+)
 
 current_ui_size = UI_SIZE
 
@@ -374,3 +377,85 @@ def create_chapters_dropdown(
             ),
         ),
     )
+
+
+def create_theme_switch_button() -> ft.IconButton:
+    """
+    Crea un pulsante icona per alternare tema chiaro e scuro.
+    """
+
+    def switch_theme(e) -> None:
+        current_theme = e.page.theme_mode
+
+        new_theme = "light" if current_theme == ft.ThemeMode.DARK else "dark"
+
+        set_theme_mode(
+            e.page,
+            new_theme,
+        )
+
+        e.control.icon = (
+            ft.Icons.DARK_MODE if new_theme == "light" else ft.Icons.LIGHT_MODE
+        )
+
+        e.control.icon_color = theme_config.primary_text_color
+
+        e.control.style = ft.ButtonStyle(
+            bgcolor=theme_config.tooltip_bgcolor,
+            side=ft.BorderSide(
+                width=1,
+                color=theme_config.primary_text_color,
+            ),
+        )
+
+        update_tooltips_theme(e.page)
+
+        e.page.update()
+
+    is_dark = THEME == "dark"
+
+    return ft.IconButton(
+        icon=(ft.Icons.LIGHT_MODE if is_dark else ft.Icons.DARK_MODE),
+        icon_color=theme_config.primary_text_color,
+        icon_size=current_ui_size * 1.3,
+        tooltip=ft.Tooltip(
+            message="Cambia tema",
+            text_style=ft.TextStyle(
+                size=current_ui_size * 0.7,
+                color=theme_config.primary_text_color,
+            ),
+            bgcolor=theme_config.tooltip_bgcolor,
+        ),
+        style=ft.ButtonStyle(
+            bgcolor=theme_config.tooltip_bgcolor,
+            shape=ft.CircleBorder(),
+            side=ft.BorderSide(
+                width=1,
+                color=theme_config.primary_text_color,
+            ),
+        ),
+        on_click=switch_theme,
+    )
+
+
+def update_tooltips_theme(control: ft.Control) -> None:
+    """
+    Aggiorna i tooltip ricorsivamente in base al tema corrente.
+    """
+
+    if isinstance(control.tooltip, ft.Tooltip):
+        control.tooltip.text_style = ft.TextStyle(
+            size=current_ui_size * 0.7,
+            color=theme_config.primary_text_color,
+        )
+        control.tooltip.bgcolor = theme_config.tooltip_bgcolor
+
+    if hasattr(control, "controls"):
+        for child in control.controls:  # type: ignore
+            update_tooltips_theme(child)
+
+    if hasattr(control, "content") and isinstance(
+        control.content,  # type: ignore
+        ft.Control,
+    ):
+        update_tooltips_theme(control.content)  # type: ignore
