@@ -220,7 +220,7 @@ def create_global_settings_row() -> ft.Row:
     ) -> ft.Dropdown:
         return ft.Dropdown(
             color=theme_config.primary_text_color,
-            width=320,
+            width=current_ui_size * 8,
             height=current_ui_size * 2.2,
             border=ft.InputBorder.OUTLINE,
             border_color=theme_config.primary_text_color,
