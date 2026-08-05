@@ -43,6 +43,7 @@ async def main(page: ft.Page):
     main_content = ft.Container(
         content=ft.Column(
             expand=True,
+            scroll=ft.ScrollMode.AUTO,
         ),
         expand=True,
         padding=ft.Padding.only(top=20),
