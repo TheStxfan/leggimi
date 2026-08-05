@@ -38,6 +38,9 @@ def set_theme_mode(
 
     page.theme = ft.Theme(
         font_family="Roboto",
+        scrollbar_theme=ft.ScrollbarTheme(
+            thumb_color=theme_config.primary_text_color,
+        ),
     )
 
     page.fonts = {

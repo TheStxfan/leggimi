@@ -649,12 +649,16 @@ def create_theme_switch_button() -> ft.IconButton:
             ),
         )
 
+        e.page.theme = ft.Theme(
+            font_family="Roboto",
+            scrollbar_theme=ft.ScrollbarTheme(
+                thumb_color=theme_config.primary_text_color,
+            ),
+        )
+
         update_text_theme(e.page)
         update_controls_theme(e.page)
         update_tooltips_theme(e.page)
-        e.page.theme = ft.Theme(
-            font_family="Roboto",
-        )
 
         e.page.update()
 
