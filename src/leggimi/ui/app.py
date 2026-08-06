@@ -46,21 +46,23 @@ async def main(page: ft.Page):
             scroll=ft.ScrollMode.AUTO,
         ),
         expand=True,
-        padding=ft.Padding.only(top=20),
+        padding=ft.Padding.only(top=25),
         clip_behavior=ft.ClipBehavior.HARD_EDGE,
     )
+
+    settings_row, mode_dropdown, level_dropdown = create_global_settings_row()
 
     app_state = AppState(
         page=page,
         file_picker=file_picker,
         main_content=main_content,
+        mode_dropdown=mode_dropdown,
+        level_dropdown=level_dropdown,
     )
-
-    settings_row = create_global_settings_row()
 
     select_pdf_button = create_button(
         "Seleziona un PDF",
-        ft.Icons.UPLOAD_FILE,
+        ft.Icons.FILE_UPLOAD,
         app_state.select_pdf,
         tooltip_text=("Seleziona un file PDF da convertire in audio"),
     )

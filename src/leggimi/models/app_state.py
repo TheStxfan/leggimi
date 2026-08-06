@@ -2,11 +2,17 @@ from dataclasses import dataclass
 
 import asyncio
 from pathlib import Path
+from typing import cast
+from typing_extensions import Literal
 
 import flet as ft
 
 from leggimi.errors import FileSelectionError
-from leggimi.pipeline import process_pdf
+from leggimi.models.models import Chapter
+from leggimi.pipeline import (
+    process_pdf,
+    generate_chapter_script,
+)
 from leggimi.ui.ui_components import (
     create_button,
     create_chapters_dropdown,
@@ -22,11 +28,17 @@ class AppState:
     file_picker: ft.FilePicker
     main_content: ft.Container
 
+    mode_dropdown: ft.Dropdown | None = None
+    level_dropdown: ft.Dropdown | None = None
+    chapter_dropdown: ft.Dropdown | None = None
+
     pdf_path: str | None = None
     selected_file_text: ft.Text | None = None
     processing_text: ft.Text | None = None
     start_button: ft.Button | None = None
     chapters_view: ft.Container | None = None
+    chapters: list[Chapter] | None = None
+    generate_button: ft.Button | None = None
 
     def remove_control(
         self,
@@ -64,18 +76,67 @@ class AppState:
             self.pdf_path,
         )
 
+        self.chapters = chapters
+
         self.remove_control(self.processing_text)
 
-        self.chapters_view = create_chapters_dropdown(
+        self.chapters_view, self.chapter_dropdown = create_chapters_dropdown(
             chapters,
             self.page,
         )
+
+        if self.generate_button is None:
+            self.generate_button = create_button(
+                "Genera mp3",
+                ft.Icons.SPATIAL_AUDIO_OFF,
+                self.generate_script,
+                tooltip_text="Genera riassunto/dialogo dal capitolo selezionato",
+            )
 
         self.main_content.content.controls.append(  # type: ignore
             self.chapters_view,
         )
 
+        self.main_content.content.controls.append(  # type: ignore
+            self.generate_button,
+        )
+
         self.page.update()
+
+    async def generate_script(self, e) -> None:
+        """Genera lo script dal capitolo selezionato."""
+
+        if (
+            self.chapter_dropdown is None
+            or self.chapter_dropdown.value is None
+            or self.chapters is None
+            or self.mode_dropdown is None
+            or self.level_dropdown is None
+        ):
+            return
+
+        chapter_index = int(self.chapter_dropdown.value)
+
+        chapter = self.chapters[chapter_index]
+
+        mode = cast(
+            Literal["riassunto", "dialogo"],
+            self.mode_dropdown.value,
+        )
+
+        level = cast(
+            Literal["base", "intermedio", "avanzato"],
+            self.level_dropdown.value,
+        )
+
+        script = await asyncio.to_thread(
+            generate_chapter_script,
+            chapter,
+            mode,
+            level,
+        )
+
+        print(vars(script))
 
     async def select_pdf(self, e) -> None:
         """Apre il selettore e carica un PDF."""
@@ -105,8 +166,8 @@ class AppState:
 
             if self.start_button is None:
                 self.start_button = create_button(
-                    "Start",
-                    ft.Icons.START,
+                    "Extract Chapters",
+                    ft.Icons.AUTO_STORIES_SHARP,
                     self.run_processes,
                     tooltip_text=("Converti il file PDF selezionato in audio"),
                 )
