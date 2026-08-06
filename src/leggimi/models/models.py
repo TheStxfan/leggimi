@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Literal
 
 
 @dataclass
@@ -21,7 +22,7 @@ class Line:
 
 @dataclass
 class Script:
-    mode: str
+    mode: Literal["riassunto", "dialogo"]
     lines: list[Line] = field(default_factory=list)
 
     @property
