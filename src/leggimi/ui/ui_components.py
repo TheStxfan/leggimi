@@ -280,8 +280,8 @@ def create_global_settings_row() -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
     mode_dropdown = create_setting_dropdown(
         "Modalità",
         [
-            ("riassunto", "Riassunto"),
-            ("dialogo", "Dialogo"),
+            ("riassunto", "riassunto"),
+            ("dialogo", "dialogo"),
         ],
         "riassunto",
     )
@@ -289,9 +289,9 @@ def create_global_settings_row() -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
     level_dropdown = create_setting_dropdown(
         "Livello",
         [
-            ("base", "Base"),
-            ("intermedio", "Intermedio"),
-            ("avanzato", "Avanzato"),
+            ("base", "base"),
+            ("intermedio", "intermedio"),
+            ("avanzato", "avanzato"),
         ],
         "base",
     )

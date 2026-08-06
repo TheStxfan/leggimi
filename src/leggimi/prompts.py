@@ -111,13 +111,13 @@ STILE AUDIO
 
 MODALITÀ
 
-Se la modalità è "Riassunto":
+Se la modalità è "riassunto":
 - Usa un solo speaker per tutto lo script.
 - Crea una spiegazione discorsiva, coerente e progressiva.
 - Dai priorità alla chiarezza mantenendo i concetti fondamentali.
 - Non trasformare il testo in un dialogo.
 
-Se la modalità è "Dialogo":
+Se la modalità è "dialogo":
 - Usa esattamente due speaker distinti.
 - Il primo speaker spiega i concetti.
 - Il secondo speaker pone domande, chiede chiarimenti o propone esempi.
@@ -168,8 +168,8 @@ REGOLE DEL FORMATO
 - Non inserire più interventi sulla stessa riga.
 
 REGOLE DEGLI SPEAKER
-- In modalità "Riassunto", usa esclusivamente `Speaker1`.
-- In modalità "Dialogo", usa esclusivamente `Speaker1` e `Speaker2`.
+- In modalità "riassunto", usa esclusivamente `Speaker1`.
+- In modalità "dialogo", usa esclusivamente `Speaker1` e `Speaker2`.
 - Non usare altri nomi o speaker.
 - Mantieni sempre esattamente questa grafia:
   `Speaker1`

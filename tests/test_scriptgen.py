@@ -62,7 +62,7 @@ def test_chunk_text_basic():
 
 
 def test_to_script_riassunto_success(monkeypatch):
-    """Verifica la generazione di uno script valido in modalità Riassunto."""
+    """Verifica la generazione di uno script valido in modalità riassunto."""
 
     content = (
         "SPEAKER: Speaker1\n"
@@ -83,7 +83,7 @@ def test_to_script_riassunto_success(monkeypatch):
     )
 
     assert isinstance(result, Script)
-    assert result.mode == "Riassunto"
+    assert result.mode == "riassunto"
     assert len(result.lines) == 2
 
     assert result.lines[0] == Line(
@@ -98,7 +98,7 @@ def test_to_script_riassunto_success(monkeypatch):
 
 
 def test_to_script_dialogo_success(monkeypatch):
-    """Verifica la generazione di uno script valido in modalità Dialogo."""
+    """Verifica la generazione di uno script valido in modalità dialogo."""
 
     content = (
         "SPEAKER: Speaker1\n"
@@ -119,7 +119,7 @@ def test_to_script_dialogo_success(monkeypatch):
     )
 
     assert isinstance(result, Script)
-    assert result.mode == "Dialogo"
+    assert result.mode == "dialogo"
     assert len(result.lines) == 2
 
     assert result.lines[0].speaker == "Speaker1"
@@ -167,7 +167,7 @@ def test_generate_chunk_script_retry_on_bad_format(monkeypatch):
 
 def test_generate_chunk_script_invalid_speaker_for_mode(monkeypatch):
     """
-    Verifica che Speaker2 non sia consentito in modalità Riassunto.
+    Verifica che Speaker2 non sia consentito in modalità riassunto.
     """
 
     invalid_content = "SPEAKER: Speaker2\n" "TEXT: Non consentito nel riassunto."
