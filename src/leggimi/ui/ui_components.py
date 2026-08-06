@@ -127,7 +127,7 @@ def resize_ui(
 
 def create_ui_size_slider(
     min_size: float = 35,
-    max_size: float = 80,
+    max_size: float = 75,
 ) -> ft.Row:
     """
     Crea lo slider per modificare la dimensione dell'interfaccia.
@@ -280,8 +280,8 @@ def create_global_settings_row() -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
     mode_dropdown = create_setting_dropdown(
         "Modalità",
         [
-            ("riassunto", "riassunto"),
-            ("dialogo", "dialogo"),
+            ("riassunto", "Riassunto"),
+            ("dialogo", "Dialogo"),
         ],
         "riassunto",
     )
@@ -289,9 +289,9 @@ def create_global_settings_row() -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
     level_dropdown = create_setting_dropdown(
         "Livello",
         [
-            ("base", "base"),
-            ("intermedio", "intermedio"),
-            ("avanzato", "avanzato"),
+            ("base", "Base"),
+            ("intermedio", "Intermedio"),
+            ("avanzato", "Avanzato"),
         ],
         "base",
     )
