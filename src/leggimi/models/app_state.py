@@ -11,7 +11,7 @@ from leggimi.errors import FileSelectionError
 from leggimi.models.models import Chapter
 from leggimi.pipeline import (
     process_pdf,
-    generate_chapter_script,
+    generate_chapter_audio,
 )
 from leggimi.ui.ui_components import (
     create_button,
@@ -89,7 +89,7 @@ class AppState:
             self.generate_button = create_button(
                 "Genera mp3",
                 ft.Icons.SPATIAL_AUDIO_OFF,
-                self.generate_script,
+                self.generate_audio,
                 tooltip_text="Genera riassunto/dialogo dal capitolo selezionato",
             )
 
@@ -103,7 +103,7 @@ class AppState:
 
         self.page.update()
 
-    async def generate_script(self, e) -> None:
+    async def generate_audio(self, e) -> None:
         """Genera lo script dal capitolo selezionato."""
 
         if (
@@ -129,14 +129,13 @@ class AppState:
             self.level_dropdown.value,
         )
 
-        script = await asyncio.to_thread(
-            generate_chapter_script,
+        await generate_chapter_audio(
             chapter,
             mode,
             level,
+            "output.mp3",
+            "output.srt",
         )
-
-        print(vars(script))
 
     async def select_pdf(self, e) -> None:
         """Apre il selettore e carica un PDF."""
