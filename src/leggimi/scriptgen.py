@@ -119,6 +119,11 @@ def _generate_chunk_script(
                 messages=messages,
             )
 
+            if not response.choices:
+                raise InvalidScriptFormatError(
+                    "La risposta del modello non contiene scelte valide.",
+                )
+
             content = response.choices[0].message.content
 
             if content is None:
@@ -179,9 +184,9 @@ def _generate_chunk_script(
                         f"Speaker non valido: {speaker}",
                     )
 
-                if mode == "Riassunto" and speaker != "Speaker1":
+                if mode == "riassunto" and speaker != "Speaker1":
                     raise InvalidScriptFormatError(
-                        "In modalità 'Riassunto' è consentito solo Speaker1.",
+                        "In modalità 'riassunto' è consentito solo Speaker1.",
                     )
 
                 lines.append(
@@ -198,12 +203,12 @@ def _generate_chunk_script(
 
             speakers = {line.speaker for line in lines}
 
-            if mode == "Riassunto" and speakers != {"Speaker1"}:
+            if mode == "riassunto" and speakers != {"Speaker1"}:
                 raise InvalidScriptFormatError(
                     "Il riassunto deve usare esclusivamente Speaker1.",
                 )
 
-            if mode == "Dialogo" and speakers != {"Speaker1", "Speaker2"}:
+            if mode == "dialogo" and speakers != {"Speaker1", "Speaker2"}:
                 raise InvalidScriptFormatError(
                     "Il dialogo deve contenere Speaker1 e Speaker2.",
                 )
@@ -293,7 +298,7 @@ def to_script(
 #         "La fotosintesi è il processo con cui le piante producono "
 #         "glucosio usando luce solare, acqua e anidride carbonica."
 #     ),
-#     mode="Riassunto",
+#     mode="riassunto",
 #     livello="base",
 # )
 # print(f"Modalità: {script.mode}")
