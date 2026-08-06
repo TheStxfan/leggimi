@@ -67,7 +67,7 @@ def resize_ui(
 
             # Dropdown impostazioni globali
             if control.label in ("Modalità", "Livello"):
-                control.width = new_size * 7
+                control.width = new_size * 8
                 control.height = new_size * 2.2
                 menu_width = new_size * 7
 
@@ -208,7 +208,7 @@ def create_ui_size_slider(
     return row
 
 
-def create_global_settings_row() -> ft.Row:
+def create_global_settings_row() -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
     """
     Crea la barra delle impostazioni globali dell'applicazione.
     """
@@ -296,13 +296,17 @@ def create_global_settings_row() -> ft.Row:
         "base",
     )
 
-    return ft.Row(
-        controls=[
-            mode_dropdown,
-            level_dropdown,
-        ],
-        alignment=ft.MainAxisAlignment.CENTER,
-        spacing=20,
+    return (
+        ft.Row(
+            controls=[
+                mode_dropdown,
+                level_dropdown,
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=20,
+        ),
+        mode_dropdown,
+        level_dropdown,
     )
 
 
@@ -405,7 +409,7 @@ def create_chapters_dropdown(
     # tooltip_text: str | None = None,
     page: ft.Page,
     size: float | None = None,
-) -> ft.Container:
+) -> tuple[ft.Container, ft.Dropdown]:
     """
     Crea un menu Dropdown Flet con testo e icona.
 
@@ -424,64 +428,70 @@ def create_chapters_dropdown(
         page,
         current_ui_size,
     )
-    return ft.Container(
-        margin=ft.Margin.only(
-            top=current_ui_size * 0.3,
-        ),
-        content=ft.Dropdown(
+
+    dropdown = ft.Dropdown(
+        color=theme_config.primary_text_color,
+        autofocus=True,
+        border=ft.InputBorder.UNDERLINE,
+        border_color=theme_config.primary_text_color,
+        border_width=2,
+        width=dropdown_width,
+        height=current_ui_size * 2.2,
+        align=ft.Alignment.CENTER,
+        label="Seleziona un capitolo",
+        text_style=ft.TextStyle(
+            size=current_ui_size,
             color=theme_config.primary_text_color,
-            autofocus=True,
-            border=ft.InputBorder.UNDERLINE,
-            border_color=theme_config.primary_text_color,
-            border_width=2,
-            width=dropdown_width,
-            height=current_ui_size * 2.2,
-            align=ft.Alignment.CENTER,
-            label="Seleziona un capitolo",
-            text_style=ft.TextStyle(
-                size=current_ui_size,
-                color=theme_config.primary_text_color,
-            ),
-            menu_style=ft.MenuStyle(
-                fixed_size=ft.Size(
-                    width=dropdown_width,
-                    height=dropdown_menu_height,
-                ),
-            ),
-            options=[
-                ft.DropdownOption(
-                    key=str(idx),
-                    text=chapter.title,
-                    style=ft.ButtonStyle(
-                        color=theme_config.primary_text_color,
-                        text_style=ft.TextStyle(
-                            size=current_ui_size,
-                        ),
-                    ),
-                )
-                for idx, chapter in enumerate(chapters)
-            ],
-            label_style=ft.TextStyle(
-                color=theme_config.primary_text_color,
-                size=current_ui_size * 0.7,
-            ),
-            value="0",
-            leading_icon=ft.Icon(
-                ft.Icons.SEARCH,
-                color=theme_config.primary_text_color,
-                size=current_ui_size * 1.2,
-            ),
-            trailing_icon=ft.Icon(
-                ft.Icons.ARROW_DROP_DOWN,
-                color=theme_config.primary_text_color,
-                size=current_ui_size,
-            ),
-            selected_trailing_icon=ft.Icon(
-                ft.Icons.ARROW_DROP_UP,
-                color=theme_config.primary_text_color,
-                size=current_ui_size,
+        ),
+        menu_style=ft.MenuStyle(
+            fixed_size=ft.Size(
+                width=dropdown_width,
+                height=dropdown_menu_height,
             ),
         ),
+        options=[
+            ft.DropdownOption(
+                key=str(idx),
+                text=chapter.title,
+                style=ft.ButtonStyle(
+                    color=theme_config.primary_text_color,
+                    text_style=ft.TextStyle(
+                        size=current_ui_size,
+                    ),
+                ),
+            )
+            for idx, chapter in enumerate(chapters)
+        ],
+        label_style=ft.TextStyle(
+            color=theme_config.primary_text_color,
+            size=current_ui_size * 0.7,
+        ),
+        value="0",
+        leading_icon=ft.Icon(
+            ft.Icons.SEARCH,
+            color=theme_config.primary_text_color,
+            size=current_ui_size * 1.2,
+        ),
+        trailing_icon=ft.Icon(
+            ft.Icons.ARROW_DROP_DOWN,
+            color=theme_config.primary_text_color,
+            size=current_ui_size,
+        ),
+        selected_trailing_icon=ft.Icon(
+            ft.Icons.ARROW_DROP_UP,
+            color=theme_config.primary_text_color,
+            size=current_ui_size,
+        ),
+    )
+
+    return (
+        ft.Container(
+            margin=ft.Margin.only(
+                top=current_ui_size * 0.3,
+            ),
+            content=dropdown,
+        ),
+        dropdown,
     )
 
 
