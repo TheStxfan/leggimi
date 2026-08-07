@@ -56,22 +56,19 @@ def generate_chapter_script(
 
 
 async def generate_chapter_audio(
+    pdf_name: str,
     chapter: Chapter,
     mode: Literal["riassunto", "dialogo"],
     livello: Literal["base", "intermedio", "avanzato"],
-    output_mp3: str,
-    output_srt: str,
 ) -> None:
     """
-    Genera l'audio e i sottotitoli di un capitolo a partire dal relativo script.
+    Genera lo script, l'audio e i sottotitoli di un capitolo.
 
     Args:
+        pdf_name: Nome del file PDF sorgente senza estensione.
         chapter: Capitolo da convertire in audio.
-        mode: Modalità di generazione dello script, tra riassunto e dialogo.
-        livello: Livello di elaborazione dello script, tra base, intermedio
-            e avanzato.
-        output_mp3: Percorso del file MP3 di output.
-        output_srt: Percorso del file SRT di output.
+        mode: Modalità di generazione dello script.
+        livello: Livello di elaborazione dello script.
 
     Returns:
         None
@@ -84,8 +81,11 @@ async def generate_chapter_audio(
         livello,
     )
 
+    output_name = (
+        f"{pdf_name}_" f"{chapter.title}_" f"{mode}_" f"{livello}".replace(" ", "_")
+    )
+
     await synthesize_script(
         script,
-        output_mp3,
-        output_srt,
+        output_name,
     )

@@ -44,3 +44,7 @@ class FileSelectionError(LeggiMiError):
 
 class InvalidScriptFormatError(LeggiMiError):
     """La risposta del modello non rispetta il formato dello script."""
+
+
+class VoiceNotFoundError(Exception):
+    """La voce richiesta non è disponibile."""

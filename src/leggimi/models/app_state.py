@@ -133,6 +133,7 @@ class AppState:
             or self.chapters is None
             or self.mode_dropdown is None
             or self.level_dropdown is None
+            or self.pdf_path is None
         ):
             return
 
@@ -166,11 +167,10 @@ class AppState:
             )
 
             await generate_chapter_audio(
+                Path(self.pdf_path).stem,
                 chapter,
                 mode,
                 level,
-                "output.mp3",
-                "output.srt",
             )
 
             self.audio_processing_text.value = "Audio pronto! 🎧"
