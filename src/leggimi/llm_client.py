@@ -23,6 +23,13 @@ from leggimi.errors import (
 def _is_retryable_error(exc: Exception) -> bool:
     """
     Determina se un errore API può essere ritentato.
+
+    Args:
+        exc: Eccezione API da valutare.
+
+    Returns:
+        bool: True se l'errore è temporaneo e può essere ritentato,
+        altrimenti False.
     """
 
     if isinstance(exc, (APIConnectionError, RateLimitError)):
@@ -41,9 +48,24 @@ def _call_with_retry(
     max_retries: int = 3,
 ) -> ChatCompletion:
     """
-    Esegue una richiesta API ritentandola in caso di errori temporanei.
+    Esegue una richiesta API con tentativi multipli in caso di errori temporanei.
 
-    Usa un backoff esponenziale tra i tentativi.
+    Utilizza un backoff esponenziale tra i tentativi per ridurre il carico
+    sulle richieste successive.
+
+    Args:
+        client: Client OpenAI utilizzato per effettuare la richiesta.
+        model: Identificativo del modello da utilizzare.
+        messages: Lista dei messaggi da inviare al modello.
+        max_retries: Numero massimo di tentativi consentiti.
+
+    Returns:
+        ChatCompletion: Risposta generata dall'API OpenAI.
+
+    Raises:
+        Exception: Propaga l'eccezione se l'errore non è ritentabile o se
+            vengono esauriti tutti i tentativi disponibili.
+        RuntimeError: Se la richiesta termina senza produrre una risposta.
     """
 
     for attempt in range(max_retries):
@@ -71,30 +93,29 @@ def get_text_from_image(
     system_prompt: str | None = TEXT_EXTRACTION_SYSTEM_PROMPT,
 ) -> str:
     """
-    Estrae il testo visibile da un'immagine di una pagina.
+    Estrae il testo visibile da un'immagine di una pagina tramite un modello
+    multimodale.
 
-    Il testo viene trascritto da un modello multimodale rispettando l'ordine
-    di lettura della pagina. Il modello restituisce il contenuto testuale
-    strutturato in Markdown, escludendo gli elementi di rumore specificati
-    dal system prompt.
+    Il modello trascrive il contenuto testuale dell'immagine mantenendo
+    l'ordine di lettura della pagina e restituendo il risultato in formato
+    Markdown, escludendo gli elementi di rumore indicati nel system prompt.
 
     Args:
         image_bytes: Contenuto binario dell'immagine della pagina da analizzare.
-        prompt: Istruzioni aggiuntive per il modello relative all'estrazione.
+        prompt: Istruzioni aggiuntive fornite al modello per guidare
+            l'estrazione del testo.
         model: Identificativo del modello multimodale da utilizzare.
-        system_prompt: Istruzioni di sistema da fornire al modello. Se `None`,
-            non viene utilizzato alcun system prompt.
+        system_prompt: Istruzioni di sistema opzionali fornite al modello.
+            Se `None`, non viene utilizzato alcun system prompt.
 
     Returns:
-        Il testo estratto dall'immagine, strutturato secondo le istruzioni
-        fornite al modello.
+        str: Testo estratto dall'immagine secondo le istruzioni fornite.
 
     Raises:
-        ModelNotFoundError: Se il modello specificato non è disponibile.
-        NoInternetConnectionError: Se non è possibile stabilire una connessione
-            con il provider.
+        ModelNotFoundError: Se l'identificativo del modello non è disponibile.
+        NoInternetConnectionError: Se non è possibile comunicare con il provider.
         ApiRequestLimitExceededError: Se viene superato il limite di richieste
-            imposto dal provider.
+            consentite dal provider.
     """
 
     key = get_openrouter_key()

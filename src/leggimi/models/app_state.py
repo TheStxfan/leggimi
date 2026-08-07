@@ -22,7 +22,10 @@ from leggimi.ui.ui_components import (
 
 @dataclass
 class AppState:
-    """Gestisce lo stato e le logiche principali dell'interfaccia."""
+    """
+    Gestisce lo stato dell'applicazione e le operazioni principali
+    dell'interfaccia grafica.
+    """
 
     page: ft.Page
     file_picker: ft.FilePicker
@@ -44,13 +47,25 @@ class AppState:
         self,
         control: ft.Control | None,
     ) -> None:
-        """Rimuove un controllo dal contenuto principale."""
+        """
+        Rimuove un controllo dal contenuto principale dell'interfaccia.
+
+        Args:
+            control: Controllo Flet da rimuovere.
+
+        """
 
         if control is not None and control in self.main_content.content.controls:  # type: ignore
             self.main_content.content.controls.remove(control)  # type: ignore
 
     async def run_processes(self, e) -> None:
-        """Elabora il PDF e visualizza i capitoli estratti."""
+        """
+        Elabora il file PDF selezionato ed aggiorna l'interfaccia con
+        i capitoli estratti.
+
+        Args:
+            e: Evento generato dall'interazione con il controllo UI.
+        """
 
         if self.pdf_path is None:
             return
@@ -104,7 +119,12 @@ class AppState:
         self.page.update()
 
     async def generate_audio(self, e) -> None:
-        """Genera lo script dal capitolo selezionato."""
+        """
+        Genera lo script audio e i sottotitoli per il capitolo selezionato.
+
+        Args:
+            e: Evento generato dall'interazione con il controllo UI.
+        """
 
         if (
             self.chapter_dropdown is None
@@ -138,7 +158,16 @@ class AppState:
         )
 
     async def select_pdf(self, e) -> None:
-        """Apre il selettore e carica un PDF."""
+        """
+        Apre il selettore file e carica il percorso del PDF selezionato.
+
+        Args:
+            e: Evento generato dall'interazione con il controllo UI.
+
+        Raises:
+            FileSelectionError: Se si verifica un errore durante la selezione
+                del file.
+        """
 
         try:
             files = await self.file_picker.pick_files(

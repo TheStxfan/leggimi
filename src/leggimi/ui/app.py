@@ -13,14 +13,11 @@ from leggimi.ui.ui_theme import set_theme_mode
 
 async def main(page: ft.Page):
     """
-    Inizializza l'interfaccia grafica dell'applicazione LeggiMi.
+    Inizializza l'interfaccia grafica dell'applicazione.
 
     Args:
         page: Pagina Flet utilizzata per costruire e visualizzare
             l'interfaccia.
-
-    Returns:
-        None.
 
     Raises:
         UIInitializationError: Se si verifica un errore durante

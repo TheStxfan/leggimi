@@ -31,7 +31,7 @@ def chunk_text(
         overlap: Numero di parole ripetute tra due blocchi consecutivi.
 
     Returns:
-        Lista dei blocchi di testo.
+        list[str]: Lista dei blocchi di testo.
     """
 
     words = text.split()
@@ -57,25 +57,26 @@ def _generate_chunk_script(
     system_prompt: str | None,
 ) -> list[Line]:
     """
-    Genera le battute dello script per un singolo chunk di testo.
+    Genera le battute dello script per un singolo blocco di testo.
 
     Args:
-        chapter_text: Chunk del capitolo da rielaborare.
-        mode: Modalità di generazione dello script.
-        livello: Livello di complessità e approfondimento.
+        chapter_text: Blocco di testo del capitolo da rielaborare.
+        mode: Modalità di generazione dello script, tra riassunto e dialogo.
+        livello: Livello di complessità e approfondimento della generazione.
         model: Identificativo del modello linguistico da utilizzare.
-        system_prompt: Istruzioni di sistema da fornire al modello.
+        system_prompt: Istruzioni di sistema opzionali da fornire al modello.
 
     Returns:
-        Lista delle battute generate.
+        list[Line]: Lista delle battute generate.
 
     Raises:
         ModelNotFoundError: Se il modello linguistico configurato non è disponibile.
-        NoInternetConnectionError: Se non è disponibile una connessione a Internet.
+        NoInternetConnectionError: Se non è possibile stabilire una connessione
+            con il provider.
         ApiRequestLimitExceededError: Se viene superato il limite di richieste
-            del provider LLM.
-        InvalidScriptFormatError: Se la risposta del modello è vuota o
-            non rispetta il formato previsto.
+            consentito dal provider LLM.
+        InvalidScriptFormatError: Se la risposta del modello è vuota, non contiene
+            battute valide o non rispetta il formato previsto.
     """
 
     key = get_openrouter_key()
@@ -259,17 +260,17 @@ def to_script(
     system_prompt: str | None = SCRIPT_GENERATION_SYSTEM_PROMPT,
 ) -> Script:
     """
-    Divide il capitolo in chunk e genera lo script per ogni parte.
+    Divide il testo del capitolo in blocchi e genera lo script per ciascuno di essi.
 
     Args:
         chapter_text: Testo completo del capitolo da rielaborare.
-        mode: Modalità di generazione dello script.
-        livello: Livello di complessità e approfondimento.
+        mode: Modalità di generazione dello script, tra riassunto e dialogo.
+        livello: Livello di complessità e approfondimento della generazione.
         model: Identificativo del modello linguistico da utilizzare.
-        system_prompt: Istruzioni di sistema da fornire al modello.
+        system_prompt: Istruzioni di sistema opzionali da fornire al modello.
 
     Returns:
-        Uno Script contenente tutte le battute generate dai vari chunk.
+        Script: Script contenente tutte le battute generate dai vari blocchi.
     """
 
     chunks = chunk_text(chapter_text)
@@ -291,16 +292,3 @@ def to_script(
         mode=mode,
         lines=lines,
     )
-
-
-# script = to_script(
-#     chapter_text=(
-#         "La fotosintesi è il processo con cui le piante producono "
-#         "glucosio usando luce solare, acqua e anidride carbonica."
-#     ),
-#     mode="riassunto",
-#     livello="base",
-# )
-# print(f"Modalità: {script.mode}")
-# for line in script.lines:
-#     print(f"{line.speaker}: {line.text}")

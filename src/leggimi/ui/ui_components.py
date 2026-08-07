@@ -16,15 +16,15 @@ def resize_ui(
     exclude: ft.Control | None = None,
 ) -> None:
     """
-    Ridimensiona ricorsivamente i componenti UI.
+    Ridimensiona ricorsivamente i componenti dell'interfaccia grafica.
 
     Args:
         control: Controllo Flet da ridimensionare.
         new_size: Nuova dimensione base dell'interfaccia.
-        exclude: Controllo da escludere dal ridimensionamento.
+        exclude: Controllo da escludere dal ridimensionamento, se specificato.
 
     Returns:
-        None.
+        None
     """
 
     if control is exclude:
@@ -130,29 +130,27 @@ def create_ui_size_slider(
     max_size: float = 75,
 ) -> ft.Row:
     """
-    Crea lo slider per modificare la dimensione dell'interfaccia.
+    Crea lo slider per modificare la dimensione dell'interfaccia grafica.
 
     Args:
-        min_size: Dimensione minima dell'interfaccia.
-        max_size: Dimensione massima dell'interfaccia.
+        min_size: Dimensione minima consentita per l'interfaccia.
+        max_size: Dimensione massima consentita per l'interfaccia.
 
     Returns:
-        Una tupla contenente il Row dello slider e il testo
-        utilizzato per visualizzare l'etichetta "UI Size".
+        ft.Row: Riga contenente l'etichetta e lo slider per il controllo
+            della dimensione dell'interfaccia.
     """
 
     ui_size_text = create_text("UI Size")
 
     def resize_ui_handler(e):
         """
-        Aggiorna la dimensione dell'interfaccia in base al valore
-        selezionato nello slider.
+        Aggiorna la dimensione dell'interfaccia in base al valore selezionato
+        nello slider.
 
         Args:
             e: Evento generato dalla modifica del valore dello slider.
 
-        Returns:
-            None.
         """
 
         global current_ui_size
@@ -210,7 +208,12 @@ def create_ui_size_slider(
 
 def create_global_settings_row() -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
     """
-    Crea la barra delle impostazioni globali dell'applicazione.
+    Crea una riga contenente i dropdown per la selezione della modalità
+    di generazione dello script e del livello di elaborazione.
+
+    Returns:
+        tuple[ft.Row, ft.Dropdown, ft.Dropdown]: Riga contenente i dropdown
+            creati e i riferimenti ai due controlli.
     """
 
     def create_setting_dropdown(
@@ -318,16 +321,17 @@ def create_button(
     size: float | None = None,
 ) -> ft.Button:
     """
-    Crea un pulsante Flet con testo e icona.
+    Crea un pulsante Flet con testo e icona configurabili.
 
     Args:
         text: Testo visualizzato nel pulsante.
         icon: Icona visualizzata nel pulsante.
         on_click: Funzione eseguita al clic sul pulsante.
+        tooltip_text: Testo mostrato nel tooltip del pulsante, se presente.
         size: Dimensione del testo e dell'icona.
 
     Returns:
-        Pulsante Flet configurato.
+        ft.Button: Pulsante Flet configurato.
     """
 
     if size is None:
@@ -370,7 +374,7 @@ def create_text(
     size: float | None = None,
 ) -> ft.Text:
     """
-    Crea un controllo di testo Flet.
+    Crea un controllo di testo Flet configurato.
 
     Args:
         text: Testo da visualizzare.
@@ -378,7 +382,7 @@ def create_text(
             la dimensione corrente dell'interfaccia.
 
     Returns:
-        Controllo di testo Flet configurato.
+        ft.Text: Controllo di testo Flet configurato.
     """
 
     return ft.Text(
@@ -393,6 +397,19 @@ def get_dropdown_dimensions(
     page: ft.Page,
     size: float,
 ) -> tuple[float, float]:
+    """
+    Calcola le dimensioni del dropdown in base alle dimensioni della pagina
+    e alla dimensione corrente dell'interfaccia.
+
+    Args:
+        page: Pagina Flet utilizzata per determinare le dimensioni disponibili.
+        size: Dimensione corrente dell'interfaccia.
+
+    Returns:
+        tuple[float, float]: Larghezza del dropdown e altezza del menu
+            associato.
+    """
+
     dropdown_scale = size ** (1 / 4)
 
     page_width = page.width or 1500
@@ -411,14 +428,18 @@ def create_chapters_dropdown(
     size: float | None = None,
 ) -> tuple[ft.Container, ft.Dropdown]:
     """
-    Crea un menu Dropdown Flet con testo e icona.
+    Crea un dropdown Flet per la selezione di un capitolo.
 
     Args:
-        chapters: Lista di capitoli contenenti titolo e testo.
-        size: Dimensione del testo e dell'icona.
+        chapters: Lista dei capitoli disponibili contenenti titolo e testo.
+        page: Pagina Flet utilizzata per calcolare le dimensioni del dropdown.
+        size: Dimensione del testo e degli elementi del controllo. Se non
+            specificata, viene utilizzata la dimensione corrente
+            dell'interfaccia.
 
     Returns:
-        Pulsante Flet configurato.
+        tuple[ft.Container, ft.Dropdown]: Contenitore del dropdown creato
+            e riferimento al controllo dropdown.
     """
 
     if size is None:
@@ -497,7 +518,12 @@ def create_chapters_dropdown(
 
 def update_text_theme(control: ft.Control) -> None:
     """
-    Aggiorna ricorsivamente i colori dei testi.
+    Aggiorna ricorsivamente i colori e gli stili testuali dei controlli
+    dell'interfaccia in base al tema corrente.
+
+    Args:
+        control: Controllo Flet da aggiornare.
+
     """
 
     if isinstance(control, ft.Text):
@@ -523,14 +549,12 @@ def update_text_theme(control: ft.Control) -> None:
                 color=theme_config.primary_text_color,
             )
 
-            # freccette dropdown
             if control.trailing_icon:
                 control.trailing_icon.color = theme_config.primary_text_color  # type: ignore
 
             if control.selected_trailing_icon:
                 control.selected_trailing_icon.color = theme_config.primary_text_color  # type: ignore
 
-            # opzioni del menu
             for option in control.options:
                 option.style = ft.ButtonStyle(
                     color=theme_config.primary_text_color,
@@ -552,7 +576,12 @@ def update_text_theme(control: ft.Control) -> None:
 
 def update_controls_theme(control: ft.Control) -> None:
     """
-    Aggiorna colori e stili dei controlli dopo cambio tema.
+    Aggiorna ricorsivamente colori e stili dei controlli dell'interfaccia
+    dopo un cambio di tema.
+
+    Args:
+        control: Controllo Flet da aggiornare.
+
     """
 
     if isinstance(control, ft.Text):
@@ -632,7 +661,11 @@ def update_controls_theme(control: ft.Control) -> None:
 
 def create_theme_switch_button() -> ft.IconButton:
     """
-    Crea un pulsante icona per alternare tema chiaro e scuro.
+    Crea un pulsante icona per alternare il tema dell'interfaccia tra chiaro
+    e scuro.
+
+    Returns:
+        ft.IconButton: Pulsante icona configurato per il cambio tema.
     """
 
     def switch_theme(e) -> None:
@@ -700,7 +733,12 @@ def create_theme_switch_button() -> ft.IconButton:
 
 def update_tooltips_theme(control: ft.Control) -> None:
     """
-    Aggiorna i tooltip ricorsivamente in base al tema corrente.
+    Aggiorna ricorsivamente lo stile dei tooltip dei controlli
+    in base al tema corrente.
+
+    Args:
+        control: Controllo Flet da cui iniziare l'aggiornamento ricorsivo.
+
     """
 
     if isinstance(control.tooltip, ft.Tooltip):

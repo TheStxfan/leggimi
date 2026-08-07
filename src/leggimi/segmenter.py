@@ -4,16 +4,18 @@ from leggimi.errors import PdfIlleggibileError, ChaptersNotFoundError
 
 def split_chapters(pages: list[Page]) -> list[Chapter]:
     """
-    Divide le pagine in capitoli basandosi sui titoli.
+    Suddivide le pagine di un documento in capitoli utilizzando i titoli
+    individuati nel testo.
 
     Args:
-        pages: Lista di oggetti Page.
+        pages: Lista delle pagine del documento da suddividere in capitoli.
 
     Returns:
-        Lista di oggetti Chapter.
+        list[Chapter]: Lista dei capitoli individuati nel documento.
 
     Raises:
-        ChaptersNotFoundError: se i capitoli non esistono.
+        PdfIlleggibileError: Se la lista delle pagine è vuota.
+        ChaptersNotFoundError: Se non viene individuato alcun capitolo.
     """
 
     if not pages:

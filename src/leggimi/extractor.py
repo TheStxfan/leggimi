@@ -74,23 +74,38 @@ def estrai_pagina_ordinata(idx: int, page) -> str:
     return text
 
 
+# TODO TypeError
 def rimuovi_sillabazione(testo: str) -> str:
     """
-    Rimuove la sillabazione a fine riga.
+    Rimuove la sillabazione presente alla fine delle righe, ricomponendo le parole
+    spezzate dal carattere di a capo.
+
+    Args:
+        testo: Testo di input contenente eventuali parole sillabate.
+
+    Returns:
+        str: Testo con la sillabazione rimossa.
 
     Raises:
-        TypeError: se `testo` non è una stringa.
+        TypeError: Se `testo` non è una stringa.
     """
 
     return re.sub(r"-\n(\S)", r"\1", testo)
 
 
+# TODO TypeError
 def unisci_righe(testo: str) -> str:
     """
-    Unisce le righe consecutive mantenendo separati i paragrafi.
+    Unisce le righe consecutive del testo mantenendo separati i paragrafi.
+
+    Args:
+        testo: Testo di input con righe e paragrafi da normalizzare.
+
+    Returns:
+        str: Testo con le righe consecutive unite e i paragrafi preservati.
 
     Raises:
-        TypeError: se `testo` non è una stringa.
+        TypeError: Se `testo` non è una stringa.
     """
 
     return re.sub(r"(?<!\n)\n(?!\n)", " ", testo)
