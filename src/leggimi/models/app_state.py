@@ -42,6 +42,7 @@ class AppState:
     chapters_view: ft.Container | None = None
     chapters: list[Chapter] | None = None
     generate_button: ft.Button | None = None
+    audio_processing_text: ft.Text | None = None
 
     def remove_control(
         self,
@@ -72,7 +73,7 @@ class AppState:
 
         if self.processing_text is None:
             self.processing_text = create_text(
-                "Processing...",
+                "Messa in ordine del caos cartaceo...",
             )
 
         if self.start_button is not None:
@@ -135,27 +136,55 @@ class AppState:
         ):
             return
 
-        chapter_index = int(self.chapter_dropdown.value)
+        if self.audio_processing_text is None:
+            self.audio_processing_text = create_text(
+                "Dando voce al caos ordinato...",
+            )
 
-        chapter = self.chapters[chapter_index]
+        if self.generate_button is not None:
+            self.generate_button.disabled = True
 
-        mode = cast(
-            Literal["riassunto", "dialogo"],
-            self.mode_dropdown.value,
+        self.main_content.content.controls.append(  # type: ignore
+            self.audio_processing_text,
         )
 
-        level = cast(
-            Literal["base", "intermedio", "avanzato"],
-            self.level_dropdown.value,
-        )
+        self.page.update()
 
-        await generate_chapter_audio(
-            chapter,
-            mode,
-            level,
-            "output.mp3",
-            "output.srt",
-        )
+        try:
+            chapter_index = int(self.chapter_dropdown.value)
+
+            chapter = self.chapters[chapter_index]
+
+            mode = cast(
+                Literal["riassunto", "dialogo"],
+                self.mode_dropdown.value,
+            )
+
+            level = cast(
+                Literal["base", "intermedio", "avanzato"],
+                self.level_dropdown.value,
+            )
+
+            await generate_chapter_audio(
+                chapter,
+                mode,
+                level,
+                "output.mp3",
+                "output.srt",
+            )
+
+            self.audio_processing_text.value = "Audio pronto! 🎧"
+            self.page.update()
+
+            await asyncio.sleep(5)
+
+        finally:
+            self.remove_control(self.audio_processing_text)
+
+            if self.generate_button is not None:
+                self.generate_button.disabled = False
+
+            self.page.update()
 
     async def select_pdf(self, e) -> None:
         """
