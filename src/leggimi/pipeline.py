@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 
 from typing_extensions import Literal
 
@@ -74,15 +75,25 @@ async def generate_chapter_audio(
         None
     """
 
+    output_name = f"{pdf_name}_{chapter.title}_{mode}_{livello}".replace(" ", "_")
+
+    output_mp3 = Path("./output") / f"{output_name}.mp3"
+    output_srt = Path("./output") / f"{output_name}.srt"
+
+    if output_mp3.exists() and output_srt.exists():
+        return
+
+    if output_mp3.exists():
+        output_mp3.unlink()
+
+    if output_srt.exists():
+        output_srt.unlink()
+
     script = await asyncio.to_thread(
         generate_chapter_script,
         chapter,
         mode,
         livello,
-    )
-
-    output_name = (
-        f"{pdf_name}_" f"{chapter.title}_" f"{mode}_" f"{livello}".replace(" ", "_")
     )
 
     await synthesize_script(
