@@ -44,6 +44,8 @@ class AppState:
     generate_button: ft.Button | None = None
     audio_processing_text: ft.Text | None = None
 
+    text_generation_id: int = 0
+
     def remove_control(
         self,
         control: ft.Control | None,
@@ -137,16 +139,23 @@ class AppState:
         ):
             return
 
-        if self.audio_processing_text is None:
-            self.audio_processing_text = create_text(
-                "Dando voce al caos ordinato...",
-            )
+        self.text_generation_id += 1
+        text_generation_id = self.text_generation_id
+
+        if self.audio_processing_text is not None:
+            self.remove_control(self.audio_processing_text)
+
+        self.audio_processing_text = create_text(
+            "Dando voce al caos ordinato...",
+        )
+
+        audio_processing_text = self.audio_processing_text
 
         if self.generate_button is not None:
             self.generate_button.disabled = True
 
         self.main_content.content.controls.append(  # type: ignore
-            self.audio_processing_text,
+            audio_processing_text,
         )
 
         self.page.update()
@@ -173,18 +182,26 @@ class AppState:
                 level,
             )
 
-            self.audio_processing_text.value = "Audio pronto! 🎧"
-            self.page.update()
+            if self.text_generation_id != text_generation_id:
+                return
 
-            await asyncio.sleep(5)
-
-        finally:
-            self.remove_control(self.audio_processing_text)
+            audio_processing_text.value = "Audio pronto! 🎧"
 
             if self.generate_button is not None:
                 self.generate_button.disabled = False
 
             self.page.update()
+
+            await asyncio.sleep(4)
+
+        finally:
+            if self.text_generation_id == text_generation_id:
+                self.remove_control(audio_processing_text)
+
+                if self.audio_processing_text is audio_processing_text:
+                    self.audio_processing_text = None
+
+                self.page.update()
 
     async def select_pdf(self, e) -> None:
         """
@@ -218,8 +235,18 @@ class AppState:
                 self.processing_text,
                 self.chapters_view,
                 self.start_button,
+                self.generate_button,
+                self.audio_processing_text,
             ]:
                 self.remove_control(control)
+
+            self.selected_file_text = None
+            self.processing_text = None
+            self.chapters_view = None
+            self.start_button = None
+            self.generate_button = None
+            self.audio_processing_text = None
+            self.chapters = None
 
             if self.start_button is None:
                 self.start_button = create_button(
