@@ -18,13 +18,23 @@ VOICES = {
 
 
 def _ensure_directories() -> None:
+    """
+    Crea le directory temporanea e di output se non esistono.
+    """
+
     TEMP_DIR.mkdir(exist_ok=True)
     OUTPUT_DIR.mkdir(exist_ok=True)
 
 
 def _timestamp_to_seconds(timestamp: str) -> float:
     """
-    Converte timestamp SRT in secondi.
+    Converte un timestamp SRT nel corrispondente numero di secondi.
+
+    Args:
+        timestamp: Timestamp SRT nel formato `HH:MM:SS,mmm`.
+
+    Returns:
+        float: Tempo espresso in secondi.
     """
 
     hours, minutes, seconds = timestamp.replace(",", ".").split(":")
@@ -34,7 +44,13 @@ def _timestamp_to_seconds(timestamp: str) -> float:
 
 def _seconds_to_timestamp(seconds: float) -> str:
     """
-    Converte secondi in timestamp SRT.
+    Converte un valore espresso in secondi nel formato timestamp SRT.
+
+    Args:
+        seconds: Tempo espresso in secondi.
+
+    Returns:
+        str: Timestamp nel formato `HH:MM:SS,mmm`.
     """
 
     milliseconds = int((seconds % 1) * 1000)
@@ -53,7 +69,14 @@ def _shift_srt(
     offset: float,
 ) -> str:
     """
-    Applica un offset temporale a un file SRT.
+    Applica un offset temporale ai timestamp contenuti in un file SRT.
+
+    Args:
+        srt_content: Contenuto del file SRT da modificare.
+        offset: Offset temporale, espresso in secondi, da applicare ai timestamp.
+
+    Returns:
+        str: Contenuto SRT con i timestamp aggiornati.
     """
 
     lines = srt_content.splitlines()
@@ -82,7 +105,13 @@ def _shift_srt(
 
 def _get_audio_duration(path: Path) -> float:
     """
-    Recupera la durata di un mp3 tramite ffprobe.
+    Recupera la durata di un file MP3 utilizzando ffprobe.
+
+    Args:
+        path: Percorso del file audio di cui recuperare la durata.
+
+    Returns:
+        float: Durata del file audio espressa in secondi.
     """
 
     result = subprocess.run(
@@ -111,7 +140,13 @@ async def _sintetizza_segmento(
     output_srt: Path,
 ) -> None:
     """
-    Genera un segmento audio con relativo SRT.
+    Genera un segmento audio e il relativo file SRT tramite Edge TTS.
+
+    Args:
+        text: Testo da convertire in audio.
+        voice: Identificativo della voce da utilizzare.
+        output_audio: Percorso del file audio da generare.
+        output_srt: Percorso del file SRT da generare.
     """
 
     communicate = edge_tts.Communicate(
@@ -146,7 +181,17 @@ async def _sintetizza_dialogo(
     output_srt: Path,
 ) -> None:
     """
-    Genera un dialogo con più voci.
+    Genera l'audio di un dialogo utilizzando le voci associate agli speaker
+    e produce il relativo file SRT con i timestamp sincronizzati.
+
+    Args:
+        script: Script contenente le battute del dialogo.
+        output_mp3: Percorso del file MP3 da generare.
+        output_srt: Percorso del file SRT da generare.
+
+    Raises:
+        VoiceNotFoundError: Se non è disponibile una voce associata a uno
+            degli speaker dello script.
     """
 
     temp_files: list[Path] = []
@@ -220,7 +265,14 @@ async def synthesize_script(
     output_name: str,
 ) -> None:
     """
-    Genera mp3 e srt da uno Script.
+    Sintetizza uno script generando il relativo file MP3 e SRT.
+
+    Args:
+        script: Script da convertire in audio.
+        output_name: Nome base dei file MP3 e SRT di output.
+
+    Raises:
+        ValueError: Se la modalità dello script non è supportata.
     """
 
     _ensure_directories()
@@ -254,5 +306,9 @@ async def synthesize_script(
 
 
 def _clean_temp() -> None:
+    """
+    Rimuove la directory temporanea e tutti i file generati al suo interno.
+    """
+
     if TEMP_DIR.exists():
         shutil.rmtree(TEMP_DIR)
