@@ -2,6 +2,20 @@ from .models.models import Page, Chapter
 from leggimi.errors import PdfIlleggibileError, ChaptersNotFoundError
 
 
+def _rimuovi_cancelletto(titolo: str) -> str:
+    """
+    Rimuove i caratteri '#' presenti all'inizio del titolo.
+
+    Args:
+        titolo: Titolo del capitolo da normalizzare.
+
+    Returns:
+        str: Titolo senza i caratteri '#' iniziali.
+    """
+
+    return titolo.lstrip("#").strip()
+
+
 def split_chapters(pages: list[Page]) -> list[Chapter]:
     """
     Suddivide le pagine di un documento in capitoli utilizzando i titoli
@@ -35,7 +49,7 @@ def split_chapters(pages: list[Page]) -> list[Chapter]:
                             Chapter(title=titolo_corrente, text=testo_completo)
                         )
                     buffer_testo = []
-                titolo_corrente = line.lstrip("# ").strip()
+                titolo_corrente = _rimuovi_cancelletto(line)
             else:
                 buffer_testo.append(line)
 
