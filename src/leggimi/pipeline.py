@@ -3,12 +3,15 @@ from pathlib import Path
 
 from typing_extensions import Literal
 
+from leggimi.errors import ChaptersNotFoundError
 from leggimi.extractor import extract_text
 from leggimi.segmenter import split_chapters
 from leggimi.scriptgen import to_script
 from leggimi.models.models import Chapter, Script
 from leggimi.tts import synthesize_script
 from leggimi.cache import load_chapters, save_chapters
+
+MAX_RETRIES = 3
 
 
 def process_pdf(pdf_path: str) -> list[Chapter]:
@@ -23,6 +26,10 @@ def process_pdf(pdf_path: str) -> list[Chapter]:
 
     Returns:
         list[Chapter]: Lista dei capitoli estratti dal documento.
+
+    Raises:
+        ChaptersNotFoundError: Se non vengono trovati capitoli dopo
+            tutti i tentativi disponibili.
     """
 
     cached_chapters = load_chapters(pdf_path)
@@ -30,13 +37,21 @@ def process_pdf(pdf_path: str) -> list[Chapter]:
     if cached_chapters is not None:
         return cached_chapters
 
-    pages = extract_text(pdf_path)
+    for attempt in range(MAX_RETRIES):
+        pages = extract_text(pdf_path)
 
-    chapters = split_chapters(pages)
+        try:
+            chapters = split_chapters(pages)
+        except ChaptersNotFoundError:
+            if attempt == MAX_RETRIES - 1:
+                raise
+            continue
 
-    save_chapters(pdf_path, chapters)
+        save_chapters(pdf_path, chapters)
 
-    return chapters
+        return chapters
+
+    raise ChaptersNotFoundError
 
 
 def generate_chapter_script(
