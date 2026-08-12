@@ -48,3 +48,7 @@ class InvalidScriptFormatError(LeggiMiError):
 
 class VoiceNotFoundError(LeggiMiError):
     """La voce richiesta non è disponibile."""
+
+
+class ChapterCacheError(LeggiMiError):
+    """Errore durante la lettura o la scrittura della cache dei capitoli."""

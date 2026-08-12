@@ -6,13 +6,17 @@ from typing_extensions import Literal
 from leggimi.extractor import extract_text
 from leggimi.segmenter import split_chapters
 from leggimi.scriptgen import to_script
-from leggimi.models.models import Chapter, Page, Script, Line
+from leggimi.models.models import Chapter, Script
 from leggimi.tts import synthesize_script
+from leggimi.cache import load_chapters, save_chapters
 
 
 def process_pdf(pdf_path: str) -> list[Chapter]:
     """
     Elabora un documento PDF estraendo il testo e suddividendolo in capitoli.
+
+    Utilizza una cache basata sul contenuto del PDF per evitare di ripetere
+    l'estrazione e la suddivisione di un documento già elaborato.
 
     Args:
         pdf_path: Percorso del file PDF da elaborare.
@@ -21,9 +25,16 @@ def process_pdf(pdf_path: str) -> list[Chapter]:
         list[Chapter]: Lista dei capitoli estratti dal documento.
     """
 
+    cached_chapters = load_chapters(pdf_path)
+
+    if cached_chapters is not None:
+        return cached_chapters
+
     pages = extract_text(pdf_path)
 
     chapters = split_chapters(pages)
+
+    save_chapters(pdf_path, chapters)
 
     return chapters
 
