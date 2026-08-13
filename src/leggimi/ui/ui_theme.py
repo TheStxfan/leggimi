@@ -9,11 +9,13 @@ from leggimi.ui.ui_config import THEME
 class ThemeConfig:
     primary_text_color: str
     tooltip_bgcolor: str
+    error_bgcolor: str
 
 
 theme_config = ThemeConfig(
     primary_text_color="",
     tooltip_bgcolor="",
+    error_bgcolor="",
 )
 
 
@@ -28,6 +30,7 @@ def set_theme_mode(
 
         theme_config.primary_text_color = "#2D2D2D"
         theme_config.tooltip_bgcolor = "#E8E4D9"
+        theme_config.error_bgcolor = "#E8E4D9"
 
     elif theme == "dark":
         page.theme_mode = ft.ThemeMode.DARK
@@ -35,6 +38,7 @@ def set_theme_mode(
 
         theme_config.primary_text_color = "amber"
         theme_config.tooltip_bgcolor = "#1E1E1E"
+        theme_config.error_bgcolor = "#1E1E1E"
 
     page.theme = ft.Theme(
         font_family="Roboto",

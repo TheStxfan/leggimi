@@ -7,7 +7,8 @@ from typing_extensions import Literal
 
 import flet as ft
 
-from leggimi.errors import FileSelectionError
+from leggimi.ui.ui_theme import theme_config
+from leggimi.errors import ChaptersNotFoundError, FileSelectionError, LeggiMiError
 from leggimi.models.models import Chapter
 from leggimi.pipeline import (
     process_pdf,
@@ -16,6 +17,7 @@ from leggimi.pipeline import (
 from leggimi.ui.ui_components import (
     create_button,
     create_chapters_dropdown,
+    create_error_popup,
     create_text,
 )
 
@@ -30,6 +32,7 @@ class AppState:
     page: ft.Page
     file_picker: ft.FilePicker
     main_content: ft.Container
+    app_stack: ft.Stack
 
     mode_dropdown: ft.Dropdown | None = None
     level_dropdown: ft.Dropdown | None = None
@@ -43,6 +46,7 @@ class AppState:
     chapters: list[Chapter] | None = None
     generate_button: ft.Button | None = None
     audio_processing_text: ft.Text | None = None
+    error_popup: ft.Container | None = None
 
     text_generation_id: int = 0
 
@@ -60,6 +64,25 @@ class AppState:
 
         if control is not None and control in self.main_content.content.controls:  # type: ignore
             self.main_content.content.controls.remove(control)  # type: ignore
+
+    async def _show_error(self, error: LeggiMiError) -> None:
+        """
+        Mostra un errore applicativo tramite un popup temporaneo.
+
+        Args:
+            error: Errore applicativo da mostrare.
+        """
+
+        error_popup = create_error_popup(error)
+
+        self.app_stack.controls.append(error_popup)
+        self.page.update()
+
+        await asyncio.sleep(4)
+
+        if error_popup in self.app_stack.controls:
+            self.app_stack.controls.remove(error_popup)
+            self.page.update()
 
     async def run_processes(self, e) -> None:
         """
@@ -89,37 +112,47 @@ class AppState:
 
         self.page.update()
 
-        chapters = await asyncio.to_thread(
-            process_pdf,
-            self.pdf_path,
-        )
-
-        self.chapters = chapters
-
-        self.remove_control(self.processing_text)
-
-        self.chapters_view, self.chapter_dropdown = create_chapters_dropdown(
-            chapters,
-            self.page,
-        )
-
-        if self.generate_button is None:
-            self.generate_button = create_button(
-                "Genera mp3",
-                ft.Icons.SPATIAL_AUDIO_OFF,
-                self.generate_audio,
-                tooltip_text="Genera riassunto/dialogo dal capitolo selezionato",
+        try:
+            chapters = await asyncio.to_thread(
+                process_pdf,
+                self.pdf_path,
             )
 
-        self.main_content.content.controls.append(  # type: ignore
-            self.chapters_view,
-        )
+            self.chapters = chapters
 
-        self.main_content.content.controls.append(  # type: ignore
-            self.generate_button,
-        )
+            self.remove_control(self.processing_text)
 
-        self.page.update()
+            self.chapters_view, self.chapter_dropdown = create_chapters_dropdown(
+                chapters,
+                self.page,
+            )
+
+            if self.generate_button is None:
+                self.generate_button = create_button(
+                    "Genera mp3",
+                    ft.Icons.SPATIAL_AUDIO_OFF,
+                    self.generate_audio,
+                    tooltip_text="Genera riassunto/dialogo dal capitolo selezionato",
+                )
+
+            self.main_content.content.controls.append(  # type: ignore
+                self.chapters_view,
+            )
+
+            self.main_content.content.controls.append(  # type: ignore
+                self.generate_button,
+            )
+
+            self.page.update()
+
+        except LeggiMiError as exc:
+            self.remove_control(self.processing_text)
+
+            if self.start_button is not None:
+                self.start_button.disabled = False
+
+            self.page.update()
+            await self._show_error(exc)
 
     async def generate_audio(self, e) -> None:
         """
@@ -193,6 +226,15 @@ class AppState:
             self.page.update()
 
             await asyncio.sleep(4)
+
+        except LeggiMiError as exc:
+            if self.text_generation_id == text_generation_id:
+                await self._show_error(exc)
+
+                if self.generate_button is not None:
+                    self.generate_button.disabled = False
+
+                self.page.update()
 
         finally:
             if self.text_generation_id == text_generation_id:

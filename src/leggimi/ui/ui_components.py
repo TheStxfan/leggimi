@@ -1,5 +1,6 @@
 import flet as ft
 
+from leggimi.errors import LeggiMiError
 from leggimi.models.models import Chapter
 from leggimi.ui.ui_config import UI_SIZE, THEME
 from leggimi.ui.ui_theme import (
@@ -30,6 +31,9 @@ def resize_ui(
     if control is exclude:
         return
 
+    if isinstance(control, ft.Container) and control.data == "error_popup":
+        return
+
     button_scale = new_size ** (1 / 16) - 0.2
 
     if isinstance(control, ft.Text):
@@ -46,7 +50,7 @@ def resize_ui(
 
         if isinstance(control.tooltip, ft.Tooltip):
             control.tooltip.text_style = ft.TextStyle(
-                size=new_size * 0.7,
+                size=new_size / 2,
                 color=theme_config.primary_text_color,
             )
 
@@ -423,7 +427,6 @@ def get_dropdown_dimensions(
 
 def create_chapters_dropdown(
     chapters: list[Chapter],
-    # tooltip_text: str | None = None,
     page: ft.Page,
     size: float | None = None,
 ) -> tuple[ft.Container, ft.Dropdown]:
@@ -701,6 +704,7 @@ def create_theme_switch_button() -> ft.IconButton:
 
         update_text_theme(e.page)
         update_controls_theme(e.page)
+        update_error_popup_theme(e.page)
         update_tooltips_theme(e.page)
 
         e.page.update()
@@ -757,3 +761,61 @@ def update_tooltips_theme(control: ft.Control) -> None:
         ft.Control,
     ):
         update_tooltips_theme(control.content)  # type: ignore
+
+
+def create_error_popup(error: LeggiMiError) -> ft.Container:
+    """
+    Crea un popup temporaneo per la visualizzazione di un errore.
+
+    Args:
+        error: Errore applicativo da mostrare.
+
+    Returns:
+        ft.Container: Popup configurato per la visualizzazione dell'errore.
+    """
+
+    return ft.Container(
+        content=ft.Text(
+            str(error),
+            size=current_ui_size * 0.75,
+            weight=ft.FontWeight.W_500,
+            color=theme_config.primary_text_color,
+        ),
+        bgcolor=theme_config.error_bgcolor,
+        border=ft.Border.all(
+            1,
+            theme_config.primary_text_color,
+        ),
+        border_radius=15,
+        padding=8,
+        left=0,
+        bottom=0,
+        data="error_popup",
+    )
+
+
+def update_error_popup_theme(control: ft.Control) -> None:
+    """
+    Aggiorna lo stile del popup di errore dopo un cambio di tema.
+
+    Args:
+        control: Controllo Flet da aggiornare.
+    """
+
+    if isinstance(control, ft.Container):
+        if isinstance(control.content, ft.Text):
+            control.bgcolor = theme_config.error_bgcolor
+            control.border = ft.Border.all(
+                1,
+                theme_config.primary_text_color,
+            )
+            control.content.color = theme_config.primary_text_color
+
+    if hasattr(control, "controls"):
+        for child in control.controls:  # type: ignore
+            update_error_popup_theme(child)
+
+    content = getattr(control, "content", None)
+
+    if isinstance(content, ft.Control):
+        update_error_popup_theme(content)

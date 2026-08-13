@@ -49,10 +49,32 @@ async def main(page: ft.Page):
 
     settings_row, mode_dropdown, level_dropdown = create_global_settings_row()
 
+    ui_size_row = create_ui_size_slider()
+    theme_button = create_theme_switch_button()
+
+    app_stack = ft.Stack(
+        expand=True,
+        controls=[
+            ft.Column(
+                expand=True,
+                controls=[
+                    main_content,
+                    ui_size_row,
+                ],
+            ),
+            ft.Container(
+                content=theme_button,
+                right=5,
+                bottom=5,
+            ),
+        ],
+    )
+
     app_state = AppState(
         page=page,
         file_picker=file_picker,
         main_content=main_content,
+        app_stack=app_stack,
         mode_dropdown=mode_dropdown,
         level_dropdown=level_dropdown,
     )
@@ -61,11 +83,8 @@ async def main(page: ft.Page):
         "Seleziona un PDF",
         ft.Icons.FILE_UPLOAD,
         app_state.select_pdf,
-        tooltip_text=("Seleziona un file PDF da convertire in audio"),
+        tooltip_text="Seleziona un file PDF da convertire in audio",
     )
-
-    ui_size_row = create_ui_size_slider()
-    theme_button = create_theme_switch_button()
 
     main_content.content.controls.extend(  # type: ignore
         [
@@ -74,25 +93,7 @@ async def main(page: ft.Page):
         ]
     )
 
-    page.add(
-        ft.Stack(
-            expand=True,
-            controls=[
-                ft.Column(
-                    expand=True,
-                    controls=[
-                        main_content,
-                        ui_size_row,
-                    ],
-                ),
-                ft.Container(
-                    content=theme_button,
-                    right=20,
-                    bottom=20,
-                ),
-            ],
-        ),
-    )
+    page.add(app_stack)
 
 
 ft.run(main)
