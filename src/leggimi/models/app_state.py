@@ -47,6 +47,7 @@ class AppState:
     generate_button: ft.Button | None = None
     audio_processing_text: ft.Text | None = None
     error_popup: ft.Container | None = None
+    audio_ready_button: ft.Button | None = None
 
     text_generation_id: int = 0
 
@@ -64,6 +65,52 @@ class AppState:
 
         if control is not None and control in self.main_content.content.controls:  # type: ignore
             self.main_content.content.controls.remove(control)  # type: ignore
+
+    def _update_audio_button(self) -> None:
+        """
+        Aggiorna il pulsante audio in base alla presenza dei file MP3 e SRT
+        relativi alla selezione corrente.
+        """
+
+        if (
+            self.pdf_path is None
+            or self.chapter_dropdown is None
+            or self.chapter_dropdown.value is None
+            or self.chapters is None
+            or self.mode_dropdown is None
+            or self.level_dropdown is None
+        ):
+            return
+
+        chapter_index = int(self.chapter_dropdown.value)
+        chapter = self.chapters[chapter_index]
+
+        mode = cast(
+            Literal["riassunto", "dialogo"],
+            self.mode_dropdown.value,
+        )
+
+        level = cast(
+            Literal["base", "intermedio", "avanzato"],
+            self.level_dropdown.value,
+        )
+
+        output_name = (
+            f"{Path(self.pdf_path).stem}_{chapter.title}_{mode}_{level}"
+        ).replace(" ", "_")
+
+        output_mp3 = Path("./output") / f"{output_name}.mp3"
+        output_srt = Path("./output") / f"{output_name}.srt"
+
+        audio_ready = output_mp3.exists() and output_srt.exists()
+
+        if self.generate_button is not None:
+            self.generate_button.visible = not audio_ready
+
+        if self.audio_ready_button is not None:
+            self.audio_ready_button.visible = audio_ready
+
+        self.page.update()
 
     async def _show_error(self, error: LeggiMiError) -> None:
         """
@@ -125,6 +172,7 @@ class AppState:
             self.chapters_view, self.chapter_dropdown = create_chapters_dropdown(
                 chapters,
                 self.page,
+                on_select=lambda e: self._update_audio_button(),
             )
 
             if self.generate_button is None:
@@ -135,6 +183,16 @@ class AppState:
                     tooltip_text="Genera riassunto/dialogo dal capitolo selezionato",
                 )
 
+            if self.audio_ready_button is None:
+                audio_ready_button = create_button(
+                    "Audio pronto",
+                    ft.Icons.HEADPHONES,
+                    None,
+                    tooltip_text="Riproduci l'audio generato",
+                )
+                audio_ready_button.visible = False
+                self.audio_ready_button = audio_ready_button
+
             self.main_content.content.controls.append(  # type: ignore
                 self.chapters_view,
             )
@@ -142,6 +200,12 @@ class AppState:
             self.main_content.content.controls.append(  # type: ignore
                 self.generate_button,
             )
+
+            self.main_content.content.controls.append(  # type: ignore
+                self.audio_ready_button,
+            )
+
+            self._update_audio_button()
 
             self.page.update()
 
@@ -218,14 +282,10 @@ class AppState:
             if self.text_generation_id != text_generation_id:
                 return
 
-            audio_processing_text.value = "Audio pronto! 🎧"
-
             if self.generate_button is not None:
                 self.generate_button.disabled = False
 
-            self.page.update()
-
-            await asyncio.sleep(4)
+            self._update_audio_button()
 
         except LeggiMiError as exc:
             if self.text_generation_id == text_generation_id:
@@ -278,6 +338,7 @@ class AppState:
                 self.chapters_view,
                 self.start_button,
                 self.generate_button,
+                self.audio_ready_button,
                 self.audio_processing_text,
             ]:
                 self.remove_control(control)
@@ -288,6 +349,7 @@ class AppState:
             self.start_button = None
             self.generate_button = None
             self.audio_processing_text = None
+            self.audio_ready_button = None
             self.chapters = None
 
             if self.start_button is None:

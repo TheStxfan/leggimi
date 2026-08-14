@@ -210,7 +210,9 @@ def create_ui_size_slider(
     return row
 
 
-def create_global_settings_row() -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
+def create_global_settings_row(
+    on_select: ft.ControlEventHandler | None = None,
+) -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
     """
     Crea una riga contenente i dropdown per la selezione della modalità
     di generazione dello script e del livello di elaborazione.
@@ -224,6 +226,7 @@ def create_global_settings_row() -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
         label: str,
         options: list[tuple[str, str]],
         value: str,
+        on_select: ft.ControlEventHandler | None = None,
     ) -> ft.Dropdown:
         return ft.Dropdown(
             color=theme_config.primary_text_color,
@@ -236,6 +239,7 @@ def create_global_settings_row() -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
             align=ft.Alignment.CENTER,
             label=label,
             value=value,
+            on_select=on_select,
             text_style=ft.TextStyle(
                 size=current_ui_size,
                 color=theme_config.primary_text_color,
@@ -291,6 +295,7 @@ def create_global_settings_row() -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
             ("dialogo", "Dialogo"),
         ],
         "riassunto",
+        on_select,
     )
 
     level_dropdown = create_setting_dropdown(
@@ -301,6 +306,7 @@ def create_global_settings_row() -> tuple[ft.Row, ft.Dropdown, ft.Dropdown]:
             ("avanzato", "Avanzato"),
         ],
         "base",
+        on_select,
     )
 
     return (
@@ -429,6 +435,7 @@ def create_chapters_dropdown(
     chapters: list[Chapter],
     page: ft.Page,
     size: float | None = None,
+    on_select: ft.ControlEventHandler | None = None,
 ) -> tuple[ft.Container, ft.Dropdown]:
     """
     Crea un dropdown Flet per la selezione di un capitolo.
@@ -463,6 +470,7 @@ def create_chapters_dropdown(
         height=current_ui_size * 2.2,
         align=ft.Alignment.CENTER,
         label="Seleziona un capitolo",
+        on_select=on_select,
         text_style=ft.TextStyle(
             size=current_ui_size,
             color=theme_config.primary_text_color,

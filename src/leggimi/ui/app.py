@@ -47,8 +47,6 @@ async def main(page: ft.Page):
         clip_behavior=ft.ClipBehavior.HARD_EDGE,
     )
 
-    settings_row, mode_dropdown, level_dropdown = create_global_settings_row()
-
     ui_size_row = create_ui_size_slider()
     theme_button = create_theme_switch_button()
 
@@ -75,9 +73,14 @@ async def main(page: ft.Page):
         file_picker=file_picker,
         main_content=main_content,
         app_stack=app_stack,
-        mode_dropdown=mode_dropdown,
-        level_dropdown=level_dropdown,
     )
+
+    settings_row, mode_dropdown, level_dropdown = create_global_settings_row(
+        on_select=lambda e: app_state._update_audio_button(),
+    )
+
+    app_state.mode_dropdown = mode_dropdown
+    app_state.level_dropdown = level_dropdown
 
     select_pdf_button = create_button(
         "Seleziona un PDF",
