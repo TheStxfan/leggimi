@@ -7,8 +7,7 @@ from typing_extensions import Literal
 
 import flet as ft
 
-from leggimi.ui.ui_theme import theme_config
-from leggimi.errors import ChaptersNotFoundError, FileSelectionError, LeggiMiError
+from leggimi.errors import FileSelectionError, LeggiMiError
 from leggimi.models.models import Chapter
 from leggimi.pipeline import (
     process_pdf,
@@ -38,6 +37,8 @@ class AppState:
     level_dropdown: ft.Dropdown | None = None
     chapter_dropdown: ft.Dropdown | None = None
 
+    playback_content: ft.Container | None = None
+
     pdf_path: str | None = None
     selected_file_text: ft.Text | None = None
     processing_text: ft.Text | None = None
@@ -50,6 +51,73 @@ class AppState:
     audio_ready_button: ft.Button | None = None
 
     text_generation_id: int = 0
+
+    def show_playback_view(self, e) -> None:
+        """
+        Mostra la schermata di riproduzione audio.
+
+        Args:
+            e: Evento generato dal clic sul pulsante audio pronto.
+        """
+
+        from leggimi.ui.ui_components import create_back_button
+
+        if self.playback_content is None:
+            back_button = create_back_button(
+                self.show_main_view,
+            )
+
+            self.playback_content = ft.Container(
+                expand=True,
+                content=ft.Stack(
+                    expand=True,
+                    controls=[
+                        ft.Container(
+                            content=back_button,
+                            left=10,
+                            top=10,
+                        ),
+                        ft.Column(
+                            expand=True,
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            controls=[
+                                create_text("Playback audio"),
+                            ],
+                        ),
+                    ],
+                ),
+            )
+
+        self.main_content.visible = False
+        self.playback_content.visible = True
+
+        if self.playback_content not in self.app_stack.controls:
+            self.app_stack.controls.insert(
+                0,
+                self.playback_content,
+            )
+
+        self.page.update()
+        self.page.run_task(
+            self._show_error,
+            LeggiMiError("Errore di test playback"),
+        )
+
+    def show_main_view(self, e) -> None:
+        """
+        Torna alla schermata principale dell'applicazione.
+
+        Args:
+            e: Evento generato dal clic sul pulsante indietro.
+        """
+
+        self.main_content.visible = True
+
+        if self.playback_content is not None:
+            self.playback_content.visible = False
+
+        self.page.update()
 
     def remove_control(
         self,
@@ -187,7 +255,7 @@ class AppState:
                 audio_ready_button = create_button(
                     "Audio pronto",
                     ft.Icons.HEADPHONES,
-                    None,
+                    self.show_playback_view,
                     tooltip_text="Riproduci l'audio generato",
                 )
                 audio_ready_button.visible = False

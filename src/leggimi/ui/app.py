@@ -1,6 +1,6 @@
 import flet as ft
 
-from leggimi.errors import UIInitializationError
+from leggimi.errors import LeggiMiError, UIInitializationError
 from leggimi.models.app_state import AppState
 from leggimi.ui.ui_components import (
     create_global_settings_row,
@@ -53,17 +53,17 @@ async def main(page: ft.Page):
     app_stack = ft.Stack(
         expand=True,
         controls=[
-            ft.Column(
-                expand=True,
-                controls=[
-                    main_content,
-                    ui_size_row,
-                ],
+            main_content,
+            ft.Container(
+                content=ui_size_row,
+                left=0,
+                right=0,
+                bottom=15,
             ),
             ft.Container(
                 content=theme_button,
-                right=5,
-                bottom=5,
+                right=15,
+                bottom=15,
             ),
         ],
     )
@@ -97,6 +97,10 @@ async def main(page: ft.Page):
     )
 
     page.add(app_stack)
+    page.run_task(
+        app_state._show_error,
+        LeggiMiError("Errore di test"),
+    )
 
 
 ft.run(main)

@@ -69,13 +69,10 @@ def resize_ui(
                 new_size,
             )
 
-            # Dropdown impostazioni globali
             if control.label in ("Modalità", "Livello"):
                 control.width = new_size * 8
                 control.height = new_size * 2.2
                 menu_width = new_size * 7
-
-            # Dropdown capitoli
             else:
                 control.width = dropdown_width
                 control.height = new_size * 2.2
@@ -198,14 +195,13 @@ def create_ui_size_slider(
         on_change=resize_ui_handler,
     )
 
-    row = ft.Row(
-        margin=ft.Margin.only(top=15),
-        controls=[
-            ui_size_text,
-            ui_size_slider,
-        ],
-        alignment=ft.MainAxisAlignment.CENTER,
-    )
+    row = ft.Row()
+    row.margin = ft.Margin.only(top=15)
+    row.controls = [
+        ui_size_text,
+        ui_size_slider,
+    ]
+    row.alignment = ft.MainAxisAlignment.CENTER
 
     return row
 
@@ -309,18 +305,15 @@ def create_global_settings_row(
         on_select,
     )
 
-    return (
-        ft.Row(
-            controls=[
-                mode_dropdown,
-                level_dropdown,
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            spacing=20,
-        ),
+    row = ft.Row()
+    row.controls = [
         mode_dropdown,
         level_dropdown,
-    )
+    ]
+    row.alignment = ft.MainAxisAlignment.CENTER
+    row.spacing = 20
+
+    return row, mode_dropdown, level_dropdown
 
 
 def create_button(
@@ -609,6 +602,13 @@ def update_controls_theme(control: ft.Control) -> None:
 
     elif isinstance(control, ft.IconButton):
         control.icon_color = theme_config.primary_text_color
+        control.style = ft.ButtonStyle(
+            bgcolor=theme_config.tooltip_bgcolor,
+            side=ft.BorderSide(
+                width=1,
+                color=theme_config.primary_text_color,
+            ),
+        )
 
     elif isinstance(control, ft.Slider):
         control.thumb_color = theme_config.primary_text_color
@@ -680,6 +680,7 @@ def create_theme_switch_button() -> ft.IconButton:
     """
 
     def switch_theme(e) -> None:
+
         current_theme = e.page.theme_mode
 
         new_theme = "light" if current_theme == ft.ThemeMode.DARK else "dark"
@@ -789,12 +790,12 @@ def create_error_popup(error: LeggiMiError) -> ft.Container:
             weight=ft.FontWeight.W_500,
             color=theme_config.primary_text_color,
         ),
-        bgcolor=theme_config.error_bgcolor,
-        border=ft.Border.all(
-            1,
-            theme_config.primary_text_color,
-        ),
-        border_radius=15,
+        # bgcolor=theme_config.error_bgcolor,
+        # border=ft.Border.all(
+        #     1,
+        #     theme_config.primary_text_color,
+        # ),
+        # border_radius=15,
         padding=8,
         left=0,
         bottom=0,
@@ -827,3 +828,38 @@ def update_error_popup_theme(control: ft.Control) -> None:
 
     if isinstance(content, ft.Control):
         update_error_popup_theme(content)
+
+
+def create_back_button(on_click) -> ft.IconButton:
+    """
+    Crea un pulsante circolare per tornare alla schermata precedente.
+
+    Args:
+        on_click: Funzione eseguita al clic sul pulsante.
+
+    Returns:
+        ft.IconButton: Pulsante circolare con icona di ritorno.
+    """
+
+    return ft.IconButton(
+        icon=ft.Icons.ARROW_BACK,
+        icon_color=theme_config.primary_text_color,
+        icon_size=current_ui_size * 1,
+        tooltip=ft.Tooltip(
+            message="Torna indietro",
+            text_style=ft.TextStyle(
+                size=current_ui_size * 0.7,
+                color=theme_config.primary_text_color,
+            ),
+            bgcolor=theme_config.tooltip_bgcolor,
+        ),
+        style=ft.ButtonStyle(
+            bgcolor=theme_config.tooltip_bgcolor,
+            shape=ft.CircleBorder(),
+            side=ft.BorderSide(
+                width=1,
+                color=theme_config.primary_text_color,
+            ),
+        ),
+        on_click=on_click,
+    )
