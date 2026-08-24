@@ -52,3 +52,23 @@ class VoiceNotFoundError(LeggiMiError):
 
 class ChapterCacheError(LeggiMiError):
     """Errore durante la lettura o la scrittura della cache dei capitoli."""
+
+
+class AudioPlayerError(LeggiMiError):
+    """Errore durante la riproduzione o la gestione dell'audio."""
+
+
+class AudioFileNotFoundError(AudioPlayerError):
+    """Il file audio richiesto non esiste."""
+
+
+class SrtFileNotFoundError(AudioPlayerError):
+    """Il file SRT richiesto non esiste."""
+
+
+class AudioPlaybackError(AudioPlayerError):
+    """Errore durante l'avvio, la pausa o l'arresto della riproduzione."""
+
+
+class AudioSeekError(AudioPlayerError):
+    """Errore durante lo spostamento della posizione di riproduzione."""

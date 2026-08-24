@@ -1,23 +1,28 @@
 from dataclasses import dataclass
-
 import asyncio
 from pathlib import Path
-from typing import cast
-from typing_extensions import Literal
+from typing import Literal, cast
 
 import flet as ft
 
-from leggimi.errors import FileSelectionError, LeggiMiError
+from leggimi.audio_player import AudioPlayer
+from leggimi.errors import AudioPlaybackError, FileSelectionError, LeggiMiError
 from leggimi.models.models import Chapter
 from leggimi.pipeline import (
-    process_pdf,
     generate_chapter_audio,
+    process_pdf,
 )
 from leggimi.ui.ui_components import (
+    create_back_button,
     create_button,
     create_chapters_dropdown,
     create_error_popup,
+    create_playback_button,
+    create_next_line_button,
+    create_previous_line_button,
+    create_restart_button,
     create_text,
+    update_playback_button_tooltip,
 )
 
 
@@ -32,19 +37,28 @@ class AppState:
     file_picker: ft.FilePicker
     main_content: ft.Container
     app_stack: ft.Stack
+    bottom_bar: ft.Container
+    ui_size_row: ft.Row
 
     mode_dropdown: ft.Dropdown | None = None
     level_dropdown: ft.Dropdown | None = None
     chapter_dropdown: ft.Dropdown | None = None
 
     playback_content: ft.Container | None = None
+    audio_player: AudioPlayer | None = None
+    playback_button: ft.IconButton | None = None
+    previous_line_button: ft.IconButton | None = None
+    next_line_button: ft.IconButton | None = None
+    restart_audio_button: ft.IconButton | None = None
 
     pdf_path: str | None = None
+
     selected_file_text: ft.Text | None = None
     processing_text: ft.Text | None = None
     start_button: ft.Button | None = None
     chapters_view: ft.Container | None = None
     chapters: list[Chapter] | None = None
+
     generate_button: ft.Button | None = None
     audio_processing_text: ft.Text | None = None
     error_popup: ft.Container | None = None
@@ -52,15 +66,129 @@ class AppState:
 
     text_generation_id: int = 0
 
+    def _get_audio_paths(self) -> tuple[Path, Path] | None:
+        """
+        Restituisce i percorsi MP3 e SRT relativi alla selezione corrente.
+
+        Returns:
+            Una tupla contenente il percorso MP3 e SRT, oppure None se
+            la selezione corrente non è valida.
+        """
+
+        if (
+            self.pdf_path is None
+            or self.chapter_dropdown is None
+            or self.chapter_dropdown.value is None
+            or self.chapters is None
+            or self.mode_dropdown is None
+            or self.mode_dropdown.value is None
+            or self.level_dropdown is None
+            or self.level_dropdown.value is None
+        ):
+            return None
+
+        chapter_index = int(self.chapter_dropdown.value)
+
+        if not 0 <= chapter_index < len(self.chapters):
+            return None
+
+        chapter = self.chapters[chapter_index]
+
+        mode = cast(
+            Literal["riassunto", "dialogo"],
+            self.mode_dropdown.value,
+        )
+
+        level = cast(
+            Literal["base", "intermedio", "avanzato"],
+            self.level_dropdown.value,
+        )
+
+        output_name = (
+            f"{Path(self.pdf_path).stem}_" f"{chapter.title}_" f"{mode}_" f"{level}"
+        ).replace(" ", "_")
+
+        output_dir = Path("./output")
+
+        return (
+            output_dir / f"{output_name}.mp3",
+            output_dir / f"{output_name}.srt",
+        )
+
     def show_playback_view(self, e) -> None:
         """
         Mostra la schermata di riproduzione audio.
-
-        Args:
-            e: Evento generato dal clic sul pulsante audio pronto.
         """
 
-        from leggimi.ui.ui_components import create_back_button
+        audio_paths = self._get_audio_paths()
+
+        if audio_paths is None:
+            return
+
+        output_mp3, output_srt = audio_paths
+
+        if not output_mp3.exists() or not output_srt.exists():
+            return
+
+        try:
+            if (
+                self.audio_player is None
+                or self.audio_player.audio_path != output_mp3
+                or self.audio_player.srt_path != output_srt
+            ):
+                if self.audio_player is not None:
+                    self.audio_player.cleanup()
+
+                self.audio_player = AudioPlayer(
+                    output_mp3,
+                    output_srt,
+                )
+
+                if self.playback_button is not None:
+                    self.playback_button.icon = ft.Icons.PLAY_ARROW
+                    update_playback_button_tooltip(
+                        self.playback_button,
+                        "Riproduci audio",
+                    )
+
+        except Exception:
+            self.page.run_task(
+                self._show_error,
+                LeggiMiError("Errore durante il caricamento dell'audio."),
+            )
+            return
+
+        # Crea i pulsanti una sola volta.
+        if self.restart_audio_button is None:
+            self.restart_audio_button = create_restart_button(
+                self.restart_audio,
+            )
+
+        if self.previous_line_button is None:
+            self.previous_line_button = create_previous_line_button(
+                self.previous_audio_line,
+            )
+
+        if self.playback_button is None:
+            self.playback_button = create_playback_button(
+                self.toggle_audio,
+            )
+
+        if self.next_line_button is None:
+            self.next_line_button = create_next_line_button(
+                self.next_audio_line,
+            )
+
+        # Bottom bar del playback.
+        self.bottom_bar.content = ft.Row(
+            controls=[
+                self.restart_audio_button,
+                self.previous_line_button,
+                self.playback_button,
+                self.next_line_button,
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
 
         if self.playback_content is None:
             back_button = create_back_button(
@@ -99,10 +227,132 @@ class AppState:
             )
 
         self.page.update()
-        self.page.run_task(
-            self._show_error,
-            LeggiMiError("Errore di test playback"),
-        )
+
+    def toggle_audio(self, e) -> None:
+        """
+        Avvia o arresta la riproduzione audio.
+        """
+
+        if self.audio_player is None:
+            self.page.run_task(
+                self._show_error,
+                LeggiMiError("Player audio non disponibile."),
+            )
+            return
+
+        try:
+            if self.audio_player.playing:
+                self.audio_player.stop()
+
+                if self.playback_button is not None:
+                    self.playback_button.icon = ft.Icons.PLAY_ARROW
+                    update_playback_button_tooltip(
+                        self.playback_button,
+                        "Riproduci audio",
+                    )
+
+            else:
+                self.audio_player.play()
+
+                if self.playback_button is not None:
+                    self.playback_button.icon = ft.Icons.PAUSE
+                    update_playback_button_tooltip(
+                        self.playback_button,
+                        "Metti in pausa",
+                    )
+
+            self.page.update()
+
+        except AudioPlaybackError as exc:
+            self.page.run_task(
+                self._show_error,
+                exc,
+            )
+
+    def restart_audio(self, e) -> None:
+        """
+        Riavvia l'audio dall'inizio.
+        """
+
+        if self.audio_player is None:
+            self.page.run_task(
+                self._show_error,
+                LeggiMiError("Player audio non disponibile."),
+            )
+            return
+
+        try:
+            self.audio_player.restart()
+
+            if self.playback_button is not None:
+                self.playback_button.icon = (
+                    ft.Icons.PAUSE if self.audio_player.playing else ft.Icons.PLAY_ARROW
+                )
+
+                update_playback_button_tooltip(
+                    self.playback_button,
+                    (
+                        "Metti in pausa"
+                        if self.audio_player.playing
+                        else "Riproduci audio"
+                    ),
+                )
+
+            self.page.update()
+
+        except Exception:
+            self.page.run_task(
+                self._show_error,
+                LeggiMiError("Errore durante il riavvio dell'audio."),
+            )
+
+    def previous_audio_line(self, e) -> None:
+        """
+        Torna alla linea SRT precedente.
+        """
+
+        if self.audio_player is None:
+            self.page.run_task(
+                self._show_error,
+                LeggiMiError("Player audio non disponibile."),
+            )
+            return
+
+        try:
+            self.audio_player.previous_line()
+            self.page.update()
+
+        except Exception:
+            self.page.run_task(
+                self._show_error,
+                LeggiMiError(
+                    "Errore durante il passaggio alla linea precedente.",
+                ),
+            )
+
+    def next_audio_line(self, e) -> None:
+        """
+        Passa alla linea SRT successiva.
+        """
+
+        if self.audio_player is None:
+            self.page.run_task(
+                self._show_error,
+                LeggiMiError("Player audio non disponibile."),
+            )
+            return
+
+        try:
+            self.audio_player.next_line()
+            self.page.update()
+
+        except Exception:
+            self.page.run_task(
+                self._show_error,
+                LeggiMiError(
+                    "Errore durante il passaggio alla linea successiva.",
+                ),
+            )
 
     def show_main_view(self, e) -> None:
         """
@@ -112,10 +362,18 @@ class AppState:
             e: Evento generato dal clic sul pulsante indietro.
         """
 
+        if self.audio_player is not None:
+            self.audio_player.stop()
+
+        if self.playback_button is not None:
+            self.playback_button.icon = ft.Icons.PLAY_ARROW
+
         self.main_content.visible = True
 
         if self.playback_content is not None:
             self.playback_content.visible = False
+
+        self.bottom_bar.content = self.ui_size_row
 
         self.page.update()
 
@@ -128,47 +386,26 @@ class AppState:
 
         Args:
             control: Controllo Flet da rimuovere.
-
         """
 
-        if control is not None and control in self.main_content.content.controls:  # type: ignore
+        if (
+            control is not None
+            and control in self.main_content.content.controls  # type: ignore
+        ):
             self.main_content.content.controls.remove(control)  # type: ignore
 
     def _update_audio_button(self) -> None:
         """
-        Aggiorna il pulsante audio in base alla presenza dei file MP3 e SRT
+        Aggiorna i pulsanti audio in base alla presenza dei file MP3 e SRT
         relativi alla selezione corrente.
         """
 
-        if (
-            self.pdf_path is None
-            or self.chapter_dropdown is None
-            or self.chapter_dropdown.value is None
-            or self.chapters is None
-            or self.mode_dropdown is None
-            or self.level_dropdown is None
-        ):
+        audio_paths = self._get_audio_paths()
+
+        if audio_paths is None:
             return
 
-        chapter_index = int(self.chapter_dropdown.value)
-        chapter = self.chapters[chapter_index]
-
-        mode = cast(
-            Literal["riassunto", "dialogo"],
-            self.mode_dropdown.value,
-        )
-
-        level = cast(
-            Literal["base", "intermedio", "avanzato"],
-            self.level_dropdown.value,
-        )
-
-        output_name = (
-            f"{Path(self.pdf_path).stem}_{chapter.title}_{mode}_{level}"
-        ).replace(" ", "_")
-
-        output_mp3 = Path("./output") / f"{output_name}.mp3"
-        output_srt = Path("./output") / f"{output_name}.srt"
+        output_mp3, output_srt = audio_paths
 
         audio_ready = output_mp3.exists() and output_srt.exists()
 
@@ -180,7 +417,10 @@ class AppState:
 
         self.page.update()
 
-    async def _show_error(self, error: LeggiMiError) -> None:
+    async def _show_error(
+        self,
+        error: LeggiMiError,
+    ) -> None:
         """
         Mostra un errore applicativo tramite un popup temporaneo.
 
@@ -191,6 +431,7 @@ class AppState:
         error_popup = create_error_popup(error)
 
         self.app_stack.controls.append(error_popup)
+
         self.page.update()
 
         await asyncio.sleep(4)
@@ -220,6 +461,7 @@ class AppState:
             self.start_button.disabled = True
 
         self.remove_control(self.chapters_view)
+        self.remove_control(self.processing_text)
 
         self.main_content.content.controls.append(  # type: ignore
             self.processing_text,
@@ -248,18 +490,25 @@ class AppState:
                     "Genera mp3",
                     ft.Icons.SPATIAL_AUDIO_OFF,
                     self.generate_audio,
-                    tooltip_text="Genera riassunto/dialogo dal capitolo selezionato",
+                    tooltip_text=(
+                        "Genera riassunto/dialogo " "dal capitolo selezionato"
+                    ),
                 )
 
             if self.audio_ready_button is None:
-                audio_ready_button = create_button(
+                self.audio_ready_button = create_button(
                     "Audio pronto",
                     ft.Icons.HEADPHONES,
                     self.show_playback_view,
                     tooltip_text="Riproduci l'audio generato",
                 )
-                audio_ready_button.visible = False
-                self.audio_ready_button = audio_ready_button
+
+                self.audio_ready_button.visible = False
+
+            # Evita di inserire due volte gli stessi controlli.
+            self.remove_control(self.chapters_view)
+            self.remove_control(self.generate_button)
+            self.remove_control(self.audio_ready_button)
 
             self.main_content.content.controls.append(  # type: ignore
                 self.chapters_view,
@@ -273,6 +522,9 @@ class AppState:
                 self.audio_ready_button,
             )
 
+            if self.start_button is not None:
+                self.start_button.disabled = False
+
             self._update_audio_button()
 
             self.page.update()
@@ -284,6 +536,7 @@ class AppState:
                 self.start_button.disabled = False
 
             self.page.update()
+
             await self._show_error(exc)
 
     async def generate_audio(self, e) -> None:
@@ -299,7 +552,9 @@ class AppState:
             or self.chapter_dropdown.value is None
             or self.chapters is None
             or self.mode_dropdown is None
+            or self.mode_dropdown.value is None
             or self.level_dropdown is None
+            or self.level_dropdown.value is None
             or self.pdf_path is None
         ):
             return
@@ -327,6 +582,9 @@ class AppState:
 
         try:
             chapter_index = int(self.chapter_dropdown.value)
+
+            if not 0 <= chapter_index < len(self.chapters):
+                return
 
             chapter = self.chapters[chapter_index]
 
@@ -381,8 +639,8 @@ class AppState:
             e: Evento generato dall'interazione con il controllo UI.
 
         Raises:
-            FileSelectionError: Se si verifica un errore durante la selezione
-                del file.
+            FileSelectionError: Se si verifica un errore durante la
+                selezione del file.
         """
 
         try:
@@ -395,10 +653,26 @@ class AppState:
             if not files:
                 return
 
-            self.pdf_path = files[0].path
+            pdf_path = files[0].path
 
-            if self.pdf_path is None:
+            if pdf_path is None:
                 return
+
+            # Ferma e libera il vecchio player.
+            if self.audio_player is not None:
+                self.audio_player.cleanup()
+                self.audio_player = None
+
+            # Reset della schermata playback.
+            if self.playback_content is not None:
+                self.playback_content.visible = False
+
+            self.main_content.visible = True
+
+            self.bottom_bar.content = self.ui_size_row
+
+            # Invalida eventuali operazioni audio precedenti.
+            self.text_generation_id += 1
 
             for control in [
                 self.selected_file_text,
@@ -411,6 +685,8 @@ class AppState:
             ]:
                 self.remove_control(control)
 
+            self.pdf_path = pdf_path
+
             self.selected_file_text = None
             self.processing_text = None
             self.chapters_view = None
@@ -418,7 +694,10 @@ class AppState:
             self.generate_button = None
             self.audio_processing_text = None
             self.audio_ready_button = None
+            self.chapter_dropdown = None
             self.chapters = None
+
+            self.playback_button = None
 
             if self.start_button is None:
                 self.start_button = create_button(

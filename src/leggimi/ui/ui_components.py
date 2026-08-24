@@ -863,3 +863,142 @@ def create_back_button(on_click) -> ft.IconButton:
         ),
         on_click=on_click,
     )
+
+
+def create_playback_button(
+    on_click: ft.ControlEventHandler,
+) -> ft.IconButton:
+    """
+    Crea il pulsante Play/Pause della schermata di riproduzione.
+    """
+
+    return ft.IconButton(
+        icon=ft.Icons.PLAY_ARROW,
+        on_click=on_click,
+        tooltip=ft.Tooltip(
+            message="Riproduci audio",
+            text_style=ft.TextStyle(
+                size=current_ui_size * 0.7,
+                color=theme_config.primary_text_color,
+            ),
+            bgcolor=theme_config.tooltip_bgcolor,
+        ),
+        icon_color=theme_config.primary_text_color,
+        icon_size=current_ui_size * 1.3,
+        style=ft.ButtonStyle(
+            bgcolor=theme_config.tooltip_bgcolor,
+            side=ft.BorderSide(
+                width=1,
+                color=theme_config.primary_text_color,
+            ),
+        ),
+    )
+
+
+def create_previous_line_button(
+    on_click: ft.ControlEventHandler,
+) -> ft.IconButton:
+    """
+    Crea il pulsante per tornare alla linea SRT precedente.
+    """
+
+    return ft.IconButton(
+        icon=ft.Icons.SKIP_PREVIOUS,
+        on_click=on_click,
+        tooltip=ft.Tooltip(
+            message="Linea precedente",
+            text_style=ft.TextStyle(
+                size=current_ui_size * 0.7,
+                color=theme_config.primary_text_color,
+            ),
+            bgcolor=theme_config.tooltip_bgcolor,
+        ),
+        icon_color=theme_config.primary_text_color,
+        icon_size=current_ui_size * 1.3,
+        style=ft.ButtonStyle(
+            bgcolor=theme_config.tooltip_bgcolor,
+            side=ft.BorderSide(
+                width=1,
+                color=theme_config.primary_text_color,
+            ),
+        ),
+    )
+
+
+def create_next_line_button(
+    on_click: ft.ControlEventHandler,
+) -> ft.IconButton:
+    """
+    Crea il pulsante per passare alla linea SRT successiva.
+    """
+
+    return ft.IconButton(
+        icon=ft.Icons.SKIP_NEXT,
+        on_click=on_click,
+        tooltip=ft.Tooltip(
+            message="Linea successiva",
+            text_style=ft.TextStyle(
+                size=current_ui_size * 0.7,
+                color=theme_config.primary_text_color,
+            ),
+            bgcolor=theme_config.tooltip_bgcolor,
+        ),
+        icon_color=theme_config.primary_text_color,
+        icon_size=current_ui_size * 1.3,
+        style=ft.ButtonStyle(
+            bgcolor=theme_config.tooltip_bgcolor,
+            side=ft.BorderSide(
+                width=1,
+                color=theme_config.primary_text_color,
+            ),
+        ),
+    )
+
+
+def create_restart_button(
+    on_click: ft.ControlEventHandler,
+) -> ft.IconButton:
+    """
+    Crea il pulsante per riavviare l'audio dall'inizio.
+    """
+
+    return ft.IconButton(
+        icon=ft.Icons.REPLAY,
+        on_click=on_click,
+        tooltip=ft.Tooltip(
+            message="Riavvia audio",
+            text_style=ft.TextStyle(
+                size=current_ui_size * 0.7,
+                color=theme_config.primary_text_color,
+            ),
+            bgcolor=theme_config.tooltip_bgcolor,
+        ),
+        icon_color=theme_config.primary_text_color,
+        icon_size=current_ui_size * 1.3,
+        style=ft.ButtonStyle(
+            bgcolor=theme_config.tooltip_bgcolor,
+            side=ft.BorderSide(
+                width=1,
+                color=theme_config.primary_text_color,
+            ),
+        ),
+    )
+
+
+def update_playback_button_tooltip(
+    button: ft.IconButton,
+    message: str,
+) -> None:
+    """
+    Aggiorna il messaggio del tooltip del pulsante playback
+    mantenendo lo stile corrente del tema.
+    """
+
+    button.tooltip = ft.Tooltip(
+        message=message,
+        text_style=ft.TextStyle(
+            size=current_ui_size * 0.7,
+            color=theme_config.primary_text_color,
+        ),
+        bgcolor=theme_config.tooltip_bgcolor,
+    )
