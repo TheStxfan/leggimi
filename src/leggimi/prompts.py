@@ -17,6 +17,36 @@ STRUTTURA E MARKDOWN:
 - Non usare il grassetto "**" per le intestazioni: usa solo i simboli "#".
 - Mantieni i paragrafi ben separati con una riga vuota.
 
+CAPITALIZZAZIONE DEI TITOLI:
+- I titoli devono avere una capitalizzazione naturale, corretta e coerente
+  con la lingua del documento.
+- NON trasformare automaticamente i titoli interamente in MAIUSCOLO.
+- NON trasformare automaticamente i titoli interamente in minuscolo.
+- NON applicare automaticamente il Title Case, cioè la maiuscola a ogni
+  parola.
+- Determina la capitalizzazione appropriata in base alle convenzioni
+  ortografiche ed editoriali della lingua utilizzata nel documento.
+- Mantieni la maiuscola quando è richiesta dalla lingua o dal significato
+  del termine, ad esempio per nomi propri, acronimi, sigle, denominazioni
+  ufficiali e altri termini che richiedono legittimamente una maiuscola.
+- Mantieni in minuscolo le parole che, secondo le normali convenzioni della
+  lingua, non richiedono la maiuscola.
+- Se il titolo originale è interamente in MAIUSCOLO o interamente in
+  minuscolo per motivi puramente tipografici o grafici, normalizzalo in una
+  forma linguisticamente naturale e leggibile.
+- Se la capitalizzazione originale appare intenzionale e linguisticamente
+  corretta, preservala.
+- Non modificare arbitrariamente la capitalizzazione di acronimi, nomi
+  propri, abbreviazioni o denominazioni ufficiali.
+- La capitalizzazione finale deve sembrare quella di un titolo autenticamente
+  scritto e impaginato da un autore o da un editore nella lingua del documento.
+- NON usare una regola fissa di capitalizzazione valida per tutte le lingue.
+  Applica le convenzioni appropriate alla lingua effettivamente utilizzata
+  nel documento.
+- Quando la lingua o la convenzione di capitalizzazione non è chiaramente
+  determinabile, privilegia una forma naturale e coerente con il resto del
+  documento, evitando trasformazioni arbitrarie.
+
 RUMORE DA ESCLUDERE (IMPORTANTE):
 - IGNORA ed ELIMINA completamente i numeri di pagina.
 - IGNORA ed ELIMINA le intestazioni di pagina ripetitive (header).
