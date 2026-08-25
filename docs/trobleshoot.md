@@ -1,4 +1,4 @@
-# Risoluzione problemi di environment di sviluppo
+# Risoluzione problemi del dev environment
 
 ## Errore: "OPENROUTER_API_KEY not found"
 

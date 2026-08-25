@@ -1,4 +1,6 @@
-# Installazione
+# Getting Started
+
+## Installazione
 
 ```bash
 git clone https://github.com/leggimi/leggimi.git
@@ -18,13 +20,13 @@ IMAGE_MODEL=openai/gpt-4o-mini
 TEXT_MODEL=openrouter/quasar-alpha
 ```
 
-# Esecuzione
+## Esecuzione
 
 ```bash
 python -m leggimi.ui.app
 ```
 
-# Compilazione
+## Compilazione
 
 Crea un eseguibile standalone con PyInstaller:
 
