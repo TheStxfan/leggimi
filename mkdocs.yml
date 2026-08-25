@@ -1,7 +1,7 @@
 site_name: LeggiMi
 site_description: Trasforma PDF in audiolibri con intelligenza artificiale
 site_author: TheStxfan
-site_url: https://TheStxfan.github.io/leggimi/
+site_url: https://thestxfan.github.io/leggimi/
 repo_url: https://github.com/TheStxfan/leggimi.git
 
 theme:

@@ -50,4 +50,4 @@ Contributi, segnalazioni di bug e richieste di funzionalità sono benvenute!
 
 ## Licenza
 
-MIT License
+[MIT License](LICENSE)
