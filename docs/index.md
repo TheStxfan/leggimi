@@ -32,3 +32,7 @@ LeggiMi è uno strumento che legge un PDF, lo suddivide in capitoli, genera una 
 - [Ottenere una API Key](api.md) - Creazione account OpenRouter
 - [Struttura dei file del progetto](structure.md) - Organizzazione del codice
 - [Risoluzione problemi](trobleshoot.md) - Soluzioni ai problemi più comuni
+
+## Interfaccia
+
+[UI Screenshots](docs/images.md)
