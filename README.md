@@ -28,13 +28,13 @@ LeggiMi è uno strumento che trasforma PDF in audiolibri. Legge il documento, lo
 ## Documentazione
 
 - [Getting Started](docs/getting-started.md) - Primi passi
-- [Guida all'installazione](setup.md) - Configurazione dell'ambiente
-- [Come eseguire](run.md) - Avvio dell'applicazione
-- [Architettura interna](internals.md) - Come funziona il programma
-- [Compilazione con PyInstaller](build.md) - Creazione di un eseguibile
-- [Ottenere una API Key](api.md) - Creazione account OpenRouter
-- [Struttura dei file del progetto](structure.md) - Organizzazione del codice
-- [Risoluzione problemi](trobleshoot.md) - Soluzioni ai problemi più comuni
+- [Guida all'installazione](docs/setup.md) - Configurazione dell'ambiente
+- [Come eseguire](docs/run.md) - Avvio dell'applicazione
+- [Architettura interna](docs/internals.md) - Come funziona il programma
+- [Compilazione con PyInstaller](docs/build.md) - Creazione di un eseguibile
+- [Ottenere una API Key](docs/api.md) - Creazione account OpenRouter
+- [Struttura dei file del progetto](docs/structure.md) - Organizzazione del codice
+- [Risoluzione problemi](docs/trobleshoot.md) - Soluzioni ai problemi più comuni
 
 ## Requisiti
 
