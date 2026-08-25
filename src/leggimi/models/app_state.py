@@ -24,6 +24,9 @@ from leggimi.ui.ui_components import (
     create_text,
     update_playback_button_tooltip,
 )
+from leggimi.ui.playback_lines import PlaybackLines
+from leggimi.ui.ui_config import UI_SIZE
+from leggimi.ui.ui_theme import theme_config
 
 
 @dataclass
@@ -45,6 +48,7 @@ class AppState:
     chapter_dropdown: ft.Dropdown | None = None
 
     playback_content: ft.Container | None = None
+    playback_lines: PlaybackLines | None = None
     audio_player: AudioPlayer | None = None
     playback_button: ft.IconButton | None = None
     previous_line_button: ft.IconButton | None = None
@@ -65,6 +69,8 @@ class AppState:
     audio_ready_button: ft.Button | None = None
 
     text_generation_id: int = 0
+    position_update_task: asyncio.Task | None = None
+    playback_time: float = 0.0
 
     def _get_audio_paths(self) -> tuple[Path, Path] | None:
         """
@@ -115,6 +121,49 @@ class AppState:
             output_dir / f"{output_name}.srt",
         )
 
+    def _stop_position_updates(self) -> None:
+        """
+        Ferma il task di aggiornamento della posizione audio.
+        """
+        if self.position_update_task and not self.position_update_task.done():
+            self.position_update_task.cancel()
+            self.position_update_task = None
+
+    def _start_position_updates(self) -> None:
+        """
+        Avvia il task di aggiornamento della posizione audio.
+        """
+        self._stop_position_updates()
+        self.position_update_task = asyncio.create_task(
+            self._update_playback_position()
+        )
+
+    async def _update_playback_position(self) -> None:
+        """
+        Aggiorna periodicamente la linea corrente durante la riproduzione.
+        """
+        last_time = asyncio.get_event_loop().time()
+
+        while self.audio_player and self.audio_player.playing:
+            await asyncio.sleep(0.1)
+
+            now = asyncio.get_event_loop().time()
+            delta = now - last_time
+            last_time = now
+
+            self.playback_time += delta
+
+            if self.playback_lines:
+                current_line = self.playback_lines.get_line_at_timestamp(
+                    self.playback_time
+                )
+
+                if current_line != self.playback_lines.current_line:
+                    self.playback_lines.update_current_line(current_line)
+                    await self.playback_lines.scroll_to_line(current_line)
+                    self.audio_player.current_line = current_line
+                    self.page.update()
+
     def show_playback_view(self, e) -> None:
         """
         Mostra la schermata di riproduzione audio.
@@ -150,6 +199,18 @@ class AppState:
                         self.playback_button,
                         "Riproduci audio",
                     )
+
+                if (
+                    self.playback_lines is None
+                    or self.playback_lines.srt_path != output_srt
+                ):
+                    self.playback_lines = PlaybackLines(
+                        srt_path=output_srt,
+                        ui_size=UI_SIZE,
+                        text_color=theme_config.primary_text_color,
+                        background_color=theme_config.tooltip_bgcolor,
+                    )
+                    self.playback_time = 0.0
 
         except Exception:
             self.page.run_task(
@@ -197,21 +258,23 @@ class AppState:
 
             self.playback_content = ft.Container(
                 expand=True,
+                padding=ft.Padding.only(
+                    top=UI_SIZE * 0.4,
+                    bottom=80,
+                ),
+                clip_behavior=ft.ClipBehavior.HARD_EDGE,
                 content=ft.Stack(
                     expand=True,
                     controls=[
+                        (
+                            self.playback_lines.container
+                            if self.playback_lines
+                            else ft.Container()
+                        ),
                         ft.Container(
                             content=back_button,
                             left=10,
                             top=10,
-                        ),
-                        ft.Column(
-                            expand=True,
-                            alignment=ft.MainAxisAlignment.CENTER,
-                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                            controls=[
-                                create_text("Playback audio"),
-                            ],
                         ),
                     ],
                 ),
@@ -243,6 +306,7 @@ class AppState:
         try:
             if self.audio_player.playing:
                 self.audio_player.stop()
+                self._stop_position_updates()
 
                 if self.playback_button is not None:
                     self.playback_button.icon = ft.Icons.PLAY_ARROW
@@ -253,6 +317,7 @@ class AppState:
 
             else:
                 self.audio_player.play()
+                self._start_position_updates()
 
                 if self.playback_button is not None:
                     self.playback_button.icon = ft.Icons.PAUSE
@@ -269,7 +334,7 @@ class AppState:
                 exc,
             )
 
-    def restart_audio(self, e) -> None:
+    async def restart_audio(self, e) -> None:
         """
         Riavvia l'audio dall'inizio.
         """
@@ -282,21 +347,28 @@ class AppState:
             return
 
         try:
+            was_playing = self.audio_player.playing
             self.audio_player.restart()
+
+            self.playback_time = 0.0
+
+            if self.playback_lines is not None:
+                self.playback_lines.update_current_line(0)
+                await self.playback_lines.scroll_to_line(0)
+                self.audio_player.current_line = 0
 
             if self.playback_button is not None:
                 self.playback_button.icon = (
-                    ft.Icons.PAUSE if self.audio_player.playing else ft.Icons.PLAY_ARROW
+                    ft.Icons.PAUSE if was_playing else ft.Icons.PLAY_ARROW
                 )
 
                 update_playback_button_tooltip(
                     self.playback_button,
-                    (
-                        "Metti in pausa"
-                        if self.audio_player.playing
-                        else "Riproduci audio"
-                    ),
+                    ("Metti in pausa" if was_playing else "Riproduci audio"),
                 )
+
+            if was_playing:
+                self._start_position_updates()
 
             self.page.update()
 
@@ -306,7 +378,7 @@ class AppState:
                 LeggiMiError("Errore durante il riavvio dell'audio."),
             )
 
-    def previous_audio_line(self, e) -> None:
+    async def previous_audio_line(self, e) -> None:
         """
         Torna alla linea SRT precedente.
         """
@@ -320,6 +392,14 @@ class AppState:
 
         try:
             self.audio_player.previous_line()
+            line_idx = self.audio_player.current_line
+
+            if self.playback_lines is not None:
+                if line_idx < len(self.playback_lines.timestamps):
+                    self.playback_time = self.playback_lines.timestamps[line_idx]
+                self.playback_lines.update_current_line(line_idx)
+                await self.playback_lines.scroll_to_line(line_idx)
+
             self.page.update()
 
         except Exception:
@@ -330,7 +410,7 @@ class AppState:
                 ),
             )
 
-    def next_audio_line(self, e) -> None:
+    async def next_audio_line(self, e) -> None:
         """
         Passa alla linea SRT successiva.
         """
@@ -344,6 +424,14 @@ class AppState:
 
         try:
             self.audio_player.next_line()
+            line_idx = self.audio_player.current_line
+
+            if self.playback_lines is not None:
+                if line_idx < len(self.playback_lines.timestamps):
+                    self.playback_time = self.playback_lines.timestamps[line_idx]
+                self.playback_lines.update_current_line(line_idx)
+                await self.playback_lines.scroll_to_line(line_idx)
+
             self.page.update()
 
         except Exception:
@@ -364,6 +452,7 @@ class AppState:
 
         if self.audio_player is not None:
             self.audio_player.stop()
+            self._stop_position_updates()
 
         if self.playback_button is not None:
             self.playback_button.icon = ft.Icons.PLAY_ARROW
@@ -663,6 +752,9 @@ class AppState:
                 self.audio_player.cleanup()
                 self.audio_player = None
 
+            self._stop_position_updates()
+            self.playback_time = 0.0
+
             # Reset della schermata playback.
             if self.playback_content is not None:
                 self.playback_content.visible = False
@@ -696,6 +788,7 @@ class AppState:
             self.audio_ready_button = None
             self.chapter_dropdown = None
             self.chapters = None
+            self.playback_lines = None
 
             self.playback_button = None
 
