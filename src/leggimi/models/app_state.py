@@ -48,6 +48,7 @@ class AppState:
     chapter_dropdown: ft.Dropdown | None = None
 
     playback_content: ft.Container | None = None
+    back_button_container: ft.Container | None = None
     playback_lines: PlaybackLines | None = None
     audio_player: AudioPlayer | None = None
     playback_button: ft.IconButton | None = None
@@ -252,41 +253,46 @@ class AppState:
         )
 
         if self.playback_content is None:
+            self.playback_content = ft.Container(
+                expand=True,
+                padding=ft.Padding.only(
+                    left=30,
+                    right=30,
+                    top=UI_SIZE * 0.5,
+                    bottom=80,
+                ),
+                clip_behavior=ft.ClipBehavior.HARD_EDGE,
+                content=(
+                    self.playback_lines.container
+                    if self.playback_lines
+                    else ft.Container()
+                ),
+            )
+
+        if self.back_button_container is None:
             back_button = create_back_button(
                 self.show_main_view,
             )
 
-            self.playback_content = ft.Container(
-                expand=True,
-                padding=ft.Padding.only(
-                    top=UI_SIZE * 0.4,
-                    bottom=80,
-                ),
-                clip_behavior=ft.ClipBehavior.HARD_EDGE,
-                content=ft.Stack(
-                    expand=True,
-                    controls=[
-                        (
-                            self.playback_lines.container
-                            if self.playback_lines
-                            else ft.Container()
-                        ),
-                        ft.Container(
-                            content=back_button,
-                            left=10,
-                            top=10,
-                        ),
-                    ],
-                ),
+            self.back_button_container = ft.Container(
+                content=back_button,
+                left=10,
+                top=10,
             )
 
         self.main_content.visible = False
         self.playback_content.visible = True
+        self.back_button_container.visible = True
 
         if self.playback_content not in self.app_stack.controls:
             self.app_stack.controls.insert(
                 0,
                 self.playback_content,
+            )
+
+        if self.back_button_container not in self.app_stack.controls:
+            self.app_stack.controls.append(
+                self.back_button_container,
             )
 
         self.page.update()
@@ -461,6 +467,9 @@ class AppState:
 
         if self.playback_content is not None:
             self.playback_content.visible = False
+
+        if self.back_button_container is not None:
+            self.back_button_container.visible = False
 
         self.bottom_bar.content = self.ui_size_row
 
@@ -758,6 +767,9 @@ class AppState:
             # Reset della schermata playback.
             if self.playback_content is not None:
                 self.playback_content.visible = False
+
+            if self.back_button_container is not None:
+                self.back_button_container.visible = False
 
             self.main_content.visible = True
 

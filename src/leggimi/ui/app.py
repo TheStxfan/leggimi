@@ -108,10 +108,6 @@ async def main(page: ft.Page):
     )
 
     page.add(app_stack)
-    page.run_task(
-        app_state._show_error,
-        LeggiMiError("Errore di test"),
-    )
 
     async def on_window_event(e: ft.WindowEvent) -> None:
         if e.type == ft.WindowEventType.CLOSE:
