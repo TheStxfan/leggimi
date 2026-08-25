@@ -2,6 +2,8 @@
 
 Trasforma documenti PDF in audiolibri intelligenti con intelligenza artificiale.
 
+**[Documentazione online](https://thestxfan.github.io/leggimi/)**
+
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![Flet](https://img.shields.io/badge/Flet-0.21+-green.svg)](https://flet.dev/)
 [![OpenRouter](https://img.shields.io/badge/OpenRouter-API-orange.svg)](https://openrouter.ai/)
