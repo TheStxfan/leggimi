@@ -17,15 +17,6 @@ theme:
     - scheme: slate
       primary: amber
       accent: amber
-      toggle:
-        icon: material/brightness-4
-        name: Passa alla modalità chiara
-    - scheme: default
-      primary: amber
-      accent: amber
-      toggle:
-        icon: material/brightness-7
-        name: Passa alla modalità scura
 
 markdown_extensions:
   - pymdownx.highlight:
