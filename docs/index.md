@@ -33,6 +33,6 @@ LeggiMi è uno strumento che legge un PDF, lo suddivide in capitoli, genera una 
 - [Struttura dei file del progetto](structure.md) - Organizzazione del codice
 - [Risoluzione problemi](trobleshoot.md) - Soluzioni ai problemi più comuni
 
-## Interfaccia
+## Screenshots
 
-[UI Screenshots](docs/images.md)
+[Interfaccia utente](images.md)
