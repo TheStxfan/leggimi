@@ -37,8 +37,12 @@ markdown_extensions:
   - pymdownx.details
   - tables
 
+extra_css:
+  - stylesheets/extra.css
+
 nav:
   - Home: index.md
+  - Getting started: getting-started.md
   - Guida all'installazione: setup.md
   - Come eseguire: run.md
   - Architettura interna: internals.md

@@ -15,7 +15,7 @@ python -m venv .venv
 
 ### Windows
 
-```bash
+```powershell
 .venv\Scripts\activate
 ```
 
