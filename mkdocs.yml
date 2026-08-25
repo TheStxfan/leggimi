@@ -1,0 +1,48 @@
+site_name: LeggiMi
+site_description: Trasforma PDF in audiolibri con intelligenza artificiale
+site_author: TheStxfan
+site_url: https://TheStxfan.github.io/leggimi/
+repo_url: https://github.com/TheStxfan/leggimi.git
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - scheme: slate
+      primary: amber
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Passa alla modalità chiara
+    - scheme: default
+      primary: amber
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Passa alla modalità scura
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - tables
+
+nav:
+  - Home: index.md
+  - Guida all'installazione: setup.md
+  - Come eseguire: run.md
+  - Architettura interna: internals.md
+  - Compilazione con PyInstaller: build.md
+  - Ottenere una API Key: api.md
+  - Struttura dei file del progetto: structure.md
+  - Risoluzione problemi: trobleshoot.md
