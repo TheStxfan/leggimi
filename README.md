@@ -25,24 +25,24 @@ LeggiMi è uno strumento che trasforma PDF in audiolibri. Legge il documento, lo
 
 ## Getting Started
 
-- [Installazione, esecuzione e compilazione](docs/getting-started.md)
+- [Installazione, esecuzione e compilazione](https://thestxfan.github.io/leggimi/getting-started)
 
 ## Documentazione
 
-- [Getting Started](docs/getting-started.md) - Primi passi
-- [Guida all'installazione](docs/setup.md) - Configurazione dell'ambiente
-- [Come eseguire](docs/run.md) - Avvio dell'applicazione
-- [Architettura interna](docs/internals.md) - Come funziona il programma
-- [Compilazione con PyInstaller](docs/build.md) - Creazione di un eseguibile
-- [Ottenere una API Key](docs/api.md) - Creazione account OpenRouter
-- [Struttura dei file del progetto](docs/structure.md) - Organizzazione del codice
-- [Risoluzione problemi](docs/trobleshoot.md) - Soluzioni ai problemi più comuni
+- [Getting Started](https://thestxfan.github.io/leggimi/getting-started) - Primi passi
+- [Guida all'installazione](https://thestxfan.github.io/leggimi/setup) - Configurazione dell'ambiente
+- [Come eseguire](https://thestxfan.github.io/leggimi/run) - Avvio dell'applicazione
+- [Architettura interna](https://thestxfan.github.io/leggimi/internals) - Come funziona il programma
+- [Compilazione con PyInstaller](https://thestxfan.github.io/leggimi/build) - Creazione di un eseguibile
+- [Ottenere una API Key](https://thestxfan.github.io/leggimi/api) - Creazione account OpenRouter
+- [Struttura dei file del progetto](https://thestxfan.github.io/leggimi/structure) - Organizzazione del codice
+- [Risoluzione problemi](https://thestxfan.github.io/leggimi/trobleshoot) - Soluzioni ai problemi più comuni
 
 ## Requisiti
 
 - [Python 3.10+](https://www.python.org/downloads/)
 
-- [Chiave API OpenRouter](docs/api.md)
+- [Chiave API OpenRouter](https://thestxfan.github.io/leggimi/api)
 
 - Connessione Internet
 
