@@ -1,4 +1,4 @@
-# Anteprima App
+# Interfaccia
 
 ## Menu principale
 
