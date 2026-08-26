@@ -1,5 +1,7 @@
 # Guida all'installazione
 
+> **Nota**: Questa applicazione è sviluppata e testata **esclusivamente su Linux**. Le istruzioni per Windows e macOS sono fornite a titolo indicativo e potrebbero non funzionare correttamente senza adattamenti.
+
 ## 1. Clonare il repository
 
 ```bash
@@ -33,13 +35,15 @@ pip install -r requirements.txt
 
 ## 4. Configurare le variabili d'ambiente
 
-Copia il file .env.example e rinominalo in .env:
+Copia il file `.env.example` e rinominalo in `.env`:
 
 ```bash
 cp .env.example .env
 ```
 
-Apri il file .env e inserisci le tue credenziali:
+> Nota: In modalità sviluppo, il .env deve stare nella root del progetto (dove c'è main.py). Nella versione compilata, deve stare nella stessa cartella dell'eseguibile.
+
+Apri il file `.env` e inserisci le tue credenziali:
 
 ```env
 # Chiave API per OpenRouter (obbligatoria)

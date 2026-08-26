@@ -55,3 +55,11 @@ cache/
 └── chapters/
     └── <hash>.json
 ```
+
+## Percorsi in modalità compilata
+
+Quando l'applicazione viene compilata con PyInstaller:
+
+- `output/`, `cache/` e `temp/` vengono creati **nella stessa cartella dell'eseguibile**
+- Il file `.env` deve essere **nella stessa cartella dell'eseguibile**
+- L'app è completamente portatile: puoi spostare l'eseguibile in qualsiasi cartella e funzionerà

@@ -23,6 +23,8 @@ LeggiMi è uno strumento che legge un PDF, lo suddivide in capitoli, genera una 
 - Chiave API OpenRouter (per l'estrazione del testo e la generazione degli script)
 - Connessione Internet (per le API)
 
+> **Piattaforme supportate**: L'applicazione è attualmente testata e sviluppata **solo su Linux**. Il supporto per Windows e macOS non è garantito e potrebbe richiedere modifiche al codice o alla procedura di compilazione.
+
 ## Documentazione
 
 - [Guida all'installazione](setup.md) - Configurazione dell'ambiente

@@ -5,6 +5,9 @@ Trasforma documenti PDF in audiolibri intelligenti con intelligenza artificiale.
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![Flet](https://img.shields.io/badge/Flet-0.21+-green.svg)](https://flet.dev/)
 [![OpenRouter](https://img.shields.io/badge/OpenRouter-API-orange.svg)](https://openrouter.ai/)
+[![Platform](https://img.shields.io/badge/Platform-Linux-lightgrey.svg)](https://www.linux.org/)
+
+> **⚠️ Piattaforma supportata**: L'applicazione è attualmente sviluppata e testata **esclusivamente su Linux**. Il supporto per Windows e macOS non è garantito e potrebbe richiedere modifiche al codice o alla procedura di compilazione.
 
 ## Descrizione
 
@@ -20,6 +23,7 @@ LeggiMi è uno strumento che trasforma PDF in audiolibri. Legge il documento, lo
 - ✅ **Sottotitoli SRT** sincronizzati
 - ✅ **Interfaccia grafica** intuitiva
 - ✅ **Navigazione** nei sottotitoli durante la riproduzione
+- ✅ **Eseguibile** leggero portatile
 
 ## Documentazione
 
@@ -35,10 +39,9 @@ LeggiMi è uno strumento che trasforma PDF in audiolibri. Legge il documento, lo
 ## Requisiti
 
 - [Python 3.10+](https://www.python.org/downloads/)
-
 - [Chiave API OpenRouter](https://thestxfan.github.io/leggimi/api)
-
 - Connessione Internet
+- **Piattaforma**: attualmente supportata solo Linux
 
 ## Screenshots
 

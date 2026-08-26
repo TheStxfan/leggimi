@@ -15,24 +15,24 @@ Configurazione
 Modifica il file .env con le tue credenziali:
 
 ```env
-OPENROUTER_API_KEY=la_tua_chiave
-IMAGE_MODEL=openai/gpt-4o-mini
-TEXT_MODEL=openrouter/quasar-alpha
+OPENROUTER_API_KEY=sk-or-v1-...
+IMAGE_MODEL=google/...
+TEXT_MODEL=nvidia/...
 ```
 
 ## Esecuzione
 
 ```bash
-python -m leggimi.ui.app
+python main.py
 ```
 
 ## Compilazione
 
-Crea un eseguibile standalone con PyInstaller:
+Crea un eseguibile standalone con PyInstaller usando lo spec file:
 
 ```bash
 pip install pyinstaller
-pyinstaller --onefile --add-data "leggimi:leggimi" --add-data ".env:." --hidden-import "flet" --hidden-import "miniaudio" --hidden-import "edge_tts" leggimi/ui/app.py
+pyinstaller leggimi.spec --clean
 ```
 
-L'eseguibile sarà in `dist/`.
+L'eseguibile sarà in `dist/`. Per eseguirlo, assicurati che il file `.env` sia nella stessa cartella di LeggiMi.
