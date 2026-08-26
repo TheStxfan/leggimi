@@ -6,9 +6,16 @@ Assicurati che l'ambiente virtuale sia attivo e che il file `.env` sia configura
 
 ### 1. Attivare l'ambiente virtuale
 
+#### Linux/macOS
+
 ```bash
-source .venv/bin/activate  # Linux/macOS
-.venv\Scripts\activate     # Windows
+source .venv/bin/activate
+```
+
+#### Windows
+
+```powershell
+.venv\Scripts\activate
 ```
 
 ### 2. Eseguire l'applicazione

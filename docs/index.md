@@ -27,13 +27,22 @@ LeggiMi è uno strumento che legge un PDF, lo suddivide in capitoli, genera una 
 
 ## Documentazione
 
-- [Guida all'installazione](setup.md) - Configurazione dell'ambiente
-- [Come eseguire](run.md) - Avvio dell'applicazione
-- [Architettura interna](internals.md) - Come funziona il programma
-- [Compilazione con PyInstaller](build.md) - Creazione di un eseguibile
-- [Ottenere una API Key](api.md) - Creazione account OpenRouter
-- [Struttura dei file del progetto](structure.md) - Organizzazione del codice
-- [Risoluzione problemi](trobleshoot.md) - Soluzioni ai problemi più comuni
+### Per iniziare
+
+- [Getting Started](https://thestxfan.github.io/leggimi/getting-started) - Primi passi
+- [Guida all'installazione](https://thestxfan.github.io/leggimi/setup) - Configurazione dell'ambiente
+- [Come eseguire](https://thestxfan.github.io/leggimi/run) - Avvio dell'applicazione
+- [Ottenere una API Key](https://thestxfan.github.io/leggimi/api) - Creazione account OpenRouter
+
+### Sviluppo
+
+- [Architettura interna](https://thestxfan.github.io/leggimi/internals) - Come funziona il programma
+- [Struttura dei file del progetto](https://thestxfan.github.io/leggimi/structure) - Organizzazione del codice
+- [Compilazione con PyInstaller](https://thestxfan.github.io/leggimi/build) - Creazione di un eseguibile
+
+### Supporto
+
+- [Risoluzione problemi](https://thestxfan.github.io/leggimi/trobleshoot) - Soluzioni ai problemi più comuni
 
 ## Screenshots
 

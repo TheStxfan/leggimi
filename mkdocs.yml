@@ -33,12 +33,18 @@ extra_css:
 
 nav:
   - Home: index.md
-  - Getting started: getting-started.md
-  - Guida all'installazione: setup.md
-  - Come eseguire: run.md
-  - Architettura interna: internals.md
-  - Compilazione con PyInstaller: build.md
-  - Ottenere una API Key: api.md
-  - Struttura dei file del progetto: structure.md
-  - Risoluzione problemi: trobleshoot.md
-  - Interfaccia utente: images.md
+
+  - Per iniziare:
+      - Getting Started: getting-started.md
+      - Guida all'installazione: setup.md
+      - Come eseguire: run.md
+      - Ottenere una API Key: api.md
+
+  - Guida allo sviluppo:
+      - Architettura interna: internals.md
+      - Struttura dei file del progetto: structure.md
+      - Compilazione con PyInstaller: build.md
+
+  - Supporto:
+      - Risoluzione problemi: trobleshoot.md
+      - Interfaccia utente: images.md

@@ -7,7 +7,7 @@ Trasforma documenti PDF in audiolibri intelligenti con intelligenza artificiale.
 [![OpenRouter](https://img.shields.io/badge/OpenRouter-API-orange.svg)](https://openrouter.ai/)
 [![Platform](https://img.shields.io/badge/Platform-Linux-lightgrey.svg)](https://www.linux.org/)
 
-> **⚠️ Piattaforma supportata**: L'applicazione è attualmente sviluppata e testata **esclusivamente su Linux**. Il supporto per Windows e macOS non è garantito e potrebbe richiedere modifiche al codice o alla procedura di compilazione.
+> **Piattaforma supportata**: L'applicazione è attualmente sviluppata e testata **esclusivamente su Linux**. Il supporto per Windows e macOS non è garantito e potrebbe richiedere modifiche al codice o alla procedura di compilazione.
 
 ## Descrizione
 
@@ -27,13 +27,21 @@ LeggiMi è uno strumento che trasforma PDF in audiolibri. Legge il documento, lo
 
 ## Documentazione
 
+### Per iniziare
+
 - [Getting Started](https://thestxfan.github.io/leggimi/getting-started) - Primi passi
 - [Guida all'installazione](https://thestxfan.github.io/leggimi/setup) - Configurazione dell'ambiente
 - [Come eseguire](https://thestxfan.github.io/leggimi/run) - Avvio dell'applicazione
-- [Architettura interna](https://thestxfan.github.io/leggimi/internals) - Come funziona il programma
-- [Compilazione con PyInstaller](https://thestxfan.github.io/leggimi/build) - Creazione di un eseguibile
 - [Ottenere una API Key](https://thestxfan.github.io/leggimi/api) - Creazione account OpenRouter
+
+### Sviluppo
+
+- [Architettura interna](https://thestxfan.github.io/leggimi/internals) - Come funziona il programma
 - [Struttura dei file del progetto](https://thestxfan.github.io/leggimi/structure) - Organizzazione del codice
+- [Compilazione con PyInstaller](https://thestxfan.github.io/leggimi/build) - Creazione di un eseguibile
+
+### Supporto
+
 - [Risoluzione problemi](https://thestxfan.github.io/leggimi/trobleshoot) - Soluzioni ai problemi più comuni
 
 ## Requisiti
