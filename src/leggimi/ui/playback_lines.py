@@ -11,7 +11,14 @@ from leggimi.tts import _timestamp_to_seconds
 @dataclass
 class PlaybackLines:
     """
-    Gestisce la visualizzazione delle righe SRT nella schermata di riproduzione.
+    Gestisce il caricamento, la visualizzazione e l'aggiornamento delle righe
+    SRT nella schermata di riproduzione.
+
+    Args:
+        srt_path: Percorso del file SRT da caricare.
+        ui_size: Dimensione del testo delle righe.
+        text_color: Colore del testo delle righe.
+        background_color: Colore di sfondo della riga selezionata.
     """
 
     srt_path: Path
@@ -33,8 +40,10 @@ class PlaybackLines:
 
     def __post_init__(self) -> None:
         """
-        Inizializza il container e carica il file SRT.
+        Inizializza i controlli dell'interfaccia e carica il contenuto
+        del file SRT.
         """
+
         self.column = ft.Column(
             expand=True,
             scroll=ft.ScrollMode.AUTO,
@@ -57,6 +66,7 @@ class PlaybackLines:
         """
         Carica il testo e i timestamp delle righe dal file SRT.
         """
+
         content = self.srt_path.read_text(encoding="utf-8")
         blocks = content.strip().split("\n\n")
 
@@ -76,8 +86,9 @@ class PlaybackLines:
 
     def _build_controls(self) -> None:
         """
-        Crea i controlli grafici delle righe SRT.
+        Crea i controlli grafici per le righe caricate dal file SRT.
         """
+
         self.column.controls.clear()
         self.text_controls.clear()
         self._last_scrolled_line = 0
@@ -108,8 +119,15 @@ class PlaybackLines:
 
     def get_line_at_timestamp(self, seconds: float) -> int:
         """
-        Restituisce l'indice della linea in base al timestamp corrente.
+        Restituisce l'indice della riga corrispondente a un timestamp.
+
+        Args:
+            seconds: Timestamp corrente, espresso in secondi.
+
+        Returns:
+            int: Indice della riga corrispondente al timestamp.
         """
+
         if not self.timestamps:
             return 0
 
@@ -118,13 +136,13 @@ class PlaybackLines:
 
     async def scroll_to_line(self, line_index: int, duration: int = 300) -> None:
         """
-        Scorre il contenitore per mostrare la linea specificata con animazione.
-        Prima e ultima riga usano un offset esatto (0 e -1, garantiti da Flet
-        stesso, non stimati). Le righe intermedie scorrono in modo relativo
-        (delta) rispetto all'ultima posizione nota: il limite reale dello
-        scroll è gestito direttamente da Flet/Flutter, non da una stima
-        nostra, quindi non può più bloccarsi prima di arrivare a destinazione.
+        Scorre la visualizzazione fino alla riga specificata.
+
+        Args:
+            line_index: Indice della riga da visualizzare.
+            duration: Durata dell'animazione di scorrimento, in millisecondi.
         """
+
         if not self.text_controls or line_index >= len(self.text_controls):
             return
 
@@ -157,8 +175,12 @@ class PlaybackLines:
 
     def update_current_line(self, line_index: int) -> None:
         """
-        Aggiorna la riga attualmente selezionata.
+        Aggiorna la riga attualmente selezionata nella visualizzazione.
+
+        Args:
+            line_index: Indice della riga da selezionare.
         """
+
         if not self.lines or line_index == self.current_line:
             return
 
@@ -178,7 +200,12 @@ class PlaybackLines:
     def update_theme(self, text_color: str, background_color: str) -> None:
         """
         Aggiorna i colori delle righe in base al tema corrente.
+
+        Args:
+            text_color: Nuovo colore del testo.
+            background_color: Nuovo colore di sfondo della riga selezionata.
         """
+
         self.text_color = text_color
         self.background_color = background_color
 
@@ -192,8 +219,12 @@ class PlaybackLines:
 
     def resize(self, ui_size: float) -> None:
         """
-        Aggiorna la dimensione del testo.
+        Aggiorna la dimensione del testo delle righe.
+
+        Args:
+            ui_size: Nuova dimensione del testo.
         """
+
         self.ui_size = ui_size
 
         for container in self.text_controls:
