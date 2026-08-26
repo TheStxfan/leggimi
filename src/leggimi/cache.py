@@ -1,11 +1,20 @@
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 from leggimi.errors import ChapterCacheError
 from leggimi.models.models import Chapter
 
-CACHE_DIR = Path("./cache/chapters")
+
+def _get_base_dir() -> Path:
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).parent
+    else:
+        return Path(__file__).parent.parent.parent
+
+
+CACHE_DIR = _get_base_dir() / "cache" / "chapters"
 
 
 def _get_cache_path(pdf_path: str) -> Path:

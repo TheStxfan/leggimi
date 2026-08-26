@@ -1,14 +1,25 @@
 from pathlib import Path
 import subprocess
 import shutil
+import sys
 
 import edge_tts
 
 from leggimi.errors import VoiceNotFoundError
 from leggimi.models.models import Script
 
-TEMP_DIR = Path("./temp")
-OUTPUT_DIR = Path("./output")
+
+def _get_base_dir() -> Path:
+    """Restituisce la directory base per output, temp e cache."""
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).parent
+    else:
+        # Sviluppo: risali fino alla root del progetto (dove c'è main.py)
+        return Path(__file__).parent.parent.parent
+
+
+TEMP_DIR = _get_base_dir() / "temp"
+OUTPUT_DIR = _get_base_dir() / "output"
 
 
 VOICES = {

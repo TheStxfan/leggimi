@@ -118,6 +118,9 @@ def get_text_from_image(
             consentite dal provider.
     """
 
+    if model is None:
+        model = get_model("IMAGE")
+
     key = get_openrouter_key()
     b64 = base64.b64encode(image_bytes).decode()
     data_url = f"data:image/png;base64,{b64}"
