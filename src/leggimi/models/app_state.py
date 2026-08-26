@@ -22,7 +22,11 @@ from leggimi.ui.ui_components import (
     create_previous_line_button,
     create_restart_button,
     create_text,
+    update_controls_theme,
+    update_error_popup_theme,
     update_playback_button_tooltip,
+    update_text_theme,
+    update_tooltips_theme,
 )
 from leggimi.ui.playback_lines import PlaybackLines
 from leggimi.ui.ui_config import UI_SIZE
@@ -793,3 +797,101 @@ class AppState:
             raise FileSelectionError(
                 "Errore durante la selezione del file.",
             ) from exc
+
+    def apply_theme_to_all(self) -> None:
+        """Aggiorna tutti i controlli dell'interfaccia con il tema corrente."""
+        page = self.page
+
+        update_text_theme(page)
+        update_error_popup_theme(page)
+        update_tooltips_theme(page)
+
+        for btn in [
+            self.restart_audio_button,
+            self.previous_line_button,
+            self.playback_button,
+            self.next_line_button,
+        ]:
+            if btn:
+                btn.icon_color = theme_config.primary_text_color
+                btn.style = ft.ButtonStyle(
+                    bgcolor=theme_config.tooltip_bgcolor,
+                    side=ft.BorderSide(width=1, color=theme_config.primary_text_color),
+                )
+                if btn.tooltip:
+                    btn.tooltip.bgcolor = theme_config.tooltip_bgcolor  # type: ignore
+                    btn.tooltip.text_style = ft.TextStyle(  # type: ignore
+                        size=UI_SIZE * 0.7,
+                        color=theme_config.primary_text_color,
+                    )
+
+        if self.back_button_container:
+            back_btn = self.back_button_container.content
+            if back_btn and isinstance(back_btn, ft.IconButton):
+                back_btn.icon_color = theme_config.primary_text_color
+                back_btn.style = ft.ButtonStyle(
+                    bgcolor=theme_config.tooltip_bgcolor,
+                    side=ft.BorderSide(width=1, color=theme_config.primary_text_color),
+                )
+                if back_btn.tooltip:
+                    back_btn.tooltip.bgcolor = theme_config.tooltip_bgcolor  # type: ignore
+                    back_btn.tooltip.text_style = ft.TextStyle(  # type: ignore
+                        size=UI_SIZE * 0.7,
+                        color=theme_config.primary_text_color,
+                    )
+
+        if self.ui_size_row and len(self.ui_size_row.controls) > 1:
+            slider = self.ui_size_row.controls[1]
+            if isinstance(slider, ft.Slider):
+                slider.thumb_color = theme_config.primary_text_color
+                slider.active_color = theme_config.primary_text_color
+                if slider.tooltip:
+                    slider.tooltip.bgcolor = theme_config.tooltip_bgcolor  # type: ignore
+                    slider.tooltip.text_style = ft.TextStyle(  # type: ignore
+                        size=UI_SIZE * 0.7,
+                        color=theme_config.primary_text_color,
+                    )
+            if len(self.ui_size_row.controls) > 0:
+                if isinstance(self.ui_size_row.controls[0], ft.Text):
+                    self.ui_size_row.controls[0].color = theme_config.primary_text_color
+
+        for dropdown in [
+            self.mode_dropdown,
+            self.level_dropdown,
+            self.chapter_dropdown,
+        ]:
+            if dropdown:
+                dropdown.color = theme_config.primary_text_color
+                dropdown.border_color = theme_config.primary_text_color
+                dropdown.text_style = ft.TextStyle(
+                    size=UI_SIZE,
+                    color=theme_config.primary_text_color,
+                )
+                dropdown.label_style = ft.TextStyle(
+                    size=UI_SIZE * 0.7 * 0.8,
+                    color=theme_config.primary_text_color,
+                )
+                if dropdown.leading_icon:
+                    dropdown.leading_icon.color = theme_config.primary_text_color  # type: ignore
+                if dropdown.trailing_icon:
+                    dropdown.trailing_icon.color = theme_config.primary_text_color  # type: ignore
+                if dropdown.selected_trailing_icon:
+                    dropdown.selected_trailing_icon.color = theme_config.primary_text_color  # type: ignore
+                for option in dropdown.options:
+                    option.style = ft.ButtonStyle(
+                        color=theme_config.primary_text_color,
+                        text_style=ft.TextStyle(
+                            size=UI_SIZE,
+                            color=theme_config.primary_text_color,
+                        ),
+                    )
+
+        if self.playback_lines:
+            self.playback_lines.update_theme(
+                theme_config.primary_text_color,
+                theme_config.tooltip_bgcolor,
+            )
+            for container in self.playback_lines.text_controls:
+                container.border = None
+
+        page.update()

@@ -111,6 +111,7 @@ class PlaybackLines:
                 padding=ft.Padding.symmetric(horizontal=12, vertical=6),
                 border_radius=45,
                 bgcolor=self.background_color if index == self.current_line else None,
+                data="srt_line",
             )
 
             self.text_controls.append(line_container)

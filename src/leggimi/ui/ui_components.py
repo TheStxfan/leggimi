@@ -680,28 +680,17 @@ def create_theme_switch_button() -> ft.IconButton:
     """
 
     def switch_theme(e) -> None:
-
         current_theme = e.page.theme_mode
-
         new_theme = "light" if current_theme == ft.ThemeMode.DARK else "dark"
-
-        set_theme_mode(
-            e.page,
-            new_theme,
-        )
+        set_theme_mode(e.page, new_theme)
 
         e.control.icon = (
             ft.Icons.DARK_MODE if new_theme == "light" else ft.Icons.LIGHT_MODE
         )
-
         e.control.icon_color = theme_config.primary_text_color
-
         e.control.style = ft.ButtonStyle(
             bgcolor=theme_config.tooltip_bgcolor,
-            side=ft.BorderSide(
-                width=1,
-                color=theme_config.primary_text_color,
-            ),
+            side=ft.BorderSide(width=1, color=theme_config.primary_text_color),
         )
 
         e.page.theme = ft.Theme(
@@ -711,19 +700,14 @@ def create_theme_switch_button() -> ft.IconButton:
             ),
         )
 
-        update_text_theme(e.page)
-        update_controls_theme(e.page)
-        update_error_popup_theme(e.page)
-        update_tooltips_theme(e.page)
-
         app_state = getattr(e.page, "app_state", None)
-        if app_state and app_state.playback_lines:
-            app_state.playback_lines.update_theme(
-                theme_config.primary_text_color,
-                theme_config.tooltip_bgcolor,
-            )
-
-        e.page.update()
+        if app_state and hasattr(app_state, "apply_theme_to_all"):
+            app_state.apply_theme_to_all()
+        else:
+            update_text_theme(e.page)
+            update_error_popup_theme(e.page)
+            update_tooltips_theme(e.page)
+            e.page.update()
 
     is_dark = THEME == "dark"
 
