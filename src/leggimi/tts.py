@@ -42,6 +42,12 @@ def _timestamp_to_seconds(timestamp: str) -> float:
     return int(hours) * 3600 + int(minutes) * 60 + float(seconds)
 
 
+def timestamp_to_seconds(timestamp: str) -> float:
+    """Compatibilità con il wrapper pubblico della conversione dei timestamp."""
+
+    return _timestamp_to_seconds(timestamp)
+
+
 def _seconds_to_timestamp(seconds: float) -> str:
     """
     Converte un valore espresso in secondi nel formato timestamp SRT.
@@ -89,8 +95,8 @@ def _shift_srt(
 
             start, end = line.split(" --> ")
 
-            start_time = _timestamp_to_seconds(start)
-            end_time = _timestamp_to_seconds(end)
+            start_time = timestamp_to_seconds(start)
+            end_time = timestamp_to_seconds(end)
 
             result.append(
                 f"{_seconds_to_timestamp(start_time + offset)} --> "

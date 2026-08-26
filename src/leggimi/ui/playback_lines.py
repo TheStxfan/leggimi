@@ -1,8 +1,11 @@
+# playback_lines.py
 from dataclasses import dataclass, field
 from pathlib import Path
 import bisect
 
 import flet as ft
+
+from leggimi.tts import _timestamp_to_seconds
 
 
 @dataclass
@@ -19,6 +22,7 @@ class PlaybackLines:
     current_line: int = field(default=0, init=False)
     lines: list[str] = field(default_factory=list, init=False)
     timestamps: list[float] = field(default_factory=list, init=False)
+    _last_scrolled_line: int = field(default=0, init=False, repr=False)
     text_controls: list[ft.Container] = field(
         default_factory=list,
         init=False,
@@ -62,7 +66,7 @@ class PlaybackLines:
                 continue
 
             timestamp_str = block_lines[1].split(" --> ")[0]
-            self.timestamps.append(self._srt_timestamp_to_seconds(timestamp_str))
+            self.timestamps.append(_timestamp_to_seconds(timestamp_str))
 
             text = " ".join(block_lines[2:]).strip()
             if text:
@@ -70,20 +74,13 @@ class PlaybackLines:
 
         self._build_controls()
 
-    @staticmethod
-    def _srt_timestamp_to_seconds(timestamp: str) -> float:
-        """
-        Converte HH:MM:SS,mmm in secondi.
-        """
-        hours, minutes, seconds = timestamp.replace(",", ".").split(":")
-        return int(hours) * 3600 + int(minutes) * 60 + float(seconds)
-
     def _build_controls(self) -> None:
         """
         Crea i controlli grafici delle righe SRT.
         """
         self.column.controls.clear()
         self.text_controls.clear()
+        self._last_scrolled_line = 0
 
         for index, text in enumerate(self.lines):
             text_control = ft.Text(
@@ -102,7 +99,7 @@ class PlaybackLines:
                 key=f"line_{index}",
                 content=text_control,
                 padding=ft.Padding.symmetric(horizontal=12, vertical=6),
-                border_radius=8,
+                border_radius=45,
                 bgcolor=self.background_color if index == self.current_line else None,
             )
 
@@ -121,25 +118,42 @@ class PlaybackLines:
 
     async def scroll_to_line(self, line_index: int, duration: int = 300) -> None:
         """
-        Scorre il contenitore per mostrare la linea specificata con animazione,
-        centrandola verticalmente nel container.
+        Scorre il contenitore per mostrare la linea specificata con animazione.
+        Prima e ultima riga usano un offset esatto (0 e -1, garantiti da Flet
+        stesso, non stimati). Le righe intermedie scorrono in modo relativo
+        (delta) rispetto all'ultima posizione nota: il limite reale dello
+        scroll è gestito direttamente da Flet/Flutter, non da una stima
+        nostra, quindi non può più bloccarsi prima di arrivare a destinazione.
         """
         if not self.text_controls or line_index >= len(self.text_controls):
             return
 
-        # Flet non supporta la centratura nativa (niente parametro "alignment"),
-        # quindi l'offset va calcolato manualmente.
-        line_height = self.ui_size * 5
-        offset = line_index * line_height
+        last_index = len(self.lines) - 1
 
-        if self.container.height:
-            offset -= self.container.height / 2
+        if line_index == 0:
+            await self.column.scroll_to(
+                offset=0,
+                duration=duration,
+                curve=ft.AnimationCurve.EASE_IN_OUT,
+            )
+        elif line_index == last_index:
+            await self.column.scroll_to(
+                offset=-1,
+                duration=duration,
+                curve=ft.AnimationCurve.EASE_IN_OUT,
+            )
+        else:
+            spacing = self.column.spacing or 0
+            line_height = self.ui_size * 4.5
+            delta = (line_index - self._last_scrolled_line) * (line_height + spacing)
 
-        await self.column.scroll_to(
-            offset=max(0, offset),
-            duration=duration,
-            curve=ft.AnimationCurve.EASE_IN_OUT,
-        )
+            await self.column.scroll_to(
+                delta=delta,
+                duration=duration,
+                curve=ft.AnimationCurve.EASE_IN_OUT,
+            )
+
+        self._last_scrolled_line = line_index
 
     def update_current_line(self, line_index: int) -> None:
         """
