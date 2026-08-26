@@ -716,6 +716,13 @@ def create_theme_switch_button() -> ft.IconButton:
         update_error_popup_theme(e.page)
         update_tooltips_theme(e.page)
 
+        app_state = getattr(e.page, "app_state", None)
+        if app_state and app_state.playback_lines:
+            app_state.playback_lines.update_theme(
+                theme_config.primary_text_color,
+                theme_config.tooltip_bgcolor,
+            )
+
         e.page.update()
 
     is_dark = THEME == "dark"

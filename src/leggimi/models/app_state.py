@@ -169,89 +169,32 @@ class AppState:
         """
         Mostra la schermata di riproduzione audio.
         """
-
         audio_paths = self._get_audio_paths()
-
         if audio_paths is None:
             return
-
         output_mp3, output_srt = audio_paths
-
         if not output_mp3.exists() or not output_srt.exists():
             return
 
-        try:
-            if (
-                self.audio_player is None
-                or self.audio_player.audio_path != output_mp3
-                or self.audio_player.srt_path != output_srt
-            ):
-                if self.audio_player is not None:
-                    self.audio_player.cleanup()
+        # Crea nuovo player audio solo se necessario (cambiato percorso)
+        if self.audio_player is None or self.audio_player.audio_path != output_mp3:
+            if self.audio_player is not None:
+                self.audio_player.cleanup()
+            self.audio_player = AudioPlayer(output_mp3, output_srt)
+            if self.playback_button is not None:
+                self.playback_button.icon = ft.Icons.PLAY_ARROW
+                update_playback_button_tooltip(self.playback_button, "Riproduci audio")
+            self.playback_time = 0.0
 
-                self.audio_player = AudioPlayer(
-                    output_mp3,
-                    output_srt,
-                )
-
-                if self.playback_button is not None:
-                    self.playback_button.icon = ft.Icons.PLAY_ARROW
-                    update_playback_button_tooltip(
-                        self.playback_button,
-                        "Riproduci audio",
-                    )
-
-                if (
-                    self.playback_lines is None
-                    or self.playback_lines.srt_path != output_srt
-                ):
-                    self.playback_lines = PlaybackLines(
-                        srt_path=output_srt,
-                        ui_size=UI_SIZE,
-                        text_color=theme_config.primary_text_color,
-                        background_color=theme_config.tooltip_bgcolor,
-                    )
-                    self.playback_time = 0.0
-
-        except Exception:
-            self.page.run_task(
-                self._show_error,
-                LeggiMiError("Errore durante il caricamento dell'audio."),
-            )
-            return
-
-        # Crea i pulsanti una sola volta.
-        if self.restart_audio_button is None:
-            self.restart_audio_button = create_restart_button(
-                self.restart_audio,
-            )
-
-        if self.previous_line_button is None:
-            self.previous_line_button = create_previous_line_button(
-                self.previous_audio_line,
-            )
-
-        if self.playback_button is None:
-            self.playback_button = create_playback_button(
-                self.toggle_audio,
-            )
-
-        if self.next_line_button is None:
-            self.next_line_button = create_next_line_button(
-                self.next_audio_line,
-            )
-
-        # Bottom bar del playback.
-        self.bottom_bar.content = ft.Row(
-            controls=[
-                self.restart_audio_button,
-                self.previous_line_button,
-                self.playback_button,
-                self.next_line_button,
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
+        # ✅ MODIFICA: RICREA SEMPRE PlaybackLines per avere le righe aggiornate
+        self.playback_lines = PlaybackLines(
+            srt_path=output_srt,
+            ui_size=UI_SIZE,
+            text_color=theme_config.primary_text_color,
+            background_color=theme_config.tooltip_bgcolor,
         )
 
+        # Aggiorna il container con il nuovo contenuto
         if self.playback_content is None:
             self.playback_content = ft.Container(
                 expand=True,
@@ -262,18 +205,37 @@ class AppState:
                     bottom=80,
                 ),
                 clip_behavior=ft.ClipBehavior.HARD_EDGE,
-                content=(
-                    self.playback_lines.container
-                    if self.playback_lines
-                    else ft.Container()
-                ),
+                content=self.playback_lines.container,
             )
+        else:
+            self.playback_content.content = self.playback_lines.container
 
+        # Crea i pulsanti una sola volta (se nulli)
+        if self.restart_audio_button is None:
+            self.restart_audio_button = create_restart_button(self.restart_audio)
+        if self.previous_line_button is None:
+            self.previous_line_button = create_previous_line_button(
+                self.previous_audio_line
+            )
+        if self.playback_button is None:
+            self.playback_button = create_playback_button(self.toggle_audio)
+        if self.next_line_button is None:
+            self.next_line_button = create_next_line_button(self.next_audio_line)
+
+        # Bottom bar del playback
+        self.bottom_bar.content = ft.Row(
+            controls=[
+                self.restart_audio_button,
+                self.previous_line_button,
+                self.playback_button,
+                self.next_line_button,
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+
+        # Back button (se non esiste)
         if self.back_button_container is None:
-            back_button = create_back_button(
-                self.show_main_view,
-            )
-
+            back_button = create_back_button(self.show_main_view)
             self.back_button_container = ft.Container(
                 content=back_button,
                 left=10,
@@ -285,15 +247,9 @@ class AppState:
         self.back_button_container.visible = True
 
         if self.playback_content not in self.app_stack.controls:
-            self.app_stack.controls.insert(
-                0,
-                self.playback_content,
-            )
-
+            self.app_stack.controls.insert(0, self.playback_content)
         if self.back_button_container not in self.app_stack.controls:
-            self.app_stack.controls.append(
-                self.back_button_container,
-            )
+            self.app_stack.controls.append(self.back_button_container)
 
         self.page.update()
 
@@ -451,11 +407,7 @@ class AppState:
     def show_main_view(self, e) -> None:
         """
         Torna alla schermata principale dell'applicazione.
-
-        Args:
-            e: Evento generato dal clic sul pulsante indietro.
         """
-
         if self.audio_player is not None:
             self.audio_player.stop()
             self._stop_position_updates()
@@ -464,15 +416,19 @@ class AppState:
             self.playback_button.icon = ft.Icons.PLAY_ARROW
 
         self.main_content.visible = True
-
         if self.playback_content is not None:
             self.playback_content.visible = False
-
         if self.back_button_container is not None:
             self.back_button_container.visible = False
 
-        self.bottom_bar.content = self.ui_size_row
+        if self.playback_content in self.app_stack.controls:
+            self.app_stack.controls.remove(self.playback_content)
+        if self.back_button_container in self.app_stack.controls:
+            self.app_stack.controls.remove(self.back_button_container)
 
+        self.playback_lines = None
+
+        self.bottom_bar.content = self.ui_size_row
         self.page.update()
 
     def remove_control(
@@ -741,6 +697,9 @@ class AppState:
                 selezione del file.
         """
 
+        if self.playback_content is not None or self.back_button_container is not None:
+            self.show_main_view(None)
+
         try:
             files = await self.file_picker.pick_files(
                 allow_multiple=False,
@@ -765,8 +724,11 @@ class AppState:
             self.playback_time = 0.0
 
             # Reset della schermata playback.
-            if self.playback_content is not None:
-                self.playback_content.visible = False
+            if (
+                self.playback_content is not None
+                or self.back_button_container is not None
+            ):
+                self.show_main_view(None)
 
             if self.back_button_container is not None:
                 self.back_button_container.visible = False

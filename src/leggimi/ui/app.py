@@ -86,6 +86,8 @@ async def main(page: ft.Page):
         ui_size_row=ui_size_row,
     )
 
+    setattr(page, "app_state", app_state)
+
     settings_row, mode_dropdown, level_dropdown = create_global_settings_row(
         on_select=lambda e: app_state._update_audio_button(),
     )
