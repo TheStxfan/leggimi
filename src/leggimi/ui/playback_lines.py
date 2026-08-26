@@ -46,7 +46,7 @@ class PlaybackLines:
         )
         self.container = ft.Container(
             expand=True,
-            padding=ft.Padding.only(left=30, right=30, top=20, bottom=20),
+            padding=ft.Padding.only(left=50, right=50, top=20, bottom=20),
             content=self.column,
         )
         self._load_srt()
