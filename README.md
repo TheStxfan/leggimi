@@ -55,10 +55,6 @@ LeggiMi è uno strumento che trasforma PDF in audiolibri. Legge il documento, lo
 
 [Interfaccia utente](docs/images.md)
 
-## Contributi
-
-Contributi, segnalazioni di bug e richieste di funzionalità sono benvenute!
-
 ## Licenza
 
 [MIT License](LICENSE)
