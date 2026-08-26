@@ -169,6 +169,7 @@ class AppState:
         """
         Mostra la schermata di riproduzione audio.
         """
+
         audio_paths = self._get_audio_paths()
         if audio_paths is None:
             return
@@ -176,7 +177,6 @@ class AppState:
         if not output_mp3.exists() or not output_srt.exists():
             return
 
-        # Crea nuovo player audio solo se necessario (cambiato percorso)
         if self.audio_player is None or self.audio_player.audio_path != output_mp3:
             if self.audio_player is not None:
                 self.audio_player.cleanup()
@@ -186,15 +186,20 @@ class AppState:
                 update_playback_button_tooltip(self.playback_button, "Riproduci audio")
             self.playback_time = 0.0
 
-        # ✅ MODIFICA: RICREA SEMPRE PlaybackLines per avere le righe aggiornate
-        self.playback_lines = PlaybackLines(
-            srt_path=output_srt,
-            ui_size=UI_SIZE,
-            text_color=theme_config.primary_text_color,
-            background_color=theme_config.tooltip_bgcolor,
-        )
+        try:
+            self.playback_lines = PlaybackLines(
+                srt_path=output_srt,
+                ui_size=UI_SIZE,
+                text_color=theme_config.primary_text_color,
+                background_color=theme_config.tooltip_bgcolor,
+            )
+        except Exception as exc:
+            self.page.run_task(
+                self._show_error,
+                LeggiMiError(f"Errore nel caricamento dei sottotitoli: {exc}"),
+            )
+            return
 
-        # Aggiorna il container con il nuovo contenuto
         if self.playback_content is None:
             self.playback_content = ft.Container(
                 expand=True,
@@ -210,7 +215,6 @@ class AppState:
         else:
             self.playback_content.content = self.playback_lines.container
 
-        # Crea i pulsanti una sola volta (se nulli)
         if self.restart_audio_button is None:
             self.restart_audio_button = create_restart_button(self.restart_audio)
         if self.previous_line_button is None:
@@ -222,7 +226,6 @@ class AppState:
         if self.next_line_button is None:
             self.next_line_button = create_next_line_button(self.next_audio_line)
 
-        # Bottom bar del playback
         self.bottom_bar.content = ft.Row(
             controls=[
                 self.restart_audio_button,
@@ -233,7 +236,6 @@ class AppState:
             alignment=ft.MainAxisAlignment.CENTER,
         )
 
-        # Back button (se non esiste)
         if self.back_button_container is None:
             back_button = create_back_button(self.show_main_view)
             self.back_button_container = ft.Container(
@@ -405,9 +407,6 @@ class AppState:
             )
 
     def show_main_view(self, e) -> None:
-        """
-        Torna alla schermata principale dell'applicazione.
-        """
         if self.audio_player is not None:
             self.audio_player.stop()
             self._stop_position_updates()

@@ -1,4 +1,3 @@
-# playback_lines.py
 from dataclasses import dataclass, field
 from pathlib import Path
 import bisect
@@ -39,11 +38,6 @@ class PlaybackLines:
     container: ft.Container = field(init=False)
 
     def __post_init__(self) -> None:
-        """
-        Inizializza i controlli dell'interfaccia e carica il contenuto
-        del file SRT.
-        """
-
         self.column = ft.Column(
             expand=True,
             scroll=ft.ScrollMode.AUTO,
@@ -52,43 +46,48 @@ class PlaybackLines:
         )
         self.container = ft.Container(
             expand=True,
-            padding=ft.Padding.only(
-                left=30,
-                right=30,
-                top=20,
-                bottom=20,
-            ),
+            padding=ft.Padding.only(left=30, right=30, top=20, bottom=20),
             content=self.column,
         )
         self._load_srt()
 
     def _load_srt(self) -> None:
-        """
-        Carica il testo e i timestamp delle righe dal file SRT.
-        """
-
         content = self.srt_path.read_text(encoding="utf-8")
         blocks = content.strip().split("\n\n")
 
         for block in blocks:
             block_lines = block.splitlines()
-            if len(block_lines) < 3:
+            if len(block_lines) < 2:
                 continue
 
-            timestamp_str = block_lines[1].split(" --> ")[0]
-            self.timestamps.append(_timestamp_to_seconds(timestamp_str))
+            timestamp_line = None
+            for line in block_lines:
+                if " --> " in line:
+                    timestamp_line = line
+                    break
+            if timestamp_line is None:
+                continue
 
-            text = " ".join(block_lines[2:]).strip()
+            try:
+                timestamp_str = timestamp_line.split(" --> ")[0]
+                self.timestamps.append(_timestamp_to_seconds(timestamp_str))
+            except Exception:
+                continue
+
+            text_parts = []
+            for line in block_lines:
+                if " --> " in line:
+                    continue
+                if line.strip().isdigit():
+                    continue
+                text_parts.append(line.strip())
+            text = " ".join(text_parts).strip()
             if text:
                 self.lines.append(text)
 
         self._build_controls()
 
     def _build_controls(self) -> None:
-        """
-        Crea i controlli grafici per le righe caricate dal file SRT.
-        """
-
         self.column.controls.clear()
         self.text_controls.clear()
         self._last_scrolled_line = 0
@@ -118,36 +117,16 @@ class PlaybackLines:
             self.column.controls.append(line_container)
 
     def get_line_at_timestamp(self, seconds: float) -> int:
-        """
-        Restituisce l'indice della riga corrispondente a un timestamp.
-
-        Args:
-            seconds: Timestamp corrente, espresso in secondi.
-
-        Returns:
-            int: Indice della riga corrispondente al timestamp.
-        """
-
         if not self.timestamps:
             return 0
-
         idx = bisect.bisect_right(self.timestamps, seconds) - 1
         return max(0, min(idx, len(self.lines) - 1))
 
     async def scroll_to_line(self, line_index: int, duration: int = 300) -> None:
-        """
-        Scorre la visualizzazione fino alla riga specificata.
-
-        Args:
-            line_index: Indice della riga da visualizzare.
-            duration: Durata dell'animazione di scorrimento, in millisecondi.
-        """
-
         if not self.text_controls or line_index >= len(self.text_controls):
             return
 
         last_index = len(self.lines) - 1
-
         if line_index == 0:
             await self.column.scroll_to(
                 offset=0,
@@ -164,33 +143,22 @@ class PlaybackLines:
             spacing = self.column.spacing or 0
             line_height = self.ui_size * 4.5
             delta = (line_index - self._last_scrolled_line) * (line_height + spacing)
-
             await self.column.scroll_to(
                 delta=delta,
                 duration=duration,
                 curve=ft.AnimationCurve.EASE_IN_OUT,
             )
-
         self._last_scrolled_line = line_index
 
     def update_current_line(self, line_index: int) -> None:
-        """
-        Aggiorna la riga attualmente selezionata nella visualizzazione.
-
-        Args:
-            line_index: Indice della riga da selezionare.
-        """
-
         if not self.lines or line_index == self.current_line:
             return
-
         self.current_line = max(0, min(line_index, len(self.lines) - 1))
 
         for index, container in enumerate(self.text_controls):
             text_control = container.content
             if not isinstance(text_control, ft.Text):
                 continue
-
             is_current = index == self.current_line
             text_control.weight = (
                 ft.FontWeight.BOLD if is_current else ft.FontWeight.NORMAL
@@ -198,14 +166,6 @@ class PlaybackLines:
             container.bgcolor = self.background_color if is_current else None
 
     def update_theme(self, text_color: str, background_color: str) -> None:
-        """
-        Aggiorna i colori delle righe in base al tema corrente.
-
-        Args:
-            text_color: Nuovo colore del testo.
-            background_color: Nuovo colore di sfondo della riga selezionata.
-        """
-
         self.text_color = text_color
         self.background_color = background_color
 
@@ -213,20 +173,11 @@ class PlaybackLines:
             text_control = container.content
             if not isinstance(text_control, ft.Text):
                 continue
-
             text_control.color = text_color
             container.bgcolor = background_color if index == self.current_line else None
 
     def resize(self, ui_size: float) -> None:
-        """
-        Aggiorna la dimensione del testo delle righe.
-
-        Args:
-            ui_size: Nuova dimensione del testo.
-        """
-
         self.ui_size = ui_size
-
         for container in self.text_controls:
             text_control = container.content
             if isinstance(text_control, ft.Text):
