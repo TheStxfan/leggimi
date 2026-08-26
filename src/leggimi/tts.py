@@ -14,7 +14,6 @@ def _get_base_dir() -> Path:
     if getattr(sys, "frozen", False):
         return Path(sys.executable).parent
     else:
-        # Sviluppo: risali fino alla root del progetto (dove c'è main.py)
         return Path(__file__).parent.parent.parent
 
 

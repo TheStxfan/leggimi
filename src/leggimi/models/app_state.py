@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import asyncio
 from pathlib import Path
+import sys
 from typing import Literal, cast
 
 import flet as ft
@@ -119,7 +120,11 @@ class AppState:
             f"{Path(self.pdf_path).stem}_" f"{chapter.title}_" f"{mode}_" f"{level}"
         ).replace(" ", "_")
 
-        output_dir = Path("./output")
+        output_dir = (
+            Path(sys.executable).parent / "output"
+            if getattr(sys, "frozen", False)
+            else Path("./output")
+        )
 
         return (
             output_dir / f"{output_name}.mp3",

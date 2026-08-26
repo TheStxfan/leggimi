@@ -256,7 +256,7 @@ def to_script(
     chapter_text: str,
     mode: Literal["riassunto", "dialogo"],
     livello: Literal["base", "intermedio", "avanzato"],
-    model: str = get_model("TEXT"),
+    model: str | None = None,
     system_prompt: str | None = SCRIPT_GENERATION_SYSTEM_PROMPT,
 ) -> Script:
     """
@@ -272,6 +272,9 @@ def to_script(
     Returns:
         Script: Script contenente tutte le battute generate dai vari blocchi.
     """
+
+    if model is None:
+        model = get_model("TEXT")
 
     chunks = chunk_text(chapter_text)
 
