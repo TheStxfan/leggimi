@@ -46,4 +46,4 @@ LeggiMi è uno strumento che legge un PDF, lo suddivide in capitoli, genera una 
 
 ## Screenshots
 
-[Interfaccia utente](images.md)
+[Interfaccia utente](https://thestxfan.github.io/leggimi/ui.md)
