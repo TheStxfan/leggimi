@@ -553,7 +553,7 @@ class AppState:
 
             if self.generate_button is None:
                 self.generate_button = create_button(
-                    "Genera mp3",
+                    "Genera audio",
                     ft.Icons.SPATIAL_AUDIO_OFF,
                     self.generate_audio,
                     tooltip_text=(
@@ -795,7 +795,7 @@ class AppState:
 
             if self.start_button is None:
                 self.start_button = create_button(
-                    "Extract Chapters",
+                    "Estrai capitoli",
                     ft.Icons.AUTO_STORIES_SHARP,
                     self.run_processes,
                     tooltip_text=("Converti il file PDF selezionato in audio"),
