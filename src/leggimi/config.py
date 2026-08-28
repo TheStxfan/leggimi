@@ -45,6 +45,5 @@ def get_openrouter_key() -> str:
 def get_model(type: Literal["TEXT", "IMAGE"]) -> str:
     model = os.environ.get("TEXT_MODEL" if type == "TEXT" else "IMAGE_MODEL")
     if not model:
-        print(f"[DEBUG] Modello {type} non trovato nelle variabili d'ambiente.")
         raise ModuleNotFoundError("Modello non trovato nelle variabili d'ambiente.")
     return model
