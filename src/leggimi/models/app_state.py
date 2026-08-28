@@ -7,7 +7,12 @@ from typing import Literal, cast
 import flet as ft
 
 from leggimi.audio_player import AudioPlayer
-from leggimi.errors import AudioPlaybackError, FileSelectionError, LeggiMiError
+from leggimi.errors import (
+    AudioPlaybackError,
+    FileSelectionError,
+    LeggiMiError,
+    OCRModelIncompatibleError,
+)
 from leggimi.models.models import Chapter
 from leggimi.pipeline import (
     generate_chapter_audio,
@@ -23,7 +28,6 @@ from leggimi.ui.ui_components import (
     create_previous_line_button,
     create_restart_button,
     create_text,
-    update_controls_theme,
     update_error_popup_theme,
     update_playback_button_tooltip,
     update_text_theme,
@@ -591,15 +595,30 @@ class AppState:
 
             self.page.update()
 
-        except LeggiMiError as exc:
+        except OCRModelIncompatibleError as exc:
             self.remove_control(self.processing_text)
-
             if self.start_button is not None:
                 self.start_button.disabled = False
-
             self.page.update()
-
+            await self._show_error(LeggiMiError(str(exc)))
+        except LeggiMiError as exc:
+            self.remove_control(self.processing_text)
+            if self.start_button is not None:
+                self.start_button.disabled = False
+            self.page.update()
             await self._show_error(exc)
+        except RuntimeError as exc:
+            self.remove_control(self.processing_text)
+            if self.start_button is not None:
+                self.start_button.disabled = False
+            self.page.update()
+            await self._show_error(LeggiMiError(str(exc)))
+        except Exception as exc:
+            self.remove_control(self.processing_text)
+            if self.start_button is not None:
+                self.start_button.disabled = False
+            self.page.update()
+            await self._show_error(LeggiMiError(f"Errore imprevisto: {exc}"))
 
     async def generate_audio(self, e) -> None:
         """

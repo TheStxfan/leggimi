@@ -1,9 +1,9 @@
 import fitz
 import re
-
+import sys
 from pathlib import Path
 from leggimi.llm_client import TEXT_EXTRACTION_SYSTEM_PROMPT, get_text_from_image
-from leggimi.errors import LeggiMiError
+from leggimi.errors import LeggiMiError, OCRModelIncompatibleError
 from .models.models import Page
 
 
@@ -19,6 +19,8 @@ def extract_text(pdf_path: str) -> list[Page]:
 
     Raises:
         FileNotFoundError: se il file non esiste.
+        OCRModelIncompatibleError: se il modello non supporta l'OCR.
+        LeggiMiError: per altri errori dell'applicazione.
     """
 
     if not Path(pdf_path).exists():
@@ -29,11 +31,15 @@ def extract_text(pdf_path: str) -> list[Page]:
         for idx, page in enumerate(doc):  # type: ignore
             try:
                 text = estrai_pagina_ordinata(idx, page)
+            except OCRModelIncompatibleError:
+                raise
             except LeggiMiError:
                 raise
             except Exception:
                 text = ""
             pages.append(Page(num=idx, text=text))
+        if all(page.text == "" for page in pages):
+            raise RuntimeError("Modello OCR incompatibile")
 
     return pages
 
@@ -50,6 +56,7 @@ def estrai_pagina_ordinata(idx: int, page) -> str:
         Testo della pagina
 
     Raises:
+        OCRModelIncompatibleError: se il modello non supporta l'OCR.
         RuntimeError: se l'estrazione o la trascrizione della pagina fallisce.
     """
 
@@ -69,7 +76,10 @@ def estrai_pagina_ordinata(idx: int, page) -> str:
     except LeggiMiError:
         raise
     except Exception as exc:
-        raise RuntimeError(f"Errore durante l'elaborazione della pagina {idx}") from exc
+        if "403" in str(exc) or "PermissionDenied" in str(type(exc)):
+            raise OCRModelIncompatibleError("Modello OCR incompatibile") from exc
+        else:
+            raise RuntimeError(f"Errore elaborazione pagina {idx}") from exc
 
     return text
 

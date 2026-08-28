@@ -72,3 +72,7 @@ class AudioPlaybackError(AudioPlayerError):
 
 class AudioSeekError(AudioPlayerError):
     """Errore durante lo spostamento della posizione di riproduzione."""
+
+
+class OCRModelIncompatibleError(LeggiMiError):
+    """Il modello scelto non è compatibile con l'OCR delle immagini."""
