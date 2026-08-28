@@ -142,7 +142,7 @@ class PlaybackLines:
             )
         else:
             spacing = self.column.spacing or 0
-            line_height = self.ui_size * 4.5
+            line_height = self.ui_size * 3
             delta = (line_index - self._last_scrolled_line) * (line_height + spacing)
             await self.column.scroll_to(
                 delta=delta,
