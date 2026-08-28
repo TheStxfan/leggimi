@@ -66,6 +66,22 @@ TEXT_MODEL=nvidia/...
 | `IMAGE_MODEL`        | Modello per l'OCR su immagini PDF       |    ✅ Sì     |
 | `TEXT_MODEL`         | Modello per la generazione degli script |    ✅ Sì     |
 
+### Come trovare i migliori modelli gratuiti
+
+I modelli disponibili su OpenRouter cambiano frequentemente. Per trovare sempre i migliori modelli gratuiti al momento:
+
+#### Per OCR e analisi immagini (IMAGE_MODEL)
+
+[Cerca modelli immagini gratuiti](https://openrouter.ai/models?input_modalities=image,text&variant=free&order=intelligence-high-to-low)
+
+Questo link mostra tutti i modelli gratuiti che supportano **immagini + testo**, ordinati dal più intelligente al meno intelligente.
+
+#### Per generazione testi (TEXT_MODEL)
+
+[Cerca modelli testo gratuiti](https://openrouter.ai/models?input_modalities=text&variant=free&order=intelligence-high-to-low)
+
+Questo link mostra tutti i modelli gratuiti che supportano **solo testo**, ordinati dal più intelligente al meno intelligente.
+
 ### Modelli consigliati
 
 #### IMAGE_MODEL (OCR di alta qualità):
