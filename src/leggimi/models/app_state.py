@@ -516,7 +516,7 @@ class AppState:
 
         if self.processing_text is None:
             self.processing_text = create_text(
-                "Messa in ordine del caos cartaceo...",
+                "Estrazione capitoli...",
             )
 
         if self.start_button is not None:
