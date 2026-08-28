@@ -628,7 +628,7 @@ class AppState:
             self.remove_control(self.audio_processing_text)
 
         self.audio_processing_text = create_text(
-            "Dando voce al caos ordinato...",
+            "Creazione audio...",
         )
 
         audio_processing_text = self.audio_processing_text
