@@ -10,7 +10,7 @@ OpenRouter offre **50 richieste gratuite al giorno** per gli account free.
 
 **Verifica il tuo utilizzo:**
 
-- Vai su [OpenRouter Activity](https://openrouter.ai/activity/explore?metric=request_count&date_preset=past_2_days&granularity=day&dimension=api_key_id)
+- Vai su [OpenRouter Activity](https://openrouter.ai/activity/explore?metric=request_count&date_preset=today&granularity=day&dimension=api_key_id)
 - Controlla il numero di richieste fatte oggi
 - Se hai raggiunto il limite di 50, aspetta il giorno successivo o ricarica crediti
 
@@ -22,6 +22,21 @@ Anche se il tuo account non ha superato il limite, **alcuni modelli** possono es
 
 - **Cambia modello** nel file `.env` (consigliato)
 - **Riprova più tardi** (il rate limit è temporaneo)
+
+---
+
+### Quale modello cambiare?
+
+A seconda di dove compare l'errore, devi modificare una variabile diversa nel file .env:
+
+| Dove compare l'errore              | Variabile da modificare | Link per trovare il modello migliore                                                                                              |
+| :--------------------------------- | :---------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| Durante Estrazione capitoli (OCR)  | IMAGE_MODEL             | [Modelli immagine gratuiti](https://openrouter.ai/models?input_modalities=image,text&variant=free&order=intelligence-high-to-low) |
+| Durante Generazione audio (script) | TEXT_MODEL              | [Modelli testo gratuiti](https://openrouter.ai/models?input_modalities=text&variant=free&order=intelligence-high-to-low)          |
+
+> Suggerimento: Se l'errore compare durante l'estrazione dei capitoli, il problema è il modello che legge le immagini del PDF. Se compare durante la generazione dell'audio, il problema è il modello che scrive il testo dello script.
+
+---
 
 ### Come scegliere un modello alternativo
 
