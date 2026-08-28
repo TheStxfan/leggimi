@@ -34,7 +34,7 @@ A seconda di dove compare l'errore, devi modificare una variabile diversa nel fi
 | Durante Estrazione capitoli (OCR)  | IMAGE_MODEL             | [Modelli immagine gratuiti](https://openrouter.ai/models?input_modalities=image,text&variant=free&order=intelligence-high-to-low) |
 | Durante Generazione audio (script) | TEXT_MODEL              | [Modelli testo gratuiti](https://openrouter.ai/models?input_modalities=text&variant=free&order=intelligence-high-to-low)          |
 
-> Suggerimento: Se l'errore compare durante l'estrazione dei capitoli, il problema è il modello che legge le immagini del PDF. Se compare durante la generazione dell'audio, il problema è il modello che scrive il testo dello script.
+> Suggerimento: Se l'errore compare subito dopo aver premuto il bottone `Estrai capitoli`, il problema è il modello che legge le immagini del PDF (IMAGE_MODEL). Se compare subito dopo aver premuto il bottone `Genera audio`, il problema è il modello che scrive il testo dello script (TEXT_MODEL).
 
 ---
 
