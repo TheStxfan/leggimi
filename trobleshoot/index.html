@@ -1,0 +1,1313 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Trasforma PDF in audiolibri con intelligenza artificiale">
+      
+      
+        <meta name="author" content="TheStxfan">
+      
+      
+        <link rel="canonical" href="https://thestxfan.github.io/leggimi/trobleshoot/">
+      
+      
+        <link rel="prev" href="../build/">
+      
+      
+        <link rel="next" href="../ui/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Risoluzione problemi - LeggiMi</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="amber" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#troubleshoot-errori-comuni" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LeggiMi" class="md-header__button md-logo" aria-label="LeggiMi" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LeggiMi
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Risoluzione problemi
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="amber" data-md-color-accent="amber"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/TheStxfan/leggimi.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LeggiMi" class="md-nav__button md-logo" aria-label="LeggiMi" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LeggiMi
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/TheStxfan/leggimi.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Per iniziare
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Per iniziare
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guida all'installazione
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../run/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Come eseguire
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ottenere una API Key
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guida allo sviluppo
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guida allo sviluppo
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architettura interna
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Struttura dei file del progetto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compilazione con PyInstaller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supporto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supporto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Risoluzione problemi
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Risoluzione problemi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#errore-limite-richieste-superato" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errore: "limite richieste superato"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Errore: &#34;limite richieste superato&#34;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-limite-giornaliero-del-tuo-account-openrouter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Limite giornaliero del tuo account OpenRouter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-rate-limit-temporaneo-del-modello-specifico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Rate limit temporaneo del modello specifico
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quale-modello-cambiare" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quale modello cambiare?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#come-scegliere-un-modello-alternativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Come scegliere un modello alternativo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#errore-modello-ocr-incompatibile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errore: "modello OCR incompatibile"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#problemi-comuni-e-soluzioni" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problemi comuni e soluzioni
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interfaccia utente
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#errore-limite-richieste-superato" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errore: "limite richieste superato"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Errore: &#34;limite richieste superato&#34;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-limite-giornaliero-del-tuo-account-openrouter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Limite giornaliero del tuo account OpenRouter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-rate-limit-temporaneo-del-modello-specifico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Rate limit temporaneo del modello specifico
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quale-modello-cambiare" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quale modello cambiare?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#come-scegliere-un-modello-alternativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Come scegliere un modello alternativo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#errore-modello-ocr-incompatibile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errore: "modello OCR incompatibile"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#problemi-comuni-e-soluzioni" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problemi comuni e soluzioni
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="troubleshoot-errori-comuni">Troubleshoot errori comuni</h1>
+<h2 id="errore-limite-richieste-superato">Errore: "limite richieste superato"</h2>
+<p>Questo errore (codice API 429) può avere due cause principali:</p>
+<h3 id="1-limite-giornaliero-del-tuo-account-openrouter">1. Limite giornaliero del tuo account OpenRouter</h3>
+<p>OpenRouter offre <strong>50 richieste gratuite al giorno</strong> per gli account free.</p>
+<p><strong>Verifica il tuo utilizzo:</strong></p>
+<ul>
+<li>Vai su <a href="https://openrouter.ai/activity/explore?metric=request_count&amp;date_preset=today&amp;granularity=day&amp;dimension=api_key_id">OpenRouter Activity</a></li>
+<li>Controlla il numero di richieste fatte oggi</li>
+<li>Se hai raggiunto il limite di 50, aspetta il giorno successivo o ricarica crediti</li>
+</ul>
+<h3 id="2-rate-limit-temporaneo-del-modello-specifico">2. Rate limit temporaneo del modello specifico</h3>
+<p>Anche se il tuo account non ha superato il limite, <strong>alcuni modelli</strong> possono essere temporaneamente limitati dal provider (es. Google AI Studio, Anthropic, ecc.).</p>
+<p><strong>Soluzione:</strong></p>
+<ul>
+<li><strong>Cambia modello</strong> nel file <code>.env</code> (consigliato)</li>
+<li><strong>Riprova più tardi</strong> (il rate limit è temporaneo)</li>
+</ul>
+<hr />
+<h3 id="quale-modello-cambiare">Quale modello cambiare?</h3>
+<p>A seconda di dove compare l'errore, devi modificare una variabile diversa nel file .env:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Dove compare l'errore</th>
+<th style="text-align: left;">Variabile da modificare</th>
+<th style="text-align: left;">Link per trovare il modello migliore</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Durante Estrazione capitoli (OCR)</td>
+<td style="text-align: left;">IMAGE_MODEL</td>
+<td style="text-align: left;"><a href="https://openrouter.ai/models?input_modalities=image,text&amp;variant=free&amp;order=intelligence-high-to-low">Modelli immagine gratuiti</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Durante Generazione audio (script)</td>
+<td style="text-align: left;">TEXT_MODEL</td>
+<td style="text-align: left;"><a href="https://openrouter.ai/models?input_modalities=text&amp;variant=free&amp;order=intelligence-high-to-low">Modelli testo gratuiti</a></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Suggerimento: Se l'errore compare subito dopo aver premuto il bottone <code>Estrai capitoli</code>, il problema è il modello che legge le immagini del PDF (IMAGE_MODEL). Se compare subito dopo aver premuto il bottone <code>Genera audio</code>, il problema è il modello che scrive il testo dello script (TEXT_MODEL).</p>
+</blockquote>
+<hr />
+<h3 id="come-scegliere-un-modello-alternativo">Come scegliere un modello alternativo</h3>
+<p>Se il modello che stai usando dà errore 429 (limite richieste superato) per un rate limit temporaneo, puoi trovare facilmente un'alternativa valida:</p>
+<table>
+<thead>
+<tr>
+<th>Scopo</th>
+<th>Link per trovare il migliore modello gratuito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IMAGE_MODEL</td>
+<td><a href="https://openrouter.ai/models?input_modalities=image,text&amp;variant=free&amp;order=intelligence-high-to-low">Modelli immagine gratuiti</a></td>
+</tr>
+<tr>
+<td>TEXT_MODEL</td>
+<td><a href="https://openrouter.ai/models?input_modalities=text&amp;variant=free&amp;order=intelligence-high-to-low">Modelli testo gratuiti</a></td>
+</tr>
+</tbody>
+</table>
+<p>Questi link sono pre-filtrati per mostrare solo modelli gratuiti, ordinati per intelligenza (dal migliore in alto).</p>
+<p><strong>Come usare i link:</strong></p>
+<ol>
+<li>Apri il link appropriato per il tuo caso</li>
+<li>Scegli uno dei primi modelli</li>
+<li>Copia l'ID del modello (es. <code>google/gemini-2.5-flash</code>)</li>
+<li>Aggiorna il valore nel tuo file <code>.env</code></li>
+<li>Riavvia l'applicazione</li>
+</ol>
+<hr />
+<h3 id="errore-modello-ocr-incompatibile">Errore: "modello OCR incompatibile"</h3>
+<p>Questo errore compare quando il modello scelto per l'estrazione del testo dal PDF non supporta l'OCR (ovvero non è in grado di leggere immagini).</p>
+<p><strong>Cause comuni:</strong></p>
+<ul>
+<li>Hai scelto un modello <strong>solo testo</strong> (es. <code>nvidia/nemotron-3-ultra-550b-a55b:free</code>)</li>
+<li>Hai scelto un modello progettato per agenti di produttività (es. <code>thinkingmachines/inkling:free</code>)</li>
+<li>Il modello non ha il supporto per input multimodali (immagini)</li>
+</ul>
+<p><strong>Soluzione:</strong></p>
+<p>Scegli un modello differente dal <a href="https://openrouter.ai/models?input_modalities=image,text&amp;variant=free&amp;order=intelligence-high-to-low">link per modelli immagini gratuiti</a> e aggiorna il file <code>.env</code>.</p>
+<hr />
+<h2 id="problemi-comuni-e-soluzioni">Problemi comuni e soluzioni</h2>
+<table>
+<thead>
+<tr>
+<th>Errore</th>
+<th>Causa</th>
+<th>Soluzione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>limite richieste superato</code> (account)</td>
+<td>Hai superato le 50 richieste giornaliere di OpenRouter</td>
+<td>Controlla su <a href="https://openrouter.ai/activity">OpenRouter Activity</a> e aspetta il giorno dopo</td>
+</tr>
+<tr>
+<td><code>limite richieste superato</code> (provider)</td>
+<td>Il provider del modello ha un rate limit temporaneo</td>
+<td>Cambia modello nel <code>.env</code> o riprova più tardi</td>
+</tr>
+<tr>
+<td><code>ModuleNotFoundError: No module named 'leggimi'</code></td>
+<td>Il package non è incluso nei dati</td>
+<td>Lo spec file include <code>('src/leggimi', 'leggimi')</code> nei <code>datas</code></td>
+</tr>
+<tr>
+<td><code>No module named '_cffi_backend'</code></td>
+<td>miniaudio richiede cffi</td>
+<td>Lo spec file include <code>_cffi_backend</code> negli <code>hiddenimports</code></td>
+</tr>
+<tr>
+<td><code>No module named 'rich'</code></td>
+<td>flet-desktop richiede rich</td>
+<td>Lo spec file include <code>rich</code> negli <code>hiddenimports</code></td>
+</tr>
+<tr>
+<td><code>icons.json not found</code></td>
+<td>Flet non trova le icone</td>
+<td>Lo spec file usa <code>collect_data_files('flet')</code> per includere tutte le risorse</td>
+</tr>
+<tr>
+<td><code>OPENROUTER_API_KEY not found</code></td>
+<td><code>.env</code> non viene caricato</td>
+<td>Assicurati che <code>.env</code> sia nella stessa cartella dell'eseguibile</td>
+</tr>
+<tr>
+<td><code>NameError: name 'exit' is not defined</code></td>
+<td>Bug di Flet quando manca rich</td>
+<td>Includi <code>rich</code> negli <code>hiddenimports</code> (lo spec file già lo fa)</td>
+</tr>
+<tr>
+<td><code>No such file or directory: '.../icons.json'</code></td>
+<td>Risorse di Flet mancanti</td>
+<td>Usa <code>collect_data_files('flet')</code> nei <code>datas</code> (lo spec file già lo fa)</td>
+</tr>
+</tbody>
+</table>
+<h1 id="problemi-del-dev-environment">Problemi del dev environment</h1>
+<h2 id="errore-openrouter_api_key-not-found-in-sviluppo">Errore: "OPENROUTER_API_KEY not found" in sviluppo</h2>
+<p>Assicurati che il file <code>.env</code> esista nella <strong>root del progetto</strong> (dove c'è <code>main.py</code>) e contenga la chiave API.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Verifica che il file esista</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ls<span class="w"> </span>-la<span class="w"> </span>.env
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Se non esiste, copialo da .env.example</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+</code></pre></div>
+<h2 id="errore-modulenotfounderror">Errore: "ModuleNotFoundError"</h2>
+<p>Verifica che l'ambiente virtuale sia attivo e che tutte le dipendenze siano installate:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</code></pre></div>
+<h2 id="errore-no-module-named-leggimi">Errore: "No module named 'leggimi'"</h2>
+<p>Assicurati di eseguire il comando dalla directory principale del progetto (dove si trova <code>main.py</code>) o imposta <code>PYTHONPATH</code>:</p>
+<h3 id="linuxmacos">Linux/macOS</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">PWD</span><span class="si">}</span><span class="s2">/src:</span><span class="si">${</span><span class="nv">PYTHONPATH</span><span class="k">:-</span><span class="si">}</span><span class="s2">"</span>
+</code></pre></div>
+<h3 id="windows">Windows</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">set </span><span class="n">PYTHONPATH</span><span class="p">=</span><span class="s2">"%CD%\src;%PYTHONPATH%"</span>
+</code></pre></div>
+<hr />
+<h1 id="problemi-di-build">Problemi di build</h1>
+<h2 id="piattaforme-supportate">Piattaforme supportate</h2>
+<p>Questa applicazione è attualmente <strong>testata e sviluppata solo su Linux</strong>. Le build per Windows e macOS potrebbero funzionare con modifiche allo spec file, ma non sono supportate attivamente.</p>
+<h2 id="leseguibile-non-parte">L'eseguibile non parte</h2>
+<ul>
+<li><strong>Verifica che <code>.env</code> sia presente nella stessa cartella dell'eseguibile</strong></li>
+<li>Controlla i permessi di esecuzione</li>
+<li>Esegui da terminale per vedere i messaggi di errore:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>./dist/LeggiMi
+</code></pre></div>
+<h2 id="problemi-di-import-durante-la-compilazione">Problemi di import durante la compilazione</h2>
+<p>Usa lo spec file <code>leggimi.spec</code> per la compilazione, che include automaticamente tutte le dipendenze necessarie:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pyinstaller<span class="w"> </span>leggimi.spec<span class="w"> </span>--clean
+</code></pre></div>
+<h2 id="problemi-comuni-e-soluzioni_1">Problemi comuni e soluzioni</h2>
+<table>
+<thead>
+<tr>
+<th>Errore</th>
+<th>Causa</th>
+<th>Soluzione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ModuleNotFoundError: No module named 'leggimi'</code></td>
+<td>Il package non è incluso nei dati</td>
+<td>Lo spec file include <code>('src/leggimi', 'leggimi')</code> nei <code>datas</code></td>
+</tr>
+<tr>
+<td><code>No module named '_cffi_backend'</code></td>
+<td>miniaudio richiede cffi</td>
+<td>Lo spec file include <code>_cffi_backend</code> negli <code>hiddenimports</code></td>
+</tr>
+<tr>
+<td><code>No module named 'rich'</code></td>
+<td>flet-desktop richiede rich</td>
+<td>Lo spec file include <code>rich</code> negli <code>hiddenimports</code></td>
+</tr>
+<tr>
+<td><code>icons.json not found</code></td>
+<td>Flet non trova le icone</td>
+<td>Lo spec file usa <code>collect_data_files('flet')</code> per includere tutte le risorse</td>
+</tr>
+<tr>
+<td><code>OPENROUTER_API_KEY not found</code></td>
+<td><code>.env</code> non viene caricato</td>
+<td>Assicurati che <code>.env</code> sia nella stessa cartella dell'eseguibile</td>
+</tr>
+<tr>
+<td><code>NameError: name 'exit' is not defined</code></td>
+<td>Bug di Flet quando manca rich</td>
+<td>Includi <code>rich</code> negli <code>hiddenimports</code> (lo spec file già lo fa)</td>
+</tr>
+<tr>
+<td><code>No such file or directory: '.../icons.json'</code></td>
+<td>Risorse di Flet mancanti</td>
+<td>Usa <code>collect_data_files('flet')</code> nei <code>datas</code> (lo spec file già lo fa)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dll-mancanti-windows">DLL mancanti (Windows)</h2>
+<p>Se su Windows ottieni errori relativi a DLL mancanti, installa i runtime Visual C++ ridistribuibili:</p>
+<ul>
+<li><a href="https://aka.ms/vs/17/release/vc_redist.x64.exe">Visual C++ Redistributable</a></li>
+</ul>
+<h2 id="ricostruire-dopo-modifiche-al-codice">Ricostruire dopo modifiche al codice</h2>
+<p>Se modifichi il codice sorgente, ricostruisci con:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pyinstaller<span class="w"> </span>leggimi.spec<span class="w"> </span>--clean
+</code></pre></div>
+<h2 id="portabilita-delleseguibile">Portabilità dell'eseguibile</h2>
+<p>L'eseguibile è completamente portatile: puoi spostare <code>LeggiMi</code> in qualsiasi cartella e funzionerà, purché:</p>
+<ol>
+<li>Il file <code>.env</code> sia nella stessa cartella</li>
+<li>L'eseguibile abbia i permessi di esecuzione</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Esempio: spostare l'eseguibile in Downloads</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>mv<span class="w"> </span>dist/LeggiMi<span class="w"> </span>~/Downloads/
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>cp<span class="w"> </span>.env<span class="w"> </span>~/Downloads/
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nb">cd</span><span class="w"> </span>~/Downloads/
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>./LeggiMi
+</code></pre></div>
+<hr />
+<h2 id="envexample"><code>.env.example</code></h2>
+<p>Copia questo file come <code>.env</code> e compila i valori:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a># Chiave API per OpenRouter (obbligatoria)
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>OPENROUTER_API_KEY=sk-or-v1-...
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a># Modello per l'estrazione del testo dalle immagini PDF
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>IMAGE_MODEL=google/gemma-4-26b-a4b-it:free
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a># Modello per la generazione degli script
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>TEXT_MODEL=nvidia/nemotron-3-ultra-550b-a55b:free
+</code></pre></div>
+<hr />
+<h2 id="riepilogo-delle-modifiche">Riepilogo delle modifiche</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Sezione</th>
+<th style="text-align: left;">Modifica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Errore <code>OPENROUTER_API_KEY</code></strong></td>
+<td style="text-align: left;">Specifica che il <code>.env</code> deve stare nella root del progetto</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>L'eseguibile non parte</strong></td>
+<td style="text-align: left;">Aggiunto comando per eseguire da terminale e vedere l'errore</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Il <code>.env</code> non viene caricato</strong></td>
+<td style="text-align: left;">Sezione dedicata con spiegazione chiara</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Problemi di import</strong></td>
+<td style="text-align: left;">Spiegazione sull'uso dello spec file</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tabella problemi comuni</strong></td>
+<td style="text-align: left;">Aggiunti tutti gli errori riscontrati con le soluzioni</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Portabilità</strong></td>
+<td style="text-align: left;">Spiegazione su come spostare l'eseguibile</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Verifica rapida</strong></td>
+<td style="text-align: left;">Messaggi di debug per verificare il caricamento del <code>.env</code></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
